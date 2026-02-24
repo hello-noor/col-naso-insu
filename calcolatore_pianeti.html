@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Col Naso all'Insù – Calcolatore Planetario</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Cousine:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-height:100vh;background:#06081a;color:#e0e8f8;font-family:'Baloo 2',cursive;overflow-x:hidden;}
+a{color:#48cae4;text-decoration:none;}a:hover{text-decoration:underline;}
+
+header{text-align:center;padding:18px 16px 6px;}
+header h1{font-size:clamp(1.1rem,3vw,1.6rem);font-weight:800;color:#FFD166;
+  text-shadow:0 0 20px rgba(255,209,102,.4);letter-spacing:.04em;}
+header p{font-family:'Cousine',monospace;font-size:clamp(.55rem,.9vw,.72rem);color:#48cae4;opacity:.65;margin-top:2px;}
+.nav-links{margin-top:6px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.nav-links a{font-family:'Cousine',monospace;font-size:.6rem;padding:3px 10px;
+  border:1.5px solid rgba(72,202,228,.25);border-radius:14px;color:rgba(72,202,228,.7);transition:all .2s;}
+.nav-links a:hover{background:rgba(72,202,228,.1);border-color:#48cae4;color:#48cae4;text-decoration:none;}
+
+.section{max-width:720px;margin:0 auto;padding:16px 20px;}
+.section h2{font-size:clamp(.95rem,2.2vw,1.25rem);font-weight:800;color:#FFD166;margin-bottom:10px;
+  text-shadow:0 0 12px rgba(255,209,102,.3);}
+
+/* INPUT AREA */
+.input-area{background:rgba(0,0,0,.35);border:1px solid rgba(72,202,228,.15);border-radius:18px;
+  padding:18px;display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:16px;}
+.input-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;}
+.input-row label{font-size:.85rem;font-weight:700;color:#FFD166;}
+.input-row input{width:80px;padding:6px 10px;border-radius:12px;border:2px solid rgba(72,202,228,.3);
+  background:rgba(0,0,0,.5);color:#fff;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;text-align:center;
+  transition:border-color .2s;}
+.input-row input:focus{outline:none;border-color:#FFD166;}
+.input-row select{padding:6px 10px;border-radius:12px;border:2px solid rgba(72,202,228,.3);
+  background:rgba(0,0,0,.5);color:#fff;font-family:'Baloo 2',cursive;font-size:.85rem;
+  cursor:pointer;transition:border-color .2s;appearance:auto;}
+.input-row select:focus{outline:none;border-color:#FFD166;}
+.calc-btn{padding:8px 24px;border-radius:24px;border:2px solid #FFD166;background:rgba(255,209,102,.1);
+  color:#FFD166;font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;cursor:pointer;
+  transition:all .25s;letter-spacing:.04em;}
+.calc-btn:hover{background:rgba(255,209,102,.2);transform:translateY(-2px);box-shadow:0 4px 16px rgba(255,209,102,.2);}
+
+/* RESULTS */
+.results{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px;}
+.planet-result{background:rgba(0,0,0,.3);border:1.5px solid var(--pc,rgba(255,255,255,.08));
+  border-radius:16px;padding:14px 12px;text-align:center;transition:all .3s;cursor:default;
+  position:relative;overflow:hidden;}
+.planet-result::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--pc,#444);opacity:.5;}
+.planet-result:hover{transform:translateY(-3px);border-color:var(--pc,#FFD166);
+  box-shadow:0 6px 20px rgba(0,0,0,.4);}
+.pr-emoji{font-size:2rem;line-height:1;margin-bottom:4px;}
+.pr-name{font-size:.85rem;font-weight:800;color:var(--pc,#FFD166);}
+.pr-age{font-size:1.6rem;font-weight:800;color:#fff;margin:4px 0;line-height:1.1;}
+.pr-age-unit{font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.4);}
+.pr-weight{font-family:'Cousine',monospace;font-size:.85rem;font-weight:700;color:#48cae4;margin:4px 0;}
+.pr-year{font-family:'Cousine',monospace;font-size:.52rem;color:rgba(255,255,255,.3);margin-top:4px;line-height:1.4;}
+.pr-fun{font-size:.6rem;color:rgba(255,209,102,.5);font-style:italic;margin-top:6px;line-height:1.4;}
+.pr-gravity-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.06);margin:6px 0 2px;position:relative;overflow:hidden;}
+.pr-gravity-fill{height:100%;border-radius:3px;background:var(--pc,#48cae4);transition:width .6s ease;}
+.pr-gravity-label{font-family:'Cousine',monospace;font-size:.48rem;color:rgba(255,255,255,.3);display:flex;justify-content:space-between;}
+
+/* EXPLANATION */
+.explain{margin-top:16px;padding:14px;background:rgba(3,10,30,.8);border:1px solid rgba(72,202,228,.15);
+  border-radius:14px;font-size:.72rem;line-height:1.65;color:#a0c4e8;}
+.explain h3{color:#FFD166;font-size:.85rem;margin-bottom:6px;}
+.note{font-family:'Cousine',monospace;font-size:.62rem!important;color:#48cae4!important;opacity:.7;
+  padding:6px 10px;border-left:3px solid rgba(72,202,228,.3);margin:8px 0;background:rgba(72,202,228,.04);border-radius:0 8px 8px 0;}
+
+footer{text-align:center;padding:20px 16px 30px;font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.2);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🪐 Calcolatore Planetario</h1>
+  <p>Quanti anni avresti e quanto peseresti sugli altri pianeti?</p>
+  <div class="nav-links">
+    <a href="universo_interattivo.html">🌌 Universo</a>
+    <a href="luce_colori.html">🌈 Luce e Colori</a>
+  </div>
+</header>
+
+<div class="section">
+  <h2>🎂 Inserisci i tuoi dati</h2>
+  
+  <div class="input-area">
+    <div class="input-row">
+      <label>Età:</label>
+      <input type="number" id="inAge" min="1" max="120" value="5" inputmode="numeric">
+      <label>anni terrestri</label>
+    </div>
+    <div class="input-row">
+      <label>Peso:</label>
+      <input type="number" id="inWeight" min="1" max="300" value="20" inputmode="numeric">
+      <label>kg sulla Terra</label>
+    </div>
+    <button class="calc-btn" id="calcBtn">🚀 Calcola!</button>
+  </div>
+  
+  <div class="results" id="results"></div>
+  
+  <div class="explain" id="explain" style="display:none">
+    <h3>📚 Come funziona?</h3>
+    <p><b>Età su un pianeta</b> = la tua età terrestre divisa per la durata dell'anno di quel pianeta. 
+    Ad esempio: se hai 5 anni sulla Terra e l'anno di Giove dura 11,86 anni terrestri, 
+    su Giove avresti solo <b>5 ÷ 11,86 = 0,42 anni</b> — meno di mezzo compleanno gioviano!</p>
+    <p style="margin-top:8px"><b>Peso su un pianeta</b> = il tuo peso terrestre × la gravità di quel pianeta rispetto alla Terra. 
+    La gravità dipende dalla <b>massa</b> e dalla <b>dimensione</b> del pianeta. 
+    Giove è enorme → gravità forte → pesi di più. La Luna è piccola → gravità debole → pesi di meno.</p>
+  </div>
+  
+  <div class="note" style="margin-top:12px">
+    ⚠️ <b>Nota scientifica:</b> Il "peso" è una forza (si misura in Newton), non una massa. 
+    La tua <b>massa</b> (quantità di materia) resta uguale ovunque! 
+    Quello che cambia è la <b>forza di gravità</b> che ti attira verso il suolo del pianeta.
+    Qui usiamo "kg" per semplicità, ma il peso vero si calcola: Peso = massa × gravità.
+  </div>
+</div>
+
+<footer>
+  <p>✦ Col Naso all'Insù — Scuola dell'Infanzia Fratello Sole, Rivotorto di Assisi ✦</p>
+  <p>Progetto di Mario Mele — IC Assisi 1</p>
+</footer>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════
+// REAL ASTRONOMICAL DATA
+// Orbital periods: NASA Planetary Fact Sheets
+// Surface gravity relative to Earth (g_planet / g_earth)
+// ═══════════════════════════════════════════════════
+const PLANETS = [
+  { name: 'Mercurio', emoji: '⚫', col: '#a8a8a8',
+    yearDays: 87.97,     // Orbital period in Earth days
+    yearEarth: 0.2408,   // Orbital period in Earth years
+    gRatio: 0.378,       // Surface gravity / Earth gravity
+    radius_km: 2439.7,
+    fun: 'Un giorno su Mercurio (176 gg terrestri) dura PIÙ di un anno mercuriano! 🤯',
+    fact: 'Temperatura: da -173°C di notte a +427°C di giorno' },
+  { name: 'Venere', emoji: '🌕', col: '#e8c86a',
+    yearDays: 224.7,
+    yearEarth: 0.6152,
+    gRatio: 0.907,
+    radius_km: 6051.8,
+    fun: 'Venere ruota al contrario! Il Sole sorge a Ovest. ↩️',
+    fact: 'Il pianeta più caldo: 462°C per effetto serra estremo' },
+  { name: 'Terra', emoji: '🌍', col: '#4a9eff',
+    yearDays: 365.25,
+    yearEarth: 1.0,
+    gRatio: 1.0,
+    radius_km: 6371,
+    fun: 'Casa nostra! Il riferimento per tutte le misure. 🏠',
+    fact: 'L\'unico pianeta con acqua liquida in superficie' },
+  { name: 'Luna', emoji: '🌙', col: '#c8c8c8',
+    yearDays: 365.25,  // Orbits Sun with Earth
+    yearEarth: 1.0,     // Same year as Earth (orbits Sun together)
+    gRatio: 0.166,      // 1/6 of Earth
+    radius_km: 1737.4,
+    fun: 'Pesa come 6 volte di meno! Potresti saltare altissimo! 🦘',
+    fact: 'Distanza dalla Terra: 384.400 km. Orbita lunare: 27,3 giorni',
+    isMoon: true },
+  { name: 'Marte', emoji: '🔴', col: '#c1440e',
+    yearDays: 687.0,
+    yearEarth: 1.8808,
+    gRatio: 0.377,
+    radius_km: 3389.5,
+    fun: 'Ha il Monte Olimpo: 22 km di altezza (3× l\'Everest)! 🏔️',
+    fact: 'Un giorno marziano (sol) dura 24h 37min' },
+  { name: 'Giove', emoji: '🟠', col: '#c88b3a',
+    yearDays: 4332.59,
+    yearEarth: 11.862,
+    gRatio: 2.528,
+    radius_km: 69911,
+    fun: 'Piove diamanti! Ha una tempesta (Grande Macchia Rossa) grande 2 volte la Terra! 💎',
+    fact: 'Ha 95 lune confermate. 11× il diametro della Terra' },
+  { name: 'Saturno', emoji: '🪐', col: '#e4d191',
+    yearDays: 10759.22,
+    yearEarth: 29.457,
+    gRatio: 1.065,
+    radius_km: 58232,
+    fun: 'I suoi anelli sono fatti di miliardi di pezzi di ghiaccio! 🧊',
+    fact: 'Così poco denso che galleggerebbe sull\'acqua (se esistesse un oceano così grande)' },
+  { name: 'Urano', emoji: '🔵', col: '#7de8e8',
+    yearDays: 30688.5,
+    yearEarth: 84.011,
+    gRatio: 0.886,
+    radius_km: 25362,
+    fun: 'Ruota su un fianco — inclinato di 98°! 42 anni di sole, 42 di buio per polo. 🌀',
+    fact: 'Temperatura: -224°C. Scoperto nel 1781 da William Herschel' },
+  { name: 'Nettuno', emoji: '🌀', col: '#4b70dd',
+    yearDays: 60195.0,
+    yearEarth: 164.79,
+    gRatio: 1.137,
+    radius_km: 24622,
+    fun: 'Venti a 2.100 km/h — i più veloci del Sistema Solare! 🌪️',
+    fact: 'Non ha completato un\'orbita da quando fu scoperto nel 1846' },
+  { name: 'Sole', emoji: '☀️', col: '#ffcc00',
+    yearDays: null,  // Not a planet
+    yearEarth: null,
+    gRatio: 27.94,   // Surface gravity
+    radius_km: 695700,
+    fun: 'La sua gravità è così forte che peseresti quasi 28 volte di più! Non potresti stare in piedi. 🫠',
+    fact: '99,86% della massa di tutto il Sistema Solare',
+    isStar: true },
+];
+
+const results = document.getElementById('results');
+const explain = document.getElementById('explain');
+
+function calculate() {
+  const age = parseFloat(document.getElementById('inAge').value) || 5;
+  const weight = parseFloat(document.getElementById('inWeight').value) || 20;
+  
+  results.innerHTML = '';
+  explain.style.display = 'block';
+  
+  const ageDays = age * 365.25;
+  
+  PLANETS.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'planet-result';
+    card.style.setProperty('--pc', p.col);
+    
+    // Calculate age on this planet
+    let ageStr = '', ageUnit = '', yearInfo = '';
+    if (p.isStar) {
+      ageStr = '—';
+      ageUnit = 'non è un pianeta!';
+      yearInfo = 'Il Sole è una stella';
+    } else if (p.isMoon) {
+      const ageOnMoon = age; // Same as Earth year
+      const moonOrbits = ageDays / 27.3; // Number of lunar months lived
+      ageStr = ageOnMoon.toFixed(1);
+      ageUnit = 'anni (= Terra)';
+      yearInfo = `Ma hai vissuto ${Math.floor(moonOrbits)} orbite lunari!`;
+    } else {
+      const ageOnPlanet = age / p.yearEarth;
+      if (ageOnPlanet < 0.01) {
+        ageStr = (ageOnPlanet * 365.25).toFixed(0);
+        ageUnit = 'giorni ' + p.name.toLowerCase() + 'iani';
+      } else if (ageOnPlanet < 1) {
+        ageStr = (ageOnPlanet * 12).toFixed(1);
+        ageUnit = 'mesi ' + p.name.toLowerCase() + 'iani';
+      } else {
+        ageStr = ageOnPlanet.toFixed(ageOnPlanet >= 10 ? 0 : ageOnPlanet >= 1 ? 1 : 2);
+        ageUnit = 'anni ' + p.name.toLowerCase() + 'iani';
+      }
+      yearInfo = `1 anno = ${p.yearDays < 365 ? p.yearDays.toFixed(0) + ' gg' : p.yearEarth.toFixed(1) + ' anni'} terrestri`;
+    }
+    
+    // Calculate weight
+    const weightOnPlanet = (weight * p.gRatio).toFixed(1);
+    const gravPercent = Math.min(100, (p.gRatio / 2.6) * 100); // Scale bar max ~2.6g (Jupiter)
+    
+    // Birthday count (how many birthdays would you have celebrated)
+    let bdayNote = '';
+    if (!p.isStar && !p.isMoon) {
+      const bdays = Math.floor(age / p.yearEarth);
+      if (bdays === 0) bdayNote = `🎂 Nemmeno 1 compleanno!`;
+      else if (bdays === 1) bdayNote = `🎂 Solo 1 compleanno!`;
+      else bdayNote = `🎂 ${bdays} compleanni!`;
+    }
+    
+    card.innerHTML = `
+      <div class="pr-emoji">${p.emoji}</div>
+      <div class="pr-name">${p.name}</div>
+      ${!p.isStar ? `<div class="pr-age">${ageStr}</div>
+      <div class="pr-age-unit">${ageUnit}</div>` : ''}
+      <div class="pr-weight">⚖️ ${weightOnPlanet} kg</div>
+      <div class="pr-gravity-bar"><div class="pr-gravity-fill" style="width:${gravPercent}%"></div></div>
+      <div class="pr-gravity-label"><span>Gravità: ${p.gRatio.toFixed(2)}g</span><span>${(p.gRatio * 100).toFixed(0)}% Terra</span></div>
+      <div class="pr-year">${yearInfo}</div>
+      ${bdayNote ? `<div class="pr-year" style="color:rgba(255,209,102,.45)">${bdayNote}</div>` : ''}
+      <div class="pr-fun">${p.fun}</div>
+    `;
+    
+    results.appendChild(card);
+  });
+  
+  // Animate gravity bars
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.pr-gravity-fill').forEach(el => {
+      el.style.width = el.style.width; // trigger reflow
+    });
+  });
+}
+
+document.getElementById('calcBtn').addEventListener('click', calculate);
+// Also calculate on Enter key
+document.querySelectorAll('#inAge, #inWeight').forEach(el => {
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+});
+
+// Auto-calculate on load
+calculate();
+</script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Col Naso all'Insù – Luce e Colori delle Stelle</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Cousine:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-height:100vh;background:#06081a;color:#e0e8f8;font-family:'Baloo 2',cursive;overflow-x:hidden;}
+a{color:#48cae4;text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+header{text-align:center;padding:18px 16px 6px;position:relative;}
+header h1{font-size:clamp(1.1rem,3vw,1.6rem);font-weight:800;color:#FFD166;
+  text-shadow:0 0 20px rgba(255,209,102,.4);letter-spacing:.04em;}
+header p{font-family:'Cousine',monospace;font-size:clamp(.55rem,.9vw,.72rem);color:#48cae4;opacity:.65;margin-top:2px;}
+.nav-links{margin-top:6px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.nav-links a{font-family:'Cousine',monospace;font-size:.6rem;padding:3px 10px;
+  border:1.5px solid rgba(72,202,228,.25);border-radius:14px;color:rgba(72,202,228,.7);transition:all .2s;}
+.nav-links a:hover{background:rgba(72,202,228,.1);border-color:#48cae4;color:#48cae4;text-decoration:none;}
+
+.section{max-width:800px;margin:0 auto;padding:16px 20px;}
+.section h2{font-size:clamp(.95rem,2.2vw,1.25rem);font-weight:800;color:#FFD166;margin-bottom:10px;
+  text-shadow:0 0 12px rgba(255,209,102,.3);}
+.section p,.section .note{font-size:clamp(.72rem,1.1vw,.82rem);line-height:1.65;color:#aac0e0;margin-bottom:8px;}
+.note{font-family:'Cousine',monospace;font-size:.65rem!important;color:#48cae4!important;opacity:.7;
+  padding:6px 10px;border-left:3px solid rgba(72,202,228,.3);margin:8px 0;background:rgba(72,202,228,.04);border-radius:0 8px 8px 0;}
+
+/* RGB MIXER */
+.mixer-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px 10px;
+  background:rgba(0,0,0,.4);border-radius:18px;border:1px solid rgba(255,255,255,.06);margin:12px 0;}
+.mixer-canvas-wrap{position:relative;width:min(360px,90vw);height:min(360px,90vw);}
+#rgbCanvas{width:100%;height:100%;border-radius:50%;display:block;}
+.sliders{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;width:100%;}
+.slider-group{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:80px;}
+.slider-group label{font-family:'Cousine',monospace;font-size:.65rem;font-weight:700;letter-spacing:.06em;}
+.slider-group input[type=range]{width:100px;accent-color:var(--sc);cursor:pointer;}
+.slider-group .val{font-family:'Cousine',monospace;font-size:.6rem;color:rgba(255,255,255,.4);}
+.mix-result{text-align:center;margin-top:6px;}
+.mix-swatch{display:inline-block;width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,.15);
+  vertical-align:middle;margin-right:10px;box-shadow:0 0 20px var(--glow);}
+.mix-label{font-family:'Cousine',monospace;font-size:.68rem;color:#aac0e0;vertical-align:middle;}
+
+/* STAR TEMPERATURE */
+.star-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0;}
+.star-card{text-align:center;padding:10px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.06);
+  background:rgba(0,0,0,.3);min-width:90px;cursor:pointer;transition:all .25s;}
+.star-card:hover{transform:translateY(-3px);border-color:rgba(255,209,102,.3);}
+.star-dot{width:40px;height:40px;border-radius:50%;margin:0 auto 6px;position:relative;}
+.star-dot::after{content:'';position:absolute;inset:-8px;border-radius:50%;opacity:.3;
+  background:radial-gradient(circle,var(--sc),transparent 70%);}
+.star-name{font-size:.7rem;font-weight:700;color:#FFD166;}
+.star-temp{font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.4);margin-top:2px;}
+.star-type{font-family:'Cousine',monospace;font-size:.5rem;color:#48cae4;opacity:.6;margin-top:1px;}
+
+/* SPECTRUM BAR */
+.spectrum-wrap{margin:14px 0;padding:14px;background:rgba(0,0,0,.3);border-radius:14px;border:1px solid rgba(255,255,255,.05);}
+.spectrum-bar{height:36px;border-radius:8px;position:relative;overflow:hidden;
+  background:linear-gradient(90deg,
+    #1a0020 0%,#3a0060 3%,#6600aa 6%,
+    #4400cc 9%,#0000ff 14%,#0066ff 20%,
+    #00ccff 26%,#00ff88 33%,#44ff00 40%,
+    #aaff00 47%,#ffff00 53%,#ffcc00 60%,
+    #ff8800 68%,#ff4400 76%,#ff0000 84%,
+    #cc0000 90%,#660000 95%,#330000 100%);}
+.spectrum-labels{display:flex;justify-content:space-between;padding:4px 0;font-family:'Cousine',monospace;font-size:.5rem;color:rgba(255,255,255,.35);}
+.spectrum-pointer{position:absolute;top:-4px;width:2px;height:calc(100% + 8px);background:#fff;
+  transition:left .3s;pointer-events:none;}
+.spectrum-pointer::after{content:attr(data-label);position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+  font-family:'Cousine',monospace;font-size:.5rem;color:#FFD166;white-space:nowrap;}
+.em-section{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.em-btn{font-family:'Cousine',monospace;font-size:.55rem;padding:3px 8px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:rgba(255,255,255,.4);
+  cursor:pointer;transition:all .2s;}
+.em-btn:hover,.em-btn.on{color:#FFD166;border-color:rgba(255,209,102,.4);background:rgba(255,209,102,.08);}
+
+/* INFO BUBBLE */
+.info-bubble{margin:10px auto;max-width:600px;padding:12px 14px;background:rgba(3,10,30,.9);
+  border:1px solid rgba(72,202,228,.2);border-radius:14px;font-size:.72rem;line-height:1.6;color:#a0c4e8;
+  display:none;animation:fadeIn .3s ease;}
+.info-bubble.show{display:block;}
+.info-bubble .ib-title{font-weight:700;color:#FFD166;font-size:.8rem;margin-bottom:4px;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+footer{text-align:center;padding:20px 16px 30px;font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.2);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✦ Luce e Colori delle Stelle ✦</h1>
+  <p>Come nasce la luce? Perché le stelle hanno colori diversi?</p>
+  <div class="nav-links">
+    <a href="universo_interattivo.html">🌌 Universo</a>
+    <a href="calcolatore_pianeti.html">🪐 Calcolatore Pianeti</a>
+  </div>
+</header>
+
+<!-- ═══ SEZIONE 1: RGB MIXER ═══ -->
+<div class="section">
+  <h2>🔴🟢🔵 Mischia i Colori della Luce</h2>
+  <p>In classe abbiamo visto che 3 fasci di luce <b style="color:#ff4444">rossa</b>, <b style="color:#44ff44">verde</b> e <b style="color:#6666ff">blu</b> 
+  messi insieme fanno <b style="color:#fff">luce bianca</b>! Prova tu:</p>
+  
+  <div class="mixer-wrap">
+    <div class="mixer-canvas-wrap">
+      <canvas id="rgbCanvas" width="400" height="400"></canvas>
+    </div>
+    <div class="sliders">
+      <div class="slider-group" style="--sc:#ff3333">
+        <label style="color:#ff5555">🔴 ROSSO</label>
+        <input type="range" id="sR" min="0" max="255" value="255">
+        <span class="val" id="vR">255</span>
+      </div>
+      <div class="slider-group" style="--sc:#33ff33">
+        <label style="color:#55ff55">🟢 VERDE</label>
+        <input type="range" id="sG" min="0" max="255" value="255">
+        <span class="val" id="vG">255</span>
+      </div>
+      <div class="slider-group" style="--sc:#5555ff">
+        <label style="color:#7777ff">🔵 BLU</label>
+        <input type="range" id="sB" min="0" max="255" value="255">
+        <span class="val" id="vB">255</span>
+      </div>
+    </div>
+    <div class="mix-result">
+      <span class="mix-swatch" id="mixSwatch" style="--glow:white"></span>
+      <span class="mix-label" id="mixLabel">Bianco puro! ✨</span>
+    </div>
+  </div>
+  
+  <div class="note">
+    💡 <b>Attenzione!</b> Mescolare la LUCE (sintesi additiva) è diverso da mescolare i colori con i pennarelli (sintesi sottrattiva). 
+    Con la luce: Rosso + Verde = <b style="color:#ffff44">Giallo</b>! Con i pennarelli sarebbe marrone.
+  </div>
+</div>
+
+<!-- ═══ SEZIONE 2: STELLE E TEMPERATURA ═══ -->
+<div class="section">
+  <h2>⭐ Il Colore racconta la Temperatura</h2>
+  <p>Le stelle hanno colori diversi perché hanno <b>temperature diverse</b>. 
+  Più una stella è calda, più la sua luce è blu. Più è fredda, più è rossa. 
+  Come un ferro che si scalda: prima rosso, poi arancione, poi bianco!</p>
+  
+  <div class="star-row" id="starRow">
+    <!-- Generated by JS -->
+  </div>
+  <div class="info-bubble" id="starInfo"></div>
+  
+  <div class="note">
+    🔬 <b>Radiazione di corpo nero:</b> Ogni oggetto caldo emette luce. 
+    La <b>legge di Wien</b> dice che il "picco" di colore si sposta: 
+    oggetti freddi → infrarosso (invisibile), tiepidi → rosso, caldi → bianco, caldissimi → blu/ultravioletto.
+  </div>
+</div>
+
+<!-- ═══ SEZIONE 3: SPETTRO ELETTROMAGNETICO ═══ -->
+<div class="section">
+  <h2>🌈 Lo Spettro Elettromagnetico</h2>
+  <p>La luce che vediamo è solo una <b>piccola parte</b> di tutte le onde che esistono! 
+  Ci sono onde che non possiamo vedere: le onde radio della TV, i raggi X del dottore, 
+  e tante altre. Sono tutte <b>onde elettromagnetiche</b>, cambiano solo in "velocità di vibrazione" (frequenza).</p>
+  
+  <div class="spectrum-wrap">
+    <div class="spectrum-bar" id="specBar">
+      <div class="spectrum-pointer" id="specPtr" style="left:50%" data-label=""></div>
+    </div>
+    <div class="spectrum-labels">
+      <span>← Bassa energia</span>
+      <span>Luce visibile 👁</span>
+      <span>Alta energia →</span>
+    </div>
+    <div class="em-section">
+      <button class="em-btn" data-em="radio">📻 Radio</button>
+      <button class="em-btn" data-em="micro">📡 Microonde</button>
+      <button class="em-btn" data-em="ir">🔥 Infrarosso</button>
+      <button class="em-btn" data-em="vis">👁 Visibile</button>
+      <button class="em-btn" data-em="uv">☀️ Ultravioletto</button>
+      <button class="em-btn" data-em="xray">🏥 Raggi X</button>
+      <button class="em-btn" data-em="gamma">⚡ Raggi Gamma</button>
+    </div>
+  </div>
+  <div class="info-bubble" id="emInfo"></div>
+  
+  <div class="note">
+    🌌 <b>In astronomia:</b> Guardiamo le stelle in TUTTE queste "luci"! 
+    I radiotelescopi vedono le onde radio delle galassie. Il telescopio Hubble vede l'ultravioletto. 
+    Il James Webb vede l'infrarosso — per scoprire le stelle più lontane e fredde!
+  </div>
+</div>
+
+<!-- ═══ SEZIONE 4: PERCHÉ IL CIELO È BLU? ═══ -->
+<div class="section">
+  <h2>🏞️ Perché il Cielo è Blu?</h2>
+  <p>La luce del Sole è <b>bianca</b> (contiene tutti i colori). 
+  Quando entra nell'atmosfera, le molecole d'aria deviano di più la luce blu 
+  (che ha onde più corte e "rimbalza" di più). Per questo vediamo blu ovunque guardiamo in alto!</p>
+  <p>Al tramonto il Sole è basso e la luce attraversa più atmosfera. 
+  Il blu viene deviato tutto via, e resta solo il <b style="color:#ff6633">rosso</b> e l'<b style="color:#ffaa33">arancione</b>. 
+  Questo si chiama <b>diffusione di Rayleigh</b>.</p>
+  <div class="note">🤔 <b>Curiosità:</b> Su Marte i tramonti sono <b style="color:#6688cc">blu</b>! 
+  La polvere marziana devia le onde al contrario rispetto alla nostra atmosfera.</div>
+</div>
+
+<footer>
+  <p>✦ Col Naso all'Insù — Scuola dell'Infanzia Fratello Sole, Rivotorto di Assisi ✦</p>
+  <p>Progetto di Mario Mele — IC Assisi 1</p>
+</footer>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════
+// RGB MIXER — Additive color mixing with 3 light beams
+// ═══════════════════════════════════════════════════
+const cvs = document.getElementById('rgbCanvas');
+const ctx = cvs.getContext('2d');
+const sR = document.getElementById('sR');
+const sG = document.getElementById('sG');
+const sB = document.getElementById('sB');
+const vR = document.getElementById('vR');
+const vG = document.getElementById('vG');
+const vB = document.getElementById('vB');
+const mixSwatch = document.getElementById('mixSwatch');
+const mixLabel = document.getElementById('mixLabel');
+
+function drawRGB() {
+  const r = +sR.value, g = +sG.value, b = +sB.value;
+  vR.textContent = r; vG.textContent = g; vB.textContent = b;
+  
+  const w = cvs.width, h = cvs.height;
+  const cx = w/2, cy = h/2;
+  
+  ctx.clearRect(0, 0, w, h);
+  
+  // Dark background circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, w * .47, 0, Math.PI * 2);
+  ctx.fillStyle = '#0a0a18';
+  ctx.fill();
+  
+  // Additive blending
+  ctx.globalCompositeOperation = 'lighter';
+  
+  // Three overlapping circles — like real light beams
+  const beamR = w * .28;
+  const offset = w * .11;
+  const beams = [
+    { x: cx, y: cy - offset * .9, color: `rgba(${r},0,0,1)` },        // Red top
+    { x: cx - offset * .85, y: cy + offset * .55, color: `rgba(0,${g},0,1)` },  // Green bottom-left
+    { x: cx + offset * .85, y: cy + offset * .55, color: `rgba(0,0,${b},1)` },  // Blue bottom-right
+  ];
+  
+  beams.forEach(beam => {
+    const grad = ctx.createRadialGradient(beam.x, beam.y, 0, beam.x, beam.y, beamR);
+    grad.addColorStop(0, beam.color);
+    grad.addColorStop(0.5, beam.color.replace(',1)', ',.6)'));
+    grad.addColorStop(1, beam.color.replace(',1)', ',0)'));
+    ctx.beginPath();
+    ctx.arc(beam.x, beam.y, beamR, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  });
+  
+  ctx.globalCompositeOperation = 'source-over';
+  
+  // Update swatch
+  const col = `rgb(${r},${g},${b})`;
+  mixSwatch.style.background = col;
+  mixSwatch.style.setProperty('--glow', col);
+  
+  // Name the color
+  let name = '';
+  if (r > 200 && g > 200 && b > 200) name = 'Bianco! ✨ Tutti i colori insieme';
+  else if (r < 30 && g < 30 && b < 30) name = 'Buio totale — nessuna luce';
+  else if (r > 200 && g > 200 && b < 60) name = 'Giallo! 💛 Rosso + Verde';
+  else if (r > 200 && g < 60 && b > 200) name = 'Magenta! 💜 Rosso + Blu';
+  else if (r < 60 && g > 200 && b > 200) name = 'Ciano! 🩵 Verde + Blu';
+  else if (r > 200 && g < 100 && b < 100) name = 'Rosso 🔴';
+  else if (r < 100 && g > 200 && b < 100) name = 'Verde 🟢';
+  else if (r < 100 && g < 100 && b > 200) name = 'Blu 🔵';
+  else if (r > 200 && g > 100 && b < 60) name = 'Arancione 🟠';
+  else name = `Miscela (${r}, ${g}, ${b})`;
+  mixLabel.textContent = name;
+}
+
+[sR, sG, sB].forEach(s => s.addEventListener('input', drawRGB));
+drawRGB();
+
+// ═══════════════════════════════════════════════════
+// STAR TEMPERATURE — Blackbody radiation colors
+// Temperatures and colors based on real stellar classification
+// ═══════════════════════════════════════════════════
+const STARS = [
+  { name: 'Betelgeuse', type: 'M (Supergigante)', temp: '3.500', tempK: 3500,
+    color: '#ff6633', glow: '#ff440033',
+    text: 'Una stella enorme e "fredda" (per una stella!). È rossa perché emette soprattutto luce a onde lunghe. È così grande che se fosse al posto del Sole, arriverebbe fino a Giove!',
+    fun: 'Potrebbe esplodere in supernova da un momento all\'altro (in termini astronomici)! 💥' },
+  { name: 'Aldebaran', type: 'K (Gigante)', temp: '4.000', tempK: 4000,
+    color: '#ff8844', glow: '#ff660033',
+    text: 'L\'occhio del Toro (costellazione del Toro). Arancione perché è un po\' più calda di Betelgeuse ma molto più fredda del Sole.',
+    fun: 'Il suo nome viene dall\'arabo "al-dabarān" = "l\'inseguitore" 🏃' },
+  { name: 'Sole', type: 'G (Nana gialla)', temp: '5.778', tempK: 5778,
+    color: '#fff4d6', glow: '#ffee8833',
+    text: 'La nostra stella! In realtà è bianca vista dallo spazio. Appare gialla dalla Terra per l\'atmosfera. Temperatura superficiale: 5.778 K.',
+    fun: 'È una stella assolutamente nella media — e per fortuna! ☀️' },
+  { name: 'Sirio', type: 'A (Bianca)', temp: '9.940', tempK: 9940,
+    color: '#cce0ff', glow: '#88bbff33',
+    text: 'La stella più brillante del cielo notturno! È bianco-azzurra perché è molto calda. È a soli 8,6 anni luce.',
+    fun: 'Sirio ha una compagna nana bianca minuscola ma densissima! ⚪' },
+  { name: 'Rigel', type: 'B (Supergigante)', temp: '12.100', tempK: 12100,
+    color: '#99bbff', glow: '#6699ff33',
+    text: 'La stella più luminosa di Orione (il piede). Blu-azzurra perché caldissima! Emette soprattutto luce a onde corte (blu/UV).',
+    fun: 'È 120.000 volte più luminosa del Sole! 🤯' },
+  { name: 'Naos', type: 'O (Caldissima)', temp: '42.000', tempK: 42000,
+    color: '#7799ff', glow: '#4466ff44',
+    text: 'Una delle stelle più calde conosciute. Così calda che emette soprattutto ultravioletto — la luce visibile che vediamo è il "rimasuglio" blu.',
+    fun: 'A questa temperatura, la stella "brucia" il suo idrogeno a velocità folle e vivrà pochissimo! 🔥' },
+];
+
+const starRow = document.getElementById('starRow');
+const starInfo = document.getElementById('starInfo');
+
+STARS.forEach((s, i) => {
+  const card = document.createElement('div');
+  card.className = 'star-card';
+  card.innerHTML = `
+    <div class="star-dot" style="background:${s.color};--sc:${s.color};box-shadow:0 0 16px ${s.color}"></div>
+    <div class="star-name">${s.name}</div>
+    <div class="star-temp">${s.temp} K</div>
+    <div class="star-type">${s.type}</div>
+  `;
+  card.addEventListener('click', () => {
+    starInfo.innerHTML = `<div class="ib-title">${s.name} — ${s.temp} K</div>
+      <p>${s.text}</p>
+      <p style="color:#48cae4;font-style:italic;margin-top:6px">${s.fun}</p>`;
+    starInfo.classList.add('show');
+    // Scroll into view on mobile
+    starInfo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+  starRow.appendChild(card);
+});
+
+// ═══════════════════════════════════════════════════
+// ELECTROMAGNETIC SPECTRUM
+// ═══════════════════════════════════════════════════
+const EM_DATA = {
+  radio: { pos: 2, label: 'Onde Radio',
+    text: '📻 Le onde più lunghe e a bassa energia. La radio, il WiFi, il Bluetooth usano queste onde! In astronomia: i radiotelescopi ascoltano le galassie e i pulsar.',
+    fun: 'La radiazione di fondo cosmico (CMB) — l\'eco del Big Bang — è nelle microonde/radio!' },
+  micro: { pos: 10, label: 'Microonde',
+    text: '📡 Il forno a microonde scalda il cibo con queste! In astronomia: il telescopio Planck ha mappato la radiazione cosmica di fondo in microonde.',
+    fun: 'La CMB ha una temperatura di 2,7 K (-270°C) — solo 2,7 gradi sopra lo zero assoluto!' },
+  ir: { pos: 22, label: 'Infrarosso',
+    text: '🔥 Tutti gli oggetti caldi emettono infrarosso — anche noi! I telecomandi della TV usano infrarosso. Le telecamere termiche "vedono" il calore.',
+    fun: 'Il telescopio James Webb vede in infrarosso: per questo riesce a vedere le galassie più antiche e lontane dell\'universo! 🔭' },
+  vis: { pos: 45, label: 'Luce Visibile',
+    text: '👁 L\'unica parte dello spettro che i nostri occhi possono vedere! Va dal viola (~380 nm) al rosso (~700 nm). La luce bianca contiene tutti questi colori.',
+    fun: 'I nostri occhi si sono evoluti per vedere esattamente le onde che il Sole emette di più — non è un caso!' },
+  uv: { pos: 65, label: 'Ultravioletto',
+    text: '☀️ La luce "oltre il viola" che non vediamo. Il Sole ne emette tanta — è ciò che causa le scottature! Lo strato di ozono ci protegge dai raggi UV più pericolosi.',
+    fun: 'Le api e molti insetti VEDONO l\'ultravioletto! I fiori hanno "disegni segreti" visibili solo in UV! 🐝' },
+  xray: { pos: 80, label: 'Raggi X',
+    text: '🏥 Attraversano la carne ma non le ossa — per questo il dottore li usa per le radiografie! In astronomia: il telescopio Chandra vede i raggi X delle stelle di neutroni e dei buchi neri.',
+    fun: 'I raggi X vengono prodotti da gas caldissimi che cadono nei buchi neri — milioni di gradi! 🕳️' },
+  gamma: { pos: 95, label: 'Raggi Gamma',
+    text: '⚡ Le onde più energetiche dell\'universo! Vengono dalle esplosioni cosmiche più potenti: supernovae, lampi gamma (GRB), e collisioni di stelle di neutroni.',
+    fun: 'Un lampo gamma (GRB) rilascia più energia in pochi secondi di quanto il Sole ne produrrà in TUTTA la sua vita! 💥' },
+};
+
+const specPtr = document.getElementById('specPtr');
+const emInfo = document.getElementById('emInfo');
+
+document.querySelectorAll('.em-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.em-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const d = EM_DATA[btn.dataset.em];
+    specPtr.style.left = d.pos + '%';
+    specPtr.setAttribute('data-label', d.label);
+    emInfo.innerHTML = `<div class="ib-title">${d.label}</div>
+      <p>${d.text}</p>
+      <p style="color:#48cae4;font-style:italic;margin-top:6px">${d.fun}</p>`;
+    emInfo.classList.add('show');
+    emInfo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+});
+</script>
+</body>
+</html>
