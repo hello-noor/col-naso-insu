@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Col Naso all'Insù – Viaggio nell'Universo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Cousine:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100vw;height:100vh;overflow:hidden;background:#010610;}
+canvas{position:fixed;top:0;left:0;}
+#ui{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;display:flex;flex-direction:column;}
+header{text-align:center;padding:8px 16px 2px;}
+header h1{font-family:'Baloo 2',cursive;font-size:clamp(.85rem,1.9vw,1.45rem);font-weight:800;
+  color:#FFD166;text-shadow:0 0 20px rgba(255,209,102,.5);letter-spacing:.06em;}
+header p{font-family:'Cousine',monospace;font-size:clamp(.46rem,.78vw,.66rem);color:#48cae4;opacity:.7;margin-top:1px;}
+#lvbar{position:absolute;top:50px;left:50%;transform:translateX(-50%);
+  display:flex;gap:4px;align-items:center;pointer-events:auto;white-space:nowrap;
+  flex-wrap:wrap;justify-content:center;max-width:98vw;padding:0 8px;}
+.lb{font-family:'Cousine',monospace;font-size:.56rem;padding:3px 9px;
+  border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.3);border-radius:18px;cursor:pointer;transition:all .25s;}
+.lb:hover{color:rgba(255,255,255,.65);border-color:rgba(255,255,255,.28);}
+.lb.on{color:#FFD166;border-color:#FFD166;background:rgba(255,209,102,.08);text-shadow:0 0 8px rgba(255,209,102,.4);}
+.lsep{color:rgba(255,255,255,.12);font-size:.65rem;pointer-events:none;}
+#info{position:absolute;bottom:60px;right:14px;background:rgba(3,10,26,.95);
+  border:1px solid rgba(72,202,228,.25);border-radius:16px;padding:12px 14px;width:218px;
+  opacity:0;transform:translateY(16px);transition:all .36s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;backdrop-filter:blur(14px);z-index:20;}
+#info.show{opacity:1;transform:translateY(0);pointer-events:auto;}
+#ie{font-size:1.85rem;float:right;margin-left:8px;line-height:1;}
+#iname{font-family:'Baloo 2',cursive;font-size:.96rem;font-weight:800;color:#FFD166;margin-bottom:4px;}
+#itext{font-size:.7rem;line-height:1.52;color:#aac0e0;}
+#ifun{margin-top:6px;font-size:.64rem;color:#48cae4;font-style:italic;
+  border-top:1px solid rgba(72,202,228,.16);padding-top:6px;line-height:1.42;}
+#icl{position:absolute;top:6px;right:8px;background:none;border:none;
+  color:rgba(255,255,255,.25);font-size:.82rem;cursor:pointer;pointer-events:auto;}
+#icl:hover{color:#fff;}
+
+#ctrl{pointer-events:auto;display:flex;justify-content:center;align-items:center;
+  gap:5px;padding:4px 8px 7px;flex-wrap:wrap;flex-shrink:0;margin-top:auto;
+  background:linear-gradient(transparent,rgba(1,6,16,.7));}
+.btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:.64rem;
+  border:1.5px solid rgba(255,255,255,.11);background:rgba(255,255,255,.04);color:#c8d8f2;
+  padding:3px 10px;border-radius:24px;cursor:pointer;transition:all .2s;}
+.btn:hover{background:rgba(255,255,255,.1);border-color:#48cae4;color:#48cae4;transform:translateY(-1px);}
+.btn.on{background:rgba(72,202,228,.14);border-color:#48cae4;color:#48cae4;}
+.btn.z{font-size:.85rem;padding:2px 9px;}
+#splbl{font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.28);min-width:22px;text-align:center;}
+#hint{position:absolute;bottom:68px;left:14px;font-family:'Cousine',monospace;
+  font-size:.54rem;color:rgba(255,255,255,.22);line-height:2;pointer-events:none;}
+#hint b{color:rgba(255,209,102,.45);}
+
+#navpop{position:absolute;bottom:46px;right:10px;background:rgba(3,10,26,.95);border:1px solid rgba(72,202,228,.25);border-radius:12px;padding:8px 12px;display:none;pointer-events:auto;z-index:30;}
+#navpop.show{display:block;}
+
+/* Scale unit button */
+
+#dtable{position:absolute;top:80px;left:14px;background:rgba(3,10,26,.95);
+  border:1px solid rgba(72,202,228,.2);border-radius:14px;padding:11px 14px;
+  opacity:0;transform:translateX(-22px);transition:opacity .3s,transform .3s cubic-bezier(.34,1.4,.64,1);
+  pointer-events:none;backdrop-filter:blur(16px);z-index:15;min-width:300px;max-width:360px;}
+#dtable.show{opacity:1;transform:translateX(0);pointer-events:auto;}
+#dtable h3{font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:#FFD166;
+  margin-bottom:8px;letter-spacing:.04em;display:flex;align-items:center;gap:6px;}
+#dtable h3 .badge{font-size:.55rem;background:rgba(255,209,102,.14);border:1px solid rgba(255,209,102,.3);
+  color:#FFD166;border-radius:8px;padding:1px 6px;letter-spacing:.06em;font-family:'Cousine',monospace;}
+#dtable table{border-collapse:collapse;width:100%;}
+#dtable th{font-family:'Cousine',monospace;font-size:.5rem;color:rgba(72,202,228,.65);
+  text-align:left;padding:2px 5px;border-bottom:1px solid rgba(72,202,228,.15);}
+#dtable th.r{text-align:right;}
+#dtable td{font-family:'Cousine',monospace;font-size:.58rem;color:#b0c8e0;
+  padding:3px 5px;border-bottom:1px solid rgba(255,255,255,.04);}
+#dtable td.r{text-align:right;}
+#dtable td.n{color:#e0eeff;font-weight:700;}
+#dtable td.a{color:#ffd6a5;}
+#dtable td.b{color:#caffbf;}
+#dtable td.c{color:#c8b4ff;}
+#dtable tr:hover td{background:rgba(72,202,228,.05);}
+#dtable .leg{margin-top:7px;font-family:'Cousine',monospace;font-size:.48rem;
+  color:rgba(255,255,255,.22);line-height:1.8;border-top:1px solid rgba(72,202,228,.1);padding-top:5px;}
+#dtable .leg i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:3px;vertical-align:middle;}
+.da{background:#ffd6a5;}.db{background:#caffbf;}.dc{background:#c8b4ff;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <header>
+    <h1>✦ Col Naso all'Insù ✦</h1>
+    <p>Tocca gli oggetti · Rotella o ＋/－ per zoomare · Da Rivotorto all'Universo</p>
+  </header>
+  <div id="lvbar">
+    <button class="lb on" data-lv="0">🌍 Terra + Luna</button>
+    <span class="lsep">›</span>
+    <button class="lb" data-lv="1">🌸 Stagioni</button>
+    <span class="lsep">›</span>
+    <button class="lb" data-lv="2">☀️ Sistema Solare</button>
+    <span class="lsep">›</span>
+    <button class="lb" data-lv="3">🌌 Via Lattea</button>
+    <span class="lsep">›</span>
+    <button class="lb" data-lv="4">🔭 Laniakea</button>
+    <span class="lsep">›</span>
+    <button class="lb" data-lv="5">🌐 Universo</button>
+  </div>
+  <div id="hint"></div>
+  <div id="bdform" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:rgba(3,10,26,.95);border:1.5px solid rgba(255,209,102,.3);border-radius:16px;
+    padding:16px 20px;pointer-events:auto;z-index:25;text-align:center;min-width:220px;backdrop-filter:blur(12px);">
+    <div style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:#FFD166;margin-bottom:8px;">🎂 Il tuo Compleanno</div>
+    <div style="font-family:'Cousine',monospace;font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:10px;">Inserisci nome e data di nascita<br>per vedere il tuo compleanno sull'orbita!</div>
+    <input id="bdname" type="text" placeholder="Il tuo nome" maxlength="15" style="width:100%;padding:6px 10px;border-radius:10px;
+      border:1.5px solid rgba(72,202,228,.3);background:rgba(0,0,0,.5);color:#fff;font-family:'Baloo 2',cursive;
+      font-size:.85rem;text-align:center;margin-bottom:6px;">
+    <div style="display:flex;gap:6px;justify-content:center;margin-bottom:8px;">
+      <input id="bdday" type="number" min="1" max="31" placeholder="GG" style="width:50px;padding:5px;border-radius:8px;
+        border:1.5px solid rgba(72,202,228,.3);background:rgba(0,0,0,.5);color:#fff;font-family:'Cousine',monospace;
+        font-size:.8rem;text-align:center;" inputmode="numeric">
+      <select id="bdmonth" style="padding:5px 8px;border-radius:8px;border:1.5px solid rgba(72,202,228,.3);
+        background:rgba(0,0,0,.5);color:#fff;font-family:'Cousine',monospace;font-size:.7rem;appearance:auto;">
+        <option value="">Mese</option>
+        <option value="1">Gennaio</option><option value="2">Febbraio</option><option value="3">Marzo</option>
+        <option value="4">Aprile</option><option value="5">Maggio</option><option value="6">Giugno</option>
+        <option value="7">Luglio</option><option value="8">Agosto</option><option value="9">Settembre</option>
+        <option value="10">Ottobre</option><option value="11">Novembre</option><option value="12">Dicembre</option>
+      </select>
+    </div>
+    <button id="bdok" style="padding:6px 20px;border-radius:20px;border:1.5px solid #FFD166;background:rgba(255,209,102,.1);
+      color:#FFD166;font-family:'Baloo 2',cursive;font-weight:700;font-size:.85rem;cursor:pointer;">🚀 Vai!</button>
+    <button id="bdclose" style="position:absolute;top:4px;right:8px;background:none;border:none;color:rgba(255,255,255,.3);
+      font-size:.8rem;cursor:pointer;">✕</button>
+  </div>
+  <div id="dtable">
+    <h3 id="dttitle">📊 Dati <span class="badge" id="dtbadge">LIVELLO 0</span></h3>
+    <div id="dtcontent"></div>
+  </div>
+  <div id="info">
+    <button id="icl">✕</button>
+    <div id="ie"></div><div id="iname"></div><div id="itext"></div><div id="ifun"></div>
+  </div>
+  <div id="ctrl">
+    <button class="btn" id="bpause">⏸ Pausa</button>
+    <button class="btn" id="bslow">🐢</button>
+    <span id="splbl">1×</span>
+    <button class="btn" id="bfast">🚀</button>
+    <button class="btn z" id="bzi">＋</button>
+    <button class="btn z" id="bzo">－</button>
+    <button class="btn" id="blbl">🏷 Nomi</button>
+    <button class="btn" id="bdata">🔢 Dati</button>
+    <button class="btn" id="bscale">📐 Scala</button>
+    <button class="btn" id="bgalp" style="display:none">🪐 Pianeti</button>
+    <button class="btn" id="bbd" style="display:none">🎂 Compleanno</button>
+    <button class="btn" id="bunit">📏 km</button>
+    <button class="btn" id="brst">🔄</button>
+    <button class="btn" id="bnav">🔗</button>
+    <div id="navpop">
+      <a href="luce_colori.html" style="display:block;color:#48cae4;font-size:.65rem;font-family:Cousine,monospace;margin:4px 0;text-decoration:none;">🌈 Luce e Colori</a>
+      <a href="calcolatore_pianeti.html" style="display:block;color:#48cae4;font-size:.65rem;font-family:Cousine,monospace;margin:4px 0;text-decoration:none;">🪐 Calcolatore Pianeti</a>
+    </div>
+  </div>
+</div>
+<script>
+'use strict';
+// ─────────────────────────────────────────────────────────────────
+// CANVAS
+// ─────────────────────────────────────────────────────────────────
+const cv=document.getElementById('c');
+const cx=cv.getContext('2d');
+let W,H,CX,CY;
+function resize(){
+  W=cv.width=window.innerWidth; H=cv.height=window.innerHeight;
+  CX=W/2; CY=H/2;
+  mkStars(); mkGalaxyPts(); mkLaniakea();
+}
+window.addEventListener('resize',resize);
+
+// ─────────────────────────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────────────────────────
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function rg(x,y,r0,r1,stops){
+  const g=cx.createRadialGradient(x,y,r0,x,y,r1);
+  stops.forEach(([t,c])=>g.addColorStop(t,c)); return g;
+}
+function lg(x1,y1,x2,y2,stops){
+  const g=cx.createLinearGradient(x1,y1,x2,y2);
+  stops.forEach(([t,c])=>g.addColorStop(t,c)); return g;
+}
+function circ(x,y,r,fill){cx.beginPath();cx.arc(x,y,r,0,TAU);cx.fillStyle=fill;cx.fill();}
+function ringC(x,y,r,col,lw=1,dash=[]){
+  cx.save();cx.setLineDash(dash);
+  cx.beginPath();cx.arc(x,y,r,0,TAU);
+  cx.strokeStyle=col;cx.lineWidth=lw;cx.stroke();cx.restore();
+}
+function lbl(s,x,y,col,sz,al='left'){
+  cx.font=`600 ${sz}px 'Baloo 2',cursive`;
+  cx.fillStyle=col;cx.textAlign=al;cx.fillText(s,x,y);cx.textAlign='left';
+}
+
+// ─── SCALE UNIT SYSTEM (km / anni luce) ───
+let scaleUnitMode='km';
+const KM_PER_LY=9.461e12, KM_PER_AU=1.496e8;
+function fmtScale(km){
+  if(scaleUnitMode==='ly'){
+    const ly=km/KM_PER_LY;
+    if(ly<0.001)return (ly*1e6).toFixed(1)+' μ a.l.';
+    if(ly<1)return ly.toFixed(3)+' a.l.';
+    if(ly<1e3)return ly.toFixed(1)+' a.l.';
+    if(ly<1e6)return (ly/1e3).toFixed(0)+'k a.l.';
+    if(ly<1e9)return (ly/1e6).toFixed(0)+'M a.l.';
+    return (ly/1e9).toFixed(1)+'G a.l.';
+  }
+  if(km<1e3)return km.toFixed(0)+' km';
+  if(km<1e6)return (km/1e3).toFixed(0)+'k km';
+  if(km<1e9)return (km/1e6).toFixed(1)+'M km';
+  if(km<1e12)return (km/1e9).toFixed(1)+'G km';
+  return (km/1e12).toFixed(1)+'T km';
+}
+function drawRuler(rulerKm,rulerPx,rx,ry,col,a){
+  cx.save();cx.globalAlpha*=a;
+  cx.strokeStyle=col;cx.lineWidth=1.5;
+  cx.beginPath();cx.moveTo(rx,ry);cx.lineTo(rx+rulerPx,ry);cx.stroke();
+  cx.beginPath();cx.moveTo(rx,ry-5);cx.lineTo(rx,ry+5);cx.stroke();
+  cx.beginPath();cx.moveTo(rx+rulerPx,ry-5);cx.lineTo(rx+rulerPx,ry+5);cx.stroke();
+  cx.font="600 8px 'Cousine',monospace";cx.fillStyle=col;cx.textAlign='center';
+  cx.fillText('◀ '+fmtScale(rulerKm)+' ▶',rx+rulerPx/2,ry+14);
+  cx.textAlign='left';cx.restore();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// STARFIELD
+// ─────────────────────────────────────────────────────────────────
+let stars=[];
+function mkStars(){
+  stars=Array.from({length:380},()=>({
+    x:Math.random()*W, y:Math.random()*H,
+    r:Math.random()*1.35+.18,
+    op:Math.random(),
+    dop:(.0012+Math.random()*.0028)*(Math.random()<.5?1:-1),
+    col:Math.random()<.15?`hsl(${200+Math.random()*60},80%,85%)`:'white'
+  }));
+}
+function drawStars(a=1){
+  if(a<.01)return;
+  cx.save();cx.globalAlpha=a;
+  for(const s of stars){
+    s.op=clamp(s.op+s.dop,.04,1);
+    if(s.op>=1||s.op<=.04)s.dop*=-1;
+    cx.beginPath();cx.arc(s.x,s.y,s.r,0,TAU);
+    cx.fillStyle=s.col==='white'?`rgba(255,255,255,${s.op})`:`rgba(180,210,255,${s.op})`;
+    cx.fill();
+  }
+  cx.restore();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GALAXY — realistic Milky Way point cloud
+// ─────────────────────────────────────────────────────────────────
+let galPts=[];
+function mkGalaxyPts(){
+  galPts=[];
+  const ARMS=4, APT=520, CORE_N=220;
+
+  // Core bulge — warm yellow/orange like real galactic center
+  for(let i=0;i<CORE_N;i++){
+    const r=Math.pow(Math.random(),.6)*0.12;
+    const a=Math.random()*TAU;
+    const ang2=Math.random()*TAU;
+    galPts.push({
+      r, a,
+      dx:0, dy:0,
+      sz:.5+Math.random()*2.2,
+      br:.3+Math.random()*.7,
+      // warm core colors: white hot center, orange/yellow outward
+      h:r<.04?0:Math.random()<.6?35:55,
+      s:r<.04?0:60+Math.random()*30,
+      l:r<.04?95:70+Math.random()*25,
+      core:true
+    });
+  }
+
+  // Spiral arms
+  for(let arm=0;arm<ARMS;arm++){
+    const armOff=arm*(TAU/ARMS);
+    const isOB=arm%2===0; // OB association arms — bluer
+
+    for(let i=0;i<APT;i++){
+      const t=i/APT;
+      const r=0.1+t*0.44;
+      const twist=t*Math.PI*2.8;
+      const spread=0.012+t*0.06;
+      const noise=(Math.random()-.5)*spread*2.8;
+      const rFinal=r+Math.abs(Math.random()-.5)*spread;
+      const aFinal=armOff+twist+noise;
+
+      // Arm color: OB arms more blue (young hot stars), other arms warmer
+      let h,s,l;
+      if(isOB){
+        // Blue-white arm (like Perseus arm): blue hot stars + some red HII regions
+        if(Math.random()<.07){h=0;s=80;l=65;}       // red HII region
+        else if(Math.random()<.3){h=220;s=70;l=85;}  // blue giant
+        else{h=210;s=55;l=78+Math.random()*18;}      // general blue-white
+      } else {
+        // Warmer arm (like Sagittarius arm): mix of ages
+        if(Math.random()<.08){h=30;s=90;l=68;}       // orange giant
+        else if(Math.random()<.15){h=60;s=70;l=82;}  // yellow star
+        else{h=200+Math.random()*40;s=40;l=80;}      // mixed blue-white
+      }
+
+      galPts.push({
+        r:rFinal, a:aFinal,
+        sz:Math.random()<.02?2.5:.25+Math.random()*(1.6-t*.6),
+        br:(1-t*.55)*(.3+Math.random()*.7),
+        h,s,l,core:false
+      });
+    }
+  }
+
+  // Dust lane (dark reddish scatter)
+  for(let i=0;i<220;i++){
+    galPts.push({
+      r:.06+Math.random()*.46,
+      a:Math.random()*TAU,
+      sz:.25+Math.random()*.5,
+      br:.08+Math.random()*.18,
+      h:20,s:30,l:30,
+      core:false,dust:true
+    });
+  }
+
+  // Random halo globular clusters
+  for(let i=0;i<60;i++){
+    galPts.push({
+      r:.35+Math.random()*.18,
+      a:Math.random()*TAU,
+      sz:.8+Math.random()*.8,
+      br:.15+Math.random()*.25,
+      h:50,s:20,l:88,
+      core:false,halo:true
+    });
+  }
+}
+
+function drawGalaxy(gx,gy,galR,rotOff,alpha){
+  if(alpha<.005)return;
+  cx.save(); cx.globalAlpha=alpha;
+
+  // Outer faint halo
+  const oh=rg(gx,gy,galR*.3,galR*1.4,[
+    [0,'rgba(160,140,255,.06)'],[.5,'rgba(80,100,200,.03)'],[1,'transparent']]);
+  cx.beginPath();cx.arc(gx,gy,galR*1.4,0,TAU);cx.fillStyle=oh;cx.fill();
+
+  // Draw each point
+  cx.save();
+  for(const p of galPts){
+    const diskY=p.r*Math.sin(p.a+rotOff)*galR*.36; // flatten disk ~36%
+    const px=gx+Math.cos(p.a+rotOff)*p.r*galR;
+    const py=gy+diskY;
+    if(p.dust){
+      cx.beginPath();cx.arc(px,py,p.sz,0,TAU);
+      cx.fillStyle=`hsla(${p.h},${p.s}%,${p.l}%,${p.br*alpha})`;cx.fill();
+      continue;
+    }
+    // Glow for brighter stars
+    if(p.sz>1.2&&p.br>.5){
+      cx.beginPath();cx.arc(px,py,p.sz*2.5,0,TAU);
+      cx.fillStyle=`hsla(${p.h},${p.s}%,${p.l}%,${p.br*.15})`;cx.fill();
+    }
+    cx.beginPath();cx.arc(px,py,p.sz,0,TAU);
+    cx.fillStyle=`hsla(${p.h},${p.s}%,${p.l}%,${p.br})`;cx.fill();
+  }
+  cx.restore();
+
+  // Core glow — realistic warm nuclear bulge
+  const cg1=rg(gx,gy,0,galR*.06,[
+    [0,'rgba(255,255,240,.95)'],[.3,'rgba(255,230,160,.7)'],[.7,'rgba(255,180,80,.25)'],[1,'transparent']]);
+  cx.beginPath();cx.arc(gx,gy,galR*.06,0,TAU);cx.fillStyle=cg1;cx.fill();
+
+  const cg2=rg(gx,gy,0,galR*.18,[
+    [0,'rgba(255,220,150,.4)'],[.5,'rgba(200,160,100,.15)'],[1,'transparent']]);
+  cx.beginPath();cx.arc(gx,gy,galR*.18,0,TAU);cx.fillStyle=cg2;cx.fill();
+
+  cx.restore();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// LANIAKEA — realistic supercluster map with proper galaxy rendering
+// Based on actual Laniakea topology (Tully et al. 2014)
+// Key: Virgo cluster is gravitational center, Perseus-Pisces is external
+// Via Lattea sits in Virgo Supercluster, ~50Mly from Virgo cluster
+// Andromeda (M31) is 2.5M ly away, shown prominently
+// ─────────────────────────────────────────────────────────────────
+
+// Cluster positions based on actual sky/distance mapping
+// rx,ry in 0..1 (relative to padded viewport)
+const CLUSTER_DEFS=[
+  // Our local group & immediate neighborhood
+  {rx:.48,ry:.50,name:'Via Lattea\n(Noi 🌌)',col:'#FFD166',r:22,key:'gal',shape:'spiral',spiral_a:.6},
+  {rx:.44,ry:.46,name:'Andromeda\n(M31)',col:'#a8d4ff',r:18,key:'m31',shape:'spiral',spiral_a:.5},
+  // Virgo cluster: gravitational heart of Laniakea
+  {rx:.36,ry:.42,name:'Ammasso\ndella Vergine',col:'#48cae4',r:20,key:'virgo',shape:'elliptical'},
+  // Great Attractor / Shapley: the massive far sink
+  {rx:.75,ry:.38,name:'Grande\nAttrattore\n(Shapley)',col:'#fdffb6',r:18,key:'shapley',shape:'cloud'},
+  // Centaurus supercluster
+  {rx:.64,ry:.36,name:'Centaurus',col:'#a0c4ff',r:11,key:'cen',shape:'elliptical'},
+  // Hydra
+  {rx:.28,ry:.58,name:'Hydra',col:'#b5ead7',r:10,key:'hydra',shape:'cloud'},
+  // Perseus-Pisces wall (external to Laniakea)
+  {rx:.72,ry:.60,name:'Perseus-\nPisces',col:'#ffc8dd',r:12,key:'perseus',shape:'filament'},
+  // Coma cluster
+  {rx:.42,ry:.22,name:'Coma',col:'#caffbf',r:10,key:'coma',shape:'elliptical'},
+  // Fornax cluster
+  {rx:.22,ry:.34,name:'Fornax',col:'#c9b1ff',r:9,key:'fornax',shape:'elliptical'},
+  // Pavo-Indus
+  {rx:.54,ry:.72,name:'Pavo-Indus',col:'#ffd6a5',r:8,key:'pavio',shape:'cloud'},
+  // Horologium-Reticulum
+  {rx:.82,ry:.70,name:'Horologium',col:'#ffb3c1',r:8,key:'horo',shape:'cloud'},
+  // Antlia
+  {rx:.32,ry:.74,name:'Antlia',col:'#a0f0c4',r:7,key:'antlia',shape:'cloud'},
+  // Pisces-Cetus (external)
+  {rx:.60,ry:.20,name:'Pisces-Cetus',col:'#d0d0ff',r:8,key:'cetus',shape:'filament'},
+];
+
+const CLUSTER_INFO={
+  gal:{name:'Via Lattea',emoji:'🌌',text:'La nostra galassia! 200-400 miliardi di stelle. Siamo nel braccio di Orione, a 26.000 anni luce dal centro.',fun:'Ci vogliono 100.000 anni luce per attraversarla. Alla velocità di luce! 🚀'},
+  m31:{name:'Andromeda (M31)',emoji:'🌀',text:'La galassia a spirale più vicina a noi, a 2,5 milioni di anni luce. Simile alla Via Lattea ma più grande!',fun:'Tra 4,5 miliardi di anni si scontrerà con la Via Lattea e formerà una gigantesca galassia ellittica! 💥'},
+  virgo:{name:'Ammasso della Vergine',emoji:'🔭',text:'Il grande ammasso con oltre 1.300 galassie. È il centro gravitazionale di Laniakea — tutto gli orbita attorno!',fun:'Ci stiamo avvicinando a lui a circa 300 km/s. Ci vorrà moltissimo tempo... ma ci stiamo cadendo dentro! 😲'},
+  cen:{name:'Centaurus',emoji:'✨',text:'Superammasso a ~170 milioni di anni luce. Migliaia di galassie, ognuna con miliardi di stelle.',fun:'È così massiccio che distorce lo spaziotempo attorno a sé!'},
+  shapley:{name:'Grande Attrattore / Shapley',emoji:'💫',text:'La struttura più massiccia di Laniakea, a ~650M anni luce. Attira letteralmente tutto il superammasso.',fun:'Stiamo andando verso di lui a 630 km/s — insieme a tutta la Via Lattea! 🕳️'},
+  hydra:{name:'Superammasso Hydra-Centaurus',emoji:'🌀',text:'Un grande superammasso che si muove verso il Grande Attrattore insieme a noi.',fun:'Stiamo tutti cadendo insieme verso qualcosa di enorme nel cosmo! 😱'},
+  perseus:{name:'Perseus-Pisces',emoji:'🌊',text:'Un lungo muro di galassie esterno a Laniakea che si estende per centinaia di milioni di anni luce.',fun:'È uno dei filamenti cosmici più lunghi conosciuti — come un muro di galassie!'},
+  coma:{name:'Ammasso della Chioma (Coma)',emoji:'💎',text:'Uno degli ammassi più ricchi conosciuti. Fritz Zwicky lo studiò e scoprì la materia oscura!',fun:'La materia oscura fu "scoperta" qui nel 1933 — c\'era qualcosa che teneva insieme le galassie! 🔮'},
+};
+
+let lanClusters=[], lanFilaments=[], lanScatter=[];
+let filamentFlow=0;
+
+function mkLaniakea(){
+  lanClusters=[...CLUSTER_DEFS];
+  lanFilaments=[];
+  // Build filaments based on actual Laniakea flow lines
+  // Connect clusters with bezier filaments where distance < threshold
+  const connections=[
+    [0,1],[0,2],[1,2],[2,3],[2,4],[3,4],[4,5],[5,2],[6,3],[6,4],
+    [7,2],[8,2],[8,0],[9,4],[10,6],[11,5],[11,9],[12,7]
+  ];
+  connections.forEach(([ai,bi])=>{
+    if(ai>=lanClusters.length||bi>=lanClusters.length)return;
+    const a=lanClusters[ai],b=lanClusters[bi];
+    const midx=(a.rx+b.rx)/2+(Math.random()-.5)*.06;
+    const midy=(a.ry+b.ry)/2+(Math.random()-.5)*.06;
+    lanFilaments.push({ai,bi,mid:{rx:midx,ry:midy},phase:Math.random()*TAU});
+  });
+  // Background scatter galaxies
+  const rng=(s)=>{let x=Math.sin(s*127.1)*43758.5453;return x-Math.floor(x);};
+  lanScatter=Array.from({length:280},(_,i)=>({
+    rx:.06+rng(i+1)*.88, ry:.06+rng(i+2)*.88,
+    r:.4+rng(i+3)*2.2,
+    col:`hsla(${200+rng(i+4)*70},${35+rng(i+5)*30}%,${45+rng(i+6)*40}%,${.08+rng(i+7)*.2})`
+  }));
+}
+
+// Draw a small galaxy shape (spiral or elliptical) at px,py with radius r
+function drawMiniGalaxy(px,py,r,col,shape,rotAng,ts,isKey){
+  cx.save(); cx.translate(px,py);
+  if(shape==='spiral'){
+    // Flatten to disk perspective
+    cx.rotate(rotAng);
+    const diskScale = isKey ? .42 : .48;
+    cx.scale(1, diskScale);
+    // Draw spiral arms
+    const nArms = 2, armSteps = isKey ? 80 : 40;
+    for(let arm=0; arm<nArms; arm++){
+      cx.save(); cx.rotate(arm*Math.PI);
+      // Each arm: logarithmic spiral
+      cx.beginPath();
+      for(let step=0; step<=armSteps; step++){
+        const t = step/armSteps;
+        const ang = t * TAU * 1.4;
+        const rad = t * r * .95;
+        const sx2 = Math.cos(ang)*rad;
+        const sy2 = Math.sin(ang)*rad;
+        if(step===0) cx.moveTo(sx2,sy2); else cx.lineTo(sx2,sy2);
+      }
+      const armW = isKey ? r*.35 : r*.25;
+      cx.strokeStyle = col;
+      cx.lineWidth = armW;
+      cx.globalAlpha *= isKey ? .6 : .5;
+      cx.stroke();
+      // Second thinner brighter stroke for arm definition
+      cx.beginPath();
+      for(let step=0; step<=armSteps; step++){
+        const t = step/armSteps;
+        const ang = t * TAU * 1.4;
+        const rad = t * r * .9;
+        if(step===0) cx.moveTo(Math.cos(ang)*rad, Math.sin(ang)*rad);
+        else cx.lineTo(Math.cos(ang)*rad, Math.sin(ang)*rad);
+      }
+      cx.lineWidth = armW*.35;
+      cx.strokeStyle = 'rgba(255,255,255,.6)';
+      cx.globalAlpha *= 1.8;
+      cx.stroke();
+      cx.restore();
+    }
+    // Restore scale then draw core (no scale distortion for glow)
+    cx.scale(1, 1/diskScale);
+    // Bright galactic core
+    const coreR = isKey ? r*.45 : r*.3;
+    const cg=rg(0,0,0,coreR,[[0,'white'],[.3,'rgba(255,240,180,1)'],[.6,col+'aa'],[1,'transparent']]);
+    circ(0,0,coreR,cg);
+  } else if(shape==='elliptical'){
+    cx.scale(1,.5);
+    const eg=rg(0,0,0,r,[[0,'white'],[.25,'rgba(220,200,160,1)'],[.55,col+'88'],[.85,col+'33'],[1,'transparent']]);
+    circ(0,0,r,eg);
+  } else {
+    // cloud/filament
+    cx.scale(1,.6);
+    const cg2=rg(0,0,0,r,[[0,col+'cc'],[.5,col+'55'],[1,'transparent']]);
+    circ(0,0,r,cg2);
+  }
+  cx.restore();
+}
+
+function drawLaniakea(alpha,ts){
+  if(!lanClusters.length) mkLaniakea();
+  if(alpha<.005)return;
+  cx.save();cx.globalAlpha=alpha;
+
+  const pad=55;
+  const fw=W-pad*2, fh=H-pad*2;
+
+  // Deep void background
+  cx.fillStyle='rgba(4,2,18,.98)'; cx.fillRect(0,0,W,H);
+  const vbg=rg(CX,CY,0,Math.max(W,H)*.7,
+    [[0,'rgba(12,6,40,.96)'],[.6,'rgba(5,2,20,.99)'],[1,'rgba(2,0,10,1)']]);
+  cx.fillStyle=vbg; cx.fillRect(0,0,W,H);
+
+  filamentFlow+=.0004*(paused?0:speedMult);
+
+  // ── Filaments ──
+  for(const f of lanFilaments){
+    const A=lanClusters[f.ai],B=lanClusters[f.bi];
+    const x1=pad+A.rx*fw, y1=pad+A.ry*fh;
+    const x2=pad+B.rx*fw, y2=pad+B.ry*fh;
+    const mx2=pad+f.mid.rx*fw, my2=pad+f.mid.ry*fh;
+    const pulse=.2+Math.sin(ts*.00035+f.phase)*.1;
+
+    // Thick outer glow (cosmic gas)
+    cx.save(); cx.globalAlpha*=pulse*.5;
+    cx.beginPath(); cx.moveTo(x1,y1); cx.quadraticCurveTo(mx2,my2,x2,y2);
+    cx.strokeStyle='rgba(80,110,220,1)'; cx.lineWidth=5; cx.stroke();
+    cx.restore();
+    // Medium glow
+    cx.save(); cx.globalAlpha*=pulse*.7;
+    cx.beginPath(); cx.moveTo(x1,y1); cx.quadraticCurveTo(mx2,my2,x2,y2);
+    cx.strokeStyle='rgba(140,170,255,1)'; cx.lineWidth=2; cx.stroke();
+    cx.restore();
+    // Bright core with dash flow
+    cx.save(); cx.setLineDash([5,9]);
+    cx.lineDashOffset=-filamentFlow*70+f.phase*14;
+    cx.globalAlpha*=pulse*1.3;
+    cx.beginPath(); cx.moveTo(x1,y1); cx.quadraticCurveTo(mx2,my2,x2,y2);
+    cx.strokeStyle='rgba(180,200,255,1)'; cx.lineWidth=.8; cx.stroke();
+    cx.restore();
+    // Flow particles
+    for(let s=0;s<5;s++){
+      const t=((ts*.0002+f.phase*.3+s/5)%1);
+      const t2=1-t;
+      const bx=t2*t2*x1+2*t2*t*mx2+t*t*x2;
+      const by=t2*t2*y1+2*t2*t*my2+t*t*y2;
+      cx.save(); cx.globalAlpha*=t*(1-t)*3*pulse*.8;
+      circ(bx,by,1.8,'rgba(210,225,255,1)'); cx.restore();
+    }
+  }
+
+  // ── Background scatter ──
+  for(const s of lanScatter){
+    circ(pad+s.rx*fw,pad+s.ry*fh,s.r,s.col);
+  }
+
+  // ── Laniakea boundary ellipse ──
+  const bRx=fw*.44, bRy=fh*.40;
+  cx.save(); cx.globalAlpha*=.12; cx.setLineDash([12,22]);
+  cx.beginPath(); cx.ellipse(CX,CY,bRx,bRy,-.08,0,TAU);
+  cx.strokeStyle='rgba(180,150,255,1)'; cx.lineWidth=1.5; cx.stroke();
+  cx.restore(); cx.setLineDash([]);
+  cx.font="600 9px 'Cousine',monospace"; cx.fillStyle='rgba(190,160,255,.28)'; cx.textAlign='center';
+  cx.fillText('Superammasso Laniakea  (520 milioni anni luce)',CX,pad+fh*.02+bRy+18);
+  cx.textAlign='left';
+
+  // ── Clusters with realistic galaxy shapes ──
+  for(const p of lanClusters){
+    const px=pad+p.rx*fw, py=pad+p.ry*fh, pr=p.r;
+    const glowPulse=1+Math.sin(ts*.0007+px*.01)*.12;
+    const isLocal = p.key==='gal'||p.key==='m31';
+    const isVirgo = p.key==='virgo';
+
+    // Multi-layer glow
+    cx.save(); cx.globalAlpha*=isLocal?.9:.75;
+    const g1=rg(px,py,0,pr*(isLocal?12:8)*glowPulse,[[0,p.col+'44'],[1,'transparent']]);
+    cx.beginPath(); cx.arc(px,py,pr*(isLocal?12:8),0,TAU); cx.fillStyle=g1; cx.fill();
+    const g2=rg(px,py,0,pr*(isLocal?5:3.5),[[0,p.col+'aa'],[.5,p.col+'33'],[1,'transparent']]);
+    cx.beginPath(); cx.arc(px,py,pr*(isLocal?5:3.5),0,TAU); cx.fillStyle=g2; cx.fill();
+    cx.restore();
+
+    // Draw realistic galaxy shape
+    cx.save(); cx.globalAlpha*=.9;
+    const rotAng=(ts*.00008+px*.003)%(TAU);
+    const isKey = p.key==='gal'||p.key==='m31';
+    drawMiniGalaxy(px,py,pr,p.col,p.shape||'elliptical',rotAng,ts,isKey);
+    cx.restore();
+
+    // Special: Virgo has many sub-galaxies visible
+    if(isVirgo){
+      cx.save(); cx.globalAlpha*=.4;
+      for(let vi=0;vi<8;vi++){
+        const va=vi*TAU/8, vd=pr*(1.5+vi*.15);
+        const vx2=px+Math.cos(va)*vd, vy2=py+Math.sin(va)*vd*.6;
+        circ(vx2,vy2,.8+vi*.1,p.col+'88');
+      }
+      cx.restore();
+    }
+
+    // Labels
+    if(p.name){
+      const isSpecial = p.key==='gal'||p.key==='m31'||p.key==='virgo'||p.key==='shapley';
+      const lines=p.name.split('\n');
+      cx.font=`${isSpecial?'700':'600'} ${isSpecial?10:8.5}px 'Baloo 2',cursive`;
+      lines.forEach((ln,i)=>{
+        cx.fillStyle=p.col+(isSpecial?'ff':'cc');
+        cx.textAlign='center';
+        cx.fillText(ln,px,py+pr*1.9+10+i*11);
+      });
+      cx.textAlign='left';
+    }
+  }
+
+  // ── Arrow from Via Lattea to Virgo (gravitational flow) ──
+  {
+    const gal=lanClusters[0], vir=lanClusters[2];
+    const gx=pad+gal.rx*fw, gy=pad+gal.ry*fh;
+    const vx=pad+vir.rx*fw, vy=pad+vir.ry*fh;
+    const t=.45+Math.sin(ts*.002)*.05; // animated position on line
+    const ax=gx+(vx-gx)*t, ay=gy+(vy-gy)*t;
+    cx.save(); cx.globalAlpha*=.3+Math.sin(ts*.002)*.1;
+    cx.beginPath(); cx.moveTo(gx,gy); cx.lineTo(ax,ay);
+    cx.strokeStyle='rgba(255,209,102,.6)'; cx.lineWidth=1; cx.setLineDash([3,7]); cx.stroke();
+    cx.restore();
+  }
+
+  // ── Local Group bracket (Via Lattea + Andromeda) ──
+  {
+    const gal=lanClusters[0], m31=lanClusters[1];
+    const gx=pad+gal.rx*fw, gy=pad+gal.ry*fh;
+    const ax=pad+m31.rx*fw, ay=pad+m31.ry*fh;
+    const mid2x=(gx+ax)/2, mid2y=(gy+ay)/2;
+    cx.save(); cx.globalAlpha*=.35;
+    cx.beginPath(); cx.moveTo(gx,gy); cx.lineTo(ax,ay);
+    cx.strokeStyle='rgba(255,220,80,.5)'; cx.lineWidth=1.2; cx.stroke();
+    // Label
+    cx.font="600 8px 'Cousine',monospace"; cx.fillStyle='rgba(255,220,80,.5)'; cx.textAlign='center';
+    cx.fillText('← 2,5M a.l. →',mid2x,mid2y-8);
+    cx.fillText('Gruppo Locale',mid2x,mid2y+12);
+    cx.textAlign='left'; cx.restore();
+  }
+
+  // ── Scale ruler ──
+  // Scale ruler — Laniakea = 520M ly
+  if(showData){
+    const lyPerPx=520000000/(fw*.88);const rulerLY=100000000;const rulerPx=rulerLY/lyPerPx;
+    drawRuler(rulerLY*KM_PER_LY, rulerPx, CX-rulerPx/2, H-60, 'rgba(180,150,255,.7)', .65);
+  }
+
+  // ── "Siamo qui" label ──
+  const vl=lanClusters[0];
+  const vx2=pad+vl.rx*fw, vy2=pad+vl.ry*fh;
+  cx.save(); cx.globalAlpha*=.85+Math.sin(ts*.002)*.15;
+  cx.font="700 9px 'Baloo 2',cursive"; cx.fillStyle='#FFD166'; cx.textAlign='center';
+  cx.fillText('← Siamo qui!',vx2,vy2-vl.r*2.2-6);
+  cx.textAlign='left'; cx.restore();
+
+  cx.restore();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// EARTH + MOON LEVEL — immersive view with real lunar phases
+// Sun light: RIGHT (+x). Phase norm: 0=new, 0.5=full, 1=new
+// ─────────────────────────────────────────────────────────────────
+
+const CLOUDS=Array.from({length:10},(_,i)=>({
+  baseA:i*TAU/10, rx:.54+.16*(i%3)*.5,
+  w:.11+.035*(i%4), h:.036+.01*(i%3)
+}));
+
+function drawMoonWithPhase(mx,my,mr,moonAng){
+  const sz=Math.ceil(mr*2+10);
+  const oc=document.createElement('canvas');
+  oc.width=sz; oc.height=sz;
+  const g=oc.getContext('2d');
+  const ox=sz/2, oy=sz/2;
+
+  // 1. LIT SURFACE
+  const surf=g.createRadialGradient(ox+mr*.18,oy-mr*.22,mr*.06,ox,oy,mr);
+  surf.addColorStop(0,'#f6f4f0'); surf.addColorStop(.28,'#dedad2');
+  surf.addColorStop(.65,'#b0aea6'); surf.addColorStop(1,'#88867e');
+  g.beginPath(); g.arc(ox,oy,mr,0,Math.PI*2); g.fillStyle=surf; g.fill();
+
+  // Mare
+  g.save(); g.translate(ox,oy); g.globalAlpha=.48;
+  [[mr*.16,-mr*.10,mr*.23,mr*.17,.30],[-mr*.22,-mr*.17,mr*.22,mr*.20,-.20],
+   [mr*.25,-mr*.27,mr*.16,mr*.13,.10],[mr*.47,-mr*.20,mr*.11,mr*.09,.00],
+   [-mr*.14,mr*.07,mr*.19,mr*.29,.14],[mr*.02,mr*.23,mr*.14,mr*.10,-.10],
+   [-mr*.38,mr*.18,mr*.10,mr*.08,.05]
+  ].forEach(([x,y,rx2,ry2,rot])=>{
+    g.fillStyle='#5a5850'; g.beginPath(); g.ellipse(x,y,rx2,ry2,rot,0,Math.PI*2); g.fill();
+  });
+  g.restore();
+
+  // Craters
+  g.save(); g.translate(ox,oy); g.globalAlpha=.55;
+  [[mr*.33,mr*.37,mr*.075],[-mr*.40,mr*.29,mr*.065],[mr*.51,-mr*.42,mr*.055],
+   [-mr*.10,-mr*.46,mr*.085],[mr*.16,mr*.10,mr*.045],[-mr*.52,-mr*.10,mr*.055],
+   [mr*.28,-mr*.52,mr*.042],[mr*.60,mr*.10,mr*.035],[-mr*.25,mr*.52,mr*.040]
+  ].forEach(([cx3,cy3,cr3])=>{
+    g.fillStyle='rgba(48,46,40,.6)'; g.beginPath(); g.arc(cx3,cy3,cr3,0,Math.PI*2); g.fill();
+    g.fillStyle='rgba(130,128,120,.25)'; g.beginPath(); g.arc(cx3,cy3,cr3*.6,0,Math.PI*2); g.fill();
+    g.strokeStyle='rgba(220,218,210,.18)'; g.lineWidth=.8;
+    g.beginPath(); g.arc(cx3-cr3*.2,cy3-cr3*.2,cr3*.85,0,Math.PI*2); g.stroke();
+  });
+  g.restore();
+
+  // Specular
+  g.save(); g.globalAlpha=.13;
+  const spec=g.createRadialGradient(ox+mr*.35,oy-mr*.32,0,ox+mr*.25,oy-mr*.2,mr*.55);
+  spec.addColorStop(0,'rgba(255,255,252,1)'); spec.addColorStop(1,'transparent');
+  g.beginPath(); g.arc(ox,oy,mr,0,Math.PI*2); g.fillStyle=spec; g.fill();
+  g.restore();
+
+  // 2. SHADOW — half-disk + ellipse technique (geometrically correct)
+  const norm=((moonAng%(Math.PI*2))+(Math.PI*2))%(Math.PI*2)/(Math.PI*2);
+  const shd='rgba(4,8,20,.97)';
+  g.save(); g.globalCompositeOperation='source-over';
+  if(norm<0.5){
+    // Waxing: shadow on left half + shrinking ellipse on right
+    const t=norm*2; // 0(new)→1(full)
+    g.fillStyle=shd;
+    g.beginPath(); g.arc(ox,oy,mr,Math.PI/2,-Math.PI/2); g.closePath(); g.fill();
+    const ex2=(1-t)*mr;
+    if(ex2>0.5){
+      g.save(); g.translate(ox,oy);
+      g.fillStyle=shd;
+      g.beginPath(); g.ellipse(0,0,ex2,mr,0,-Math.PI/2,Math.PI/2); g.closePath(); g.fill();
+      g.restore();
+    }
+  } else {
+    // Waning: shadow on right half + growing ellipse on left
+    const t=(norm-0.5)*2; // 0(full)→1(new)
+    g.fillStyle=shd;
+    g.beginPath(); g.arc(ox,oy,mr,-Math.PI/2,Math.PI/2); g.closePath(); g.fill();
+    const ex2=t*mr;
+    if(ex2>0.5){
+      g.save(); g.translate(ox,oy);
+      g.fillStyle=shd;
+      g.beginPath(); g.ellipse(0,0,ex2,mr,0,Math.PI/2,-Math.PI/2); g.closePath(); g.fill();
+      g.restore();
+    }
+  }
+  g.restore();
+
+  // 3. Terminator penumbra
+  g.save(); g.globalCompositeOperation='source-atop';
+  const tx=norm<=0.5 ? ox+(1-norm*2)*mr : ox-((norm-0.5)*2)*mr;
+  const tg=g.createLinearGradient(tx-mr*.2,oy,tx+mr*.2,oy);
+  tg.addColorStop(0,'transparent'); tg.addColorStop(.45,'rgba(4,8,20,.28)');
+  tg.addColorStop(.55,'rgba(4,8,20,.28)'); tg.addColorStop(1,'transparent');
+  g.fillStyle=tg; g.fillRect(0,0,sz,sz);
+  g.restore();
+
+  // 4. Earthshine
+  if(norm<.18||norm>.82){
+    g.save(); g.globalAlpha=.11;
+    const es=g.createRadialGradient(ox,oy,0,ox,oy,mr);
+    es.addColorStop(0,'rgba(60,100,220,.5)'); es.addColorStop(1,'transparent');
+    g.beginPath(); g.arc(ox,oy,mr,0,Math.PI*2); g.fillStyle=es; g.fill();
+    g.restore();
+  }
+
+  // 5. Blit
+  cx.save(); cx.beginPath(); cx.arc(mx,my,mr+.5,0,Math.PI*2); cx.clip();
+  cx.drawImage(oc,mx-ox,my-oy); cx.restore();
+  cx.save(); cx.globalAlpha*=.18; ringC(mx,my,mr,'rgba(220,218,210,1)',1.5); cx.restore();
+}
+
+function getMoonPhaseInfo(ang){
+  const t=((ang%TAU)+TAU)%TAU/TAU;
+  if(t<.04||t>.96) return {idx:0,name:'🌑 Luna Nuova',desc:'La Luna è tra Terra e Sole: la faccia illuminata è dall\'altra parte!'};
+  if(t<.21)        return {idx:1,name:'🌒 Crescente',  desc:'Una piccola falce cresce ogni sera. Il Sole tramonta presto!'};
+  if(t<.29)        return {idx:2,name:'🌓 Primo Quarto',desc:'Esattamente metà illuminata. Il Sole è a 90° dalla Luna!'};
+  if(t<.46)        return {idx:3,name:'🌔 Gibbosa Crescente',desc:'Quasi piena! Presto sarà il plenilunio.'};
+  if(t<.54)        return {idx:4,name:'🌕 Luna Piena',  desc:'La Terra è tra Sole e Luna: tutta la faccia è illuminata!'};
+  if(t<.71)        return {idx:5,name:'🌖 Gibbosa Calante',desc:'Inizia a oscurarsi dopo il plenilunio.'};
+  if(t<.79)        return {idx:6,name:'🌗 Ultimo Quarto',desc:'Metà illuminata, ma calante. Il ciclo si chiude!'};
+                   return {idx:7,name:'🌘 Calante',     desc:'Quasi scomparsa. Presto ricomincia il ciclo!'};
+}
+
+// ─── EARTH axial tilt constant ───
+const TILT = 23.5 * Math.PI / 180; // 23.5 degrees
+
+// Project lat/lon (radians) onto screen given current earth rotation angle.
+// Returns screen offset from earth center {sx, sy, z} where z>0 = visible side.
+// Uses simple orthographic projection with axial tilt.
+function sphProject(latRad, lonRad, rotAng) {
+  const lon2 = lonRad + rotAng;
+  // 3D cartesian on unit sphere (z = toward viewer before tilt)
+  const x =  Math.cos(latRad) * Math.sin(lon2);
+  const y =  Math.sin(latRad);
+  const z =  Math.cos(latRad) * Math.cos(lon2);
+  // Apply axial tilt: rotate around screen-x axis by TILT
+  const cosT = Math.cos(TILT), sinT = Math.sin(TILT);
+  const y2 =  y * cosT - z * sinT;
+  const z2 =  y * sinT + z * cosT;
+  return { sx: x, sy: -y2, z: z2 }; // sy negative because canvas y flips
+}
+
+// Continent outlines as [lat,lon] degree arrays (closed polygons)
+const CONTS = {
+  // Africa
+  africa: [[37,10],[35,3],[30,-3],[22,-17],[10,-17],[0,-10],[-5,-10],[-10,-14],
+    [-18,-12],[-27,15],[-35,18],[-34,25],[-28,32],[-18,36],[-10,40],
+    [0,42],[8,44],[12,44],[18,40],[22,37],[28,33],[32,26],[32,24],[37,10]],
+  // Europe
+  europe: [[71,29],[68,14],[65,12],[60,5],[55,8],[51,2],[48,-5],[44,-9],[37,-9],
+    [36,-5],[36,4],[38,13],[41,19],[44,14],[47,17],[52,14],[54,18],[57,22],
+    [60,25],[65,25],[68,28],[71,29]],
+  // Asia
+  asia: [[71,30],[65,30],[60,25],[56,38],[50,40],[43,34],[40,26],[37,28],
+    [35,36],[30,50],[26,56],[20,58],[10,60],[5,55],[2,45],[5,40],
+    [15,44],[20,58],[24,60],[28,68],[32,68],[35,75],[40,75],[45,82],
+    [50,80],[56,84],[60,90],[62,80],[65,80],[68,70],[72,52],[71,30]],
+  // East+Southeast Asia
+  se_asia: [[22,100],[15,100],[5,103],[0,108],[5,115],[10,120],[20,122],
+    [25,121],[30,122],[35,130],[38,140],[40,141],[35,137],[30,122],[22,100]],
+  // North America
+  n_america: [[70,-140],[72,-120],[74,-100],[72,-80],[68,-70],[60,-64],[50,-55],
+    [47,-52],[44,-66],[40,-70],[35,-75],[30,-82],[25,-80],[20,-87],
+    [15,-85],[10,-83],[8,-77],[10,-75],[15,-92],[22,-106],[28,-110],
+    [32,-118],[36,-122],[42,-124],[48,-124],[55,-130],[60,-140],[70,-140]],
+  // South America
+  s_america: [[12,-72],[10,-62],[8,-60],[5,-52],[2,-50],[0,-50],[-5,-35],
+    [-10,-37],[-15,-40],[-23,-43],[-33,-53],[-40,-62],[-52,-68],[-55,-66],
+    [-52,-74],[-45,-75],[-40,-73],[-32,-72],[-22,-70],[-15,-75],[-5,-80],
+    [0,-78],[5,-77],[12,-72]],
+  // Australia
+  australia: [[-13,130],[-15,136],[-20,148],[-25,153],[-32,152],[-38,146],
+    [-38,140],[-35,136],[-32,133],[-28,115],[-22,114],[-18,122],[-13,130]],
+  // Greenland
+  greenland: [[83,-44],[80,-18],[76,-18],[72,-22],[68,-24],[64,-42],
+    [66,-52],[70,-56],[74,-58],[78,-68],[82,-68],[83,-44]],
+};
+
+// Draw one continent polygon with spherical projection
+function drawCont(pts, rotAng, ex, ey, ER, color) {
+  const projected = pts.map(([la,lo]) => sphProject(la*Math.PI/180, lo*Math.PI/180, rotAng));
+  // Skip if mostly on back face
+  const vis = projected.filter(p => p.z > -0.1).length;
+  if (vis < pts.length * 0.35) return;
+  cx.beginPath();
+  let first = true;
+  for (const p of projected) {
+    const px = ex + p.sx * ER, py = ey + p.sy * ER;
+    if (first) { cx.moveTo(px, py); first = false; } else cx.lineTo(px, py);
+  }
+  cx.closePath();
+  cx.fillStyle = color;
+  cx.fill();
+}
+
+function drawEarthLevel(alpha, ts, dt) {
+  if (alpha < .005) return;
+  cx.save(); cx.globalAlpha = alpha;
+
+  // ── ORBITAL VIEW: Earth at center, Moon orbits ──
+  const mOrb = Math.min(W,H) * .32;  // Moon orbit radius on screen
+  const ER   = Math.min(W,H) * .07;  // Earth visual size
+  const mr   = ER * .35;             // Moon visual size
+
+  // Moon orbit (slightly elliptical: real e=0.055, exaggerated to 0.12)
+  const mEcc = 0.12, mA = mOrb, mB = mA * Math.sqrt(1 - mEcc*mEcc), mC = mA * mEcc;
+
+  if (!paused) {
+    moonAngEarth += BASE_SPD * 0.55 * dt;
+    earthRotAng  += BASE_SPD * 0.55 * 27.3 * dt;
+  }
+  const mAng = moonAngEarth;
+  const phaseInfo = getMoonPhaseInfo(mAng);
+
+  // ── Orbit ellipse ──
+  cx.save(); cx.globalAlpha *= .15;
+  cx.beginPath(); cx.ellipse(CX - mC, CY, mA, mB, 0, 0, TAU);
+  cx.strokeStyle = 'rgba(180,200,230,1)'; cx.lineWidth = 1.2; cx.stroke();
+  cx.restore();
+
+  // ── 8 phase markers on orbit ──
+  const PNAMES = ['Nuova','Cresc.','I°Q.','Gibb.+','Piena','Gibb.−','III°Q.','Cal.'];
+  cx.save(); cx.globalAlpha *= .45;
+  for (let i = 0; i < 8; i++) {
+    const a2 = i * TAU / 8;
+    const pmx = CX - mC + Math.cos(a2) * mA;
+    const pmy = CY + Math.sin(a2) * mB;
+    const miniR = 7, isThis = i === phaseInfo.idx;
+    if (isThis) {
+      cx.save(); cx.globalAlpha *= .5;
+      const g2 = rg(pmx,pmy,0,miniR*3,[[0,'rgba(255,209,102,.5)'],[1,'transparent']]);
+      cx.beginPath(); cx.arc(pmx,pmy,miniR*3,0,TAU); cx.fillStyle=g2; cx.fill();
+      cx.restore();
+    }
+    // Mini moon phase icon
+    cx.save(); cx.beginPath(); cx.arc(pmx,pmy,miniR,0,TAU); cx.clip();
+    cx.fillStyle = '#b8b6ae'; cx.beginPath(); cx.arc(pmx,pmy,miniR,0,TAU); cx.fill();
+    cx.fillStyle = 'rgba(5,10,25,.93)';
+    const pn = i/8;
+    if (pn <= .5) {
+      cx.beginPath(); cx.rect(pmx-miniR,pmy-miniR,miniR,miniR*2); cx.fill();
+      const t2 = pn*2;
+      if (t2 > 0) { cx.save(); cx.translate(pmx,pmy); cx.scale(-(1-t2),1);
+        cx.beginPath(); cx.arc(0,0,miniR,-Math.PI/2,Math.PI/2); cx.closePath(); cx.fill(); cx.restore(); }
+    } else {
+      cx.beginPath(); cx.rect(pmx,pmy-miniR,miniR,miniR*2); cx.fill();
+      const t2 = (pn-.5)*2;
+      if (t2 < 1) { cx.save(); cx.translate(pmx,pmy); cx.scale(1-t2,1);
+        cx.beginPath(); cx.arc(0,0,miniR,-Math.PI/2,Math.PI/2); cx.closePath(); cx.fill(); cx.restore(); }
+    }
+    cx.restore();
+    cx.font = `${isThis?'700':'500'} 7px 'Cousine',monospace`;
+    cx.fillStyle = isThis ? '#FFD166' : 'rgba(255,255,255,.2)';
+    cx.textAlign = 'center'; cx.fillText(PNAMES[i], pmx, pmy + miniR + 11);
+  }
+  cx.textAlign = 'left'; cx.restore();
+
+  // ── Sun direction indicator (outside orbit) ──
+  const sunDir = mAng; // Sun direction from Earth
+  const sunIndR = mOrb + 60;
+  const sunIX = CX + Math.cos(sunDir) * sunIndR;
+  const sunIY = CY + Math.sin(sunDir) * sunIndR;
+  // Sun rays
+  cx.save(); cx.globalAlpha *= .25;
+  for (let i = 0; i < 5; i++) {
+    const ra = sunDir + (i-2)*0.08;
+    cx.beginPath();
+    cx.moveTo(CX + Math.cos(ra)*(mOrb+10), CY + Math.sin(ra)*(mOrb+10));
+    cx.lineTo(CX + Math.cos(ra)*(mOrb+50), CY + Math.sin(ra)*(mOrb+50));
+    cx.strokeStyle = 'rgba(255,220,80,.7)'; cx.lineWidth = 3 - Math.abs(i-2)*.5; cx.stroke();
+  }
+  cx.restore();
+  // Sun icon
+  const sunGl = rg(sunIX,sunIY,0,16,[[0,'rgba(255,240,100,.6)'],[.5,'rgba(255,200,60,.2)'],[1,'transparent']]);
+  cx.beginPath(); cx.arc(sunIX,sunIY,16,0,TAU); cx.fillStyle=sunGl; cx.fill();
+  circ(sunIX,sunIY,6,'#fff8dc');
+  cx.font = "600 8px 'Cousine',monospace"; cx.fillStyle = 'rgba(255,220,80,.55)'; cx.textAlign = 'center';
+  cx.fillText('☀ Sole', sunIX, sunIY + 18); cx.textAlign = 'left';
+
+  // ── Earth (center) with atmosphere ──
+  const atm = rg(CX,CY,ER*.9,ER*1.5,
+    [[0,'rgba(90,165,255,.6)'],[.5,'rgba(40,90,230,.2)'],[1,'transparent']]);
+  cx.beginPath(); cx.arc(CX,CY,ER*1.5,0,TAU); cx.fillStyle=atm; cx.fill();
+  // Ocean
+  cx.save(); cx.beginPath(); cx.arc(CX,CY,ER,0,TAU); cx.clip();
+  const oceanG = rg(CX,CY-ER*.2, ER*.1, ER*1.3, [[0,'#2a88ff'],[.4,'#1060dd'],[.75,'#083898'],[1,'#051e6a']]);
+  cx.fillStyle = oceanG; cx.fillRect(CX-ER, CY-ER, ER*2, ER*2);
+  // Simple continents
+  cx.save(); cx.translate(CX,CY); cx.rotate(earthRotAng);
+  cx.fillStyle = '#3a9a55';
+  cx.beginPath(); cx.ellipse(ER*.1,  ER*.03,  ER*.12, ER*.28, -.1,  0, TAU); cx.fill();
+  cx.beginPath(); cx.ellipse(-ER*.28,ER*.04,  ER*.11, ER*.28,  .15, 0, TAU); cx.fill();
+  cx.beginPath(); cx.ellipse(ER*.32, -ER*.1,  ER*.2,  ER*.2,  -.06,0, TAU); cx.fill();
+  cx.fillStyle = 'rgba(220,235,255,.9)';
+  cx.beginPath(); cx.ellipse(0, ER*.43, ER*.28, ER*.06, 0, 0, TAU); cx.fill();
+  cx.restore(); cx.restore();
+  // Atmosphere limb
+  cx.save(); cx.globalAlpha *= .5; ringC(CX,CY,ER*1.02,'rgba(80,165,255,.9)',2.5); cx.restore();
+  // Axial tilt
+  cx.save(); cx.globalAlpha *= .4;
+  const axLen = ER * 1.6;
+  const axDx = Math.sin(TILT), axDy = -Math.cos(TILT);
+  cx.beginPath(); cx.moveTo(CX-axDx*axLen,CY-axDy*axLen); cx.lineTo(CX+axDx*axLen,CY+axDy*axLen);
+  cx.strokeStyle = 'rgba(160,210,255,.6)'; cx.lineWidth = 1; cx.setLineDash([4,7]); cx.stroke(); cx.setLineDash([]);
+  cx.font = "500 7px 'Cousine',monospace"; cx.fillStyle = 'rgba(160,210,255,.45)'; cx.textAlign = 'center';
+  cx.fillText('23,5°', CX+ER*.6, CY-ER*.5); cx.textAlign = 'left'; cx.restore();
+
+  // Earth label
+  cx.font = "700 11px 'Baloo 2',cursive"; cx.fillStyle = '#a0c8ff'; cx.textAlign = 'center';
+  cx.fillText('🌍 Terra', CX, CY + ER + 16); cx.textAlign = 'left';
+
+  hits.push({x:CX,y:CY,r:ER+8,d:{name:'Terra 🌍',emoji:'🌍',
+    text:'Il nostro pianeta! 4,5 miliardi di anni. L\'asse è inclinato di 23,5° — per questo esistono le stagioni!',
+    fun:'Siamo un puntino blu pallido in un raggio di luce solare — Carl Sagan 🔵'}});
+
+  // ── Moon ──
+  const mx = CX - mC + Math.cos(mAng) * mA;
+  const my = CY + Math.sin(mAng) * mB;
+  const mGlow = rg(mx,my,mr*.5,mr*3,[[0,'rgba(200,210,225,.14)'],[1,'transparent']]);
+  cx.beginPath(); cx.arc(mx,my,mr*3,0,TAU); cx.fillStyle=mGlow; cx.fill();
+  drawMoonWithPhase(mx,my,mr,mAng+Math.PI);
+
+  // Moon label + phase
+  cx.save();
+  cx.font = "700 11px 'Baloo 2',cursive"; cx.fillStyle = 'rgba(210,222,240,.9)'; cx.textAlign = 'center';
+  cx.fillText(phaseInfo.name, mx, my - mr - 8);
+  cx.font = "500 8px 'Cousine',monospace"; cx.fillStyle = 'rgba(150,175,210,.6)';
+  cx.fillText('🌙 Luna', mx, my + mr + 14);
+  cx.textAlign = 'left'; cx.restore();
+
+  hits.push({x:mx,y:my,r:mr+12,d:{name:phaseInfo.name,emoji:'🌕',
+    text:phaseInfo.desc+' Orbita a 384.400 km. Periodo: 27,3 giorni.',
+    fun:'Le maree del mare sono causate dalla gravità della Luna! 🌊'}});
+
+  // ── Connecting line Earth-Moon (faint) ──
+  cx.save(); cx.globalAlpha *= .08;
+  cx.beginPath(); cx.moveTo(CX,CY); cx.lineTo(mx,my);
+  cx.strokeStyle='rgba(180,200,230,1)'; cx.lineWidth=1; cx.setLineDash([4,10]); cx.stroke(); cx.restore();
+
+  // ── Scale ruler: Moon orbit = 384,400 km ──
+  drawRuler(384400, mA, CX-mA/2, H-80, 'rgba(72,202,228,.5)', .4);
+
+  // ── Phase strip (bottom) ──
+  const stripW=Math.min(460,W-40), stripH=42;
+  const sx=CX-stripW/2, sy=H-stripH-8;
+  cx.save(); cx.globalAlpha *= .9;
+  cx.fillStyle='rgba(3,9,22,.88)'; cx.strokeStyle='rgba(72,202,228,.14)'; cx.lineWidth=1;
+  cx.beginPath(); cx.roundRect(sx,sy,stripW,stripH,11); cx.fill(); cx.stroke();
+  const PDATA=[
+    {e:'🌑',n:'Nuova'},{e:'🌒',n:'Cresc.'},{e:'🌓',n:'I° Q.'},
+    {e:'🌔',n:'Gibbosa'},{e:'🌕',n:'Piena'},{e:'🌖',n:'Gibb.'},
+    {e:'🌗',n:'III° Q.'},{e:'🌘',n:'Cal.'}
+  ];
+  const slot=stripW/8;
+  PDATA.forEach((p,i) => {
+    const px2=sx+i*slot+slot/2, act=i===phaseInfo.idx;
+    if (act) {
+      cx.fillStyle='rgba(255,209,102,.13)';
+      cx.beginPath(); cx.roundRect(px2-slot*.47,sy+2,slot*.94,stripH-4,8); cx.fill();
+      cx.fillStyle='#FFD166'; cx.beginPath(); cx.arc(px2,sy+stripH-4,2.5,0,TAU); cx.fill();
+    }
+    cx.font=`${act?16:12}px serif`; cx.textAlign='center';
+    cx.fillText(p.e,px2,sy+19);
+    cx.font=`${act?'700':'500'} ${act?7:6}px 'Cousine',monospace`;
+    cx.fillStyle=act?'#FFD166':'rgba(255,255,255,.2)';
+    cx.fillText(p.n,px2,sy+32);
+  });
+  cx.textAlign='left'; cx.restore();
+
+  cx.restore();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SEASONS LEVEL — Earth orbiting Sun with axial tilt, seasons, Moon
+// ─────────────────────────────────────────────────────────────────
+const SEASON_NAMES = [
+  {name:'Equinozio di Primavera', emoji:'🌸', months:'20-21 Marzo', note:'Giorno = Notte ovunque'},
+  {name:'Solstizio d\'Estate', emoji:'☀️', months:'21-22 Giugno', note:'Giorno più lungo (Nord)'},
+  {name:'Equinozio d\'Autunno', emoji:'🍂', months:'22-23 Settembre', note:'Giorno = Notte ovunque'},
+  {name:'Solstizio d\'Inverno', emoji:'❄️', months:'21-22 Dicembre', note:'Notte più lunga (Nord)'},
+];
+
+function drawSeasonsLevel(alpha, ts, dt) {
+  if (alpha < .005) return;
+  cx.save(); cx.globalAlpha = alpha;
+
+  // Earth orbits COUNTERCLOCKWISE (as seen from north pole)
+  // Positive angle = counterclockwise in standard math coords
+  if (!paused) earthAngSeason -= BASE_SPD * 1.2 * dt;
+  const eAng = earthAngSeason;
+
+  // ── Orbital geometry ──
+  // Visually exaggerated eccentricity (real = 0.017, visual = 0.38) so ellipse is VERY obvious
+  const ECC   = 0.38;
+  const a     = Math.min(W * .40, H * .36);
+  const b     = a * Math.sqrt(1 - ECC * ECC);
+  const foc   = a * ECC;
+
+  const eCX = CX + foc * 0.35;
+  const sunX = eCX + foc;
+  const sunY = CY;
+
+  const TILT_S = 23.5 * Math.PI / 180;
+  const ER   = Math.min(W, H) * .048;
+  const sunR = Math.min(W, H) * .052;
+
+  // Earth position on ellipse (ang=0 = perihelion = rightmost ≈ Jan 3)
+  const eX = eCX + Math.cos(eAng) * a;
+  const eY = CY  + Math.sin(eAng) * b;
+
+  const dxSE = eX - sunX, dySE = eY - sunY;
+  const dSElen = Math.sqrt(dxSE*dxSE + dySE*dySE);
+  const sunDirAtEarth = Math.atan2(dySE, dxSE);
+
+  // ── Orbit path (thicker for visibility) ──
+  cx.save(); cx.globalAlpha *= .25;
+  cx.beginPath(); cx.ellipse(eCX, CY, a, b, 0, 0, TAU);
+  cx.strokeStyle = 'rgba(150,180,220,.8)'; cx.lineWidth = 1.6; cx.stroke();
+  cx.restore();
+
+  // ── Major axis line ──
+  cx.save(); cx.globalAlpha *= .1;
+  cx.beginPath(); cx.moveTo(eCX - a - 12, CY); cx.lineTo(eCX + a + 12, CY);
+  cx.strokeStyle = 'rgba(200,180,100,.5)'; cx.lineWidth = .8; cx.setLineDash([4,10]); cx.stroke();
+  cx.setLineDash([]); cx.restore();
+
+  // ── Empty focus ──
+  const focL = eCX - foc;
+  cx.save(); cx.globalAlpha *= .3;
+  circ(focL, CY, 3, 'rgba(180,180,255,.5)');
+  cx.font = "500 7px 'Cousine',monospace"; cx.fillStyle = 'rgba(180,180,255,.4)';
+  cx.textAlign = 'center'; cx.fillText('fuoco vuoto', focL, CY + 14); cx.textAlign = 'left';
+  cx.restore();
+
+  // ── CORRECT astronomical positions (angles from perihelion=0) ──
+  // On screen: positive angle = clockwise (Y down). Earth eAng DECREASES = CCW on screen.
+  // So markers at later dates must also be at NEGATIVE angles to be in the CCW direction.
+  // Perihelion (Jan 3) = 0°, Spring Eq (Mar 20, ~77d later) = -77/365.25 * 2π, etc.
+  const dayToAng = d => -(d / 365.25) * TAU;
+  const SEV = [
+    { ang: 0,              emoji:'🌍', date1:'3 Gen',  date2:'Perielio',  label:'Perielio',            col:'#ffb347', note:'Terra più vicina al Sole\n147,1M km',  dot:true },
+    { ang: dayToAng(77),   emoji:'🌸', date1:'20 Mar', date2:'Equinozio', label:'Equinozio\nPrimavera',col:'#a8ff78', note:'Giorno = Notte (12h/12h)', dot:false },
+    { ang: dayToAng(170),  emoji:'☀️', date1:'21 Giu', date2:'Solstizio', label:'Solstizio\nEstate',   col:'#ffe56d', note:'Giorno più lungo (Nord)',   dot:false },
+    { ang: dayToAng(182),  emoji:'🌍', date1:'4 Lug',  date2:'Afelio',    label:'Afelio',              col:'#88c0ff', note:'Terra più lontana\n152,1M km', dot:true },
+    { ang: dayToAng(263),  emoji:'🍂', date1:'22 Set', date2:'Equinozio', label:'Equinozio\nAutunno',  col:'#ffd580', note:'Giorno = Notte (12h/12h)', dot:false },
+    { ang: dayToAng(353),  emoji:'❄️', date1:'21 Dic', date2:'Solstizio', label:'Solstizio\nInverno',  col:'#b0d8ff', note:'Notte più lunga (Nord)',    dot:false },
+  ];
+
+  SEV.forEach(s => {
+    const mx = eCX + Math.cos(s.ang) * a;
+    const my = CY  + Math.sin(s.ang) * b;
+    const outR = 32 + (s.dot ? 10 : 0);
+    const nx = Math.cos(s.ang), ny = Math.sin(s.ang);
+    cx.save(); cx.globalAlpha *= .45;
+    cx.beginPath();
+    cx.moveTo(mx + nx * 8, my + ny * 8);
+    cx.lineTo(mx + nx * outR, my + ny * outR);
+    cx.strokeStyle = s.col; cx.lineWidth = 1.2; cx.stroke();
+    cx.restore();
+    cx.save(); cx.globalAlpha *= s.dot ? .95 : .7;
+    circ(mx, my, s.dot ? 6 : 4, s.col);
+    cx.restore();
+    const lx = mx + nx * (outR + 4);
+    const ly = my + ny * (outR + 4);
+    const lines = [s.label.split('\n')[0], s.label.split('\n')[1] || '', s.date1 + ' — ' + s.date2];
+    cx.save(); cx.globalAlpha *= .9; cx.textAlign = 'center';
+    cx.font = `700 9px 'Baloo 2',cursive`; cx.fillStyle = s.col;
+    cx.fillText(lines[0], lx, ly);
+    if (lines[1]) { cx.font = `600 8px 'Baloo 2',cursive`; cx.fillText(lines[1], lx, ly + 11); }
+    cx.font = `500 7px 'Cousine',monospace`; cx.fillStyle = 'rgba(200,220,255,.6)';
+    cx.fillText(lines[2], lx, ly + (lines[1] ? 22 : 12));
+    cx.textAlign = 'left'; cx.restore();
+  });
+
+  // ── SUN ──
+  const sg = rg(sunX, sunY, 0, sunR * 5.5, [[0,'rgba(255,240,100,.55)'],[.4,'rgba(255,150,0,.14)'],[1,'transparent']]);
+  cx.beginPath(); cx.arc(sunX, sunY, sunR * 5.5, 0, TAU); cx.fillStyle = sg; cx.fill();
+  cx.save(); cx.globalAlpha *= .22;
+  for (let i = 0; i < 12; i++) {
+    const ra = i * Math.PI / 6 + ts * .0003;
+    cx.beginPath();
+    cx.moveTo(sunX + Math.cos(ra) * sunR * 1.1, sunY + Math.sin(ra) * sunR * 1.1);
+    cx.lineTo(sunX + Math.cos(ra) * sunR * 2.1, sunY + Math.sin(ra) * sunR * 2.1);
+    cx.strokeStyle = '#ffe066'; cx.lineWidth = 1.5; cx.stroke();
+  }
+  cx.restore();
+  const sbg = rg(sunX - sunR*.3, sunY - sunR*.3, 0, sunR,
+    [[0,'#fff8dc'],[.3,'#ffe066'],[.7,'#ff9900'],[1,'#ff6600']]);
+  circ(sunX, sunY, sunR, sbg);
+  cx.font = "700 10px 'Baloo 2',cursive"; cx.fillStyle = '#FFD166'; cx.textAlign = 'center';
+  cx.fillText('☀ Sole', sunX, sunY + sunR + 14); cx.textAlign = 'left';
+
+  // ── Sunlight rays to Earth ──
+  cx.save(); cx.globalAlpha *= .14;
+  for (let i = -3; i <= 3; i++) {
+    const ra = sunDirAtEarth + i * 0.055;
+    cx.beginPath();
+    cx.moveTo(sunX + Math.cos(ra) * sunR, sunY + Math.sin(ra) * sunR);
+    cx.lineTo(eX - Math.cos(ra) * ER * 1.2, eY - Math.sin(ra) * ER * 1.2);
+    cx.strokeStyle = 'rgba(255,230,80,.9)'; cx.lineWidth = 2 - Math.abs(i) * .25; cx.stroke();
+  }
+  cx.restore();
+
+  // ── EARTH ──
+  const atm = rg(eX, eY, ER * .9, ER * 1.5,
+    [[0,'rgba(90,165,255,.6)'],[.5,'rgba(40,90,230,.2)'],[1,'transparent']]);
+  cx.beginPath(); cx.arc(eX, eY, ER * 1.5, 0, TAU); cx.fillStyle = atm; cx.fill();
+  const towardSun = sunDirAtEarth + Math.PI;
+  cx.save(); cx.beginPath(); cx.arc(eX, eY, ER, 0, TAU); cx.clip();
+  const oceanGS = rg(eX + Math.cos(towardSun)*ER*.3, eY + Math.sin(towardSun)*ER*.3,
+    ER*.05, ER*1.4, [[0,'#2a88ff'],[.35,'#1060dd'],[.7,'#083898'],[1,'#051e6a']]);
+  cx.fillStyle = oceanGS; cx.fillRect(eX-ER, eY-ER, ER*2, ER*2);
+  cx.save(); cx.translate(eX, eY); cx.rotate(earthRotAng);
+  cx.fillStyle = '#3a9a55';
+  cx.beginPath(); cx.ellipse(ER*.1,ER*.03,ER*.12,ER*.28,-.1,0,TAU); cx.fill();
+  cx.beginPath(); cx.ellipse(-ER*.28,ER*.04,ER*.11,ER*.28,.15,0,TAU); cx.fill();
+  cx.beginPath(); cx.ellipse(ER*.32,-ER*.1,ER*.2,ER*.2,-.06,0,TAU); cx.fill();
+  cx.fillStyle = 'rgba(220,235,255,.9)';
+  cx.beginPath(); cx.ellipse(0,ER*.43,ER*.28,ER*.07,0,0,TAU); cx.fill();
+  cx.restore(); cx.restore();
+  // Terminator
+  cx.save(); cx.beginPath(); cx.arc(eX, eY, ER, 0, TAU); cx.clip();
+  const termGS = lg(
+    eX+Math.cos(towardSun)*ER, eY+Math.sin(towardSun)*ER,
+    eX-Math.cos(towardSun)*ER, eY-Math.sin(towardSun)*ER,
+    [[0,'transparent'],[.38,'transparent'],[.52,'rgba(3,8,22,.65)'],[.72,'rgba(3,8,22,.88)'],[1,'rgba(3,8,22,.93)']]);
+  cx.fillStyle = termGS; cx.fillRect(eX-ER, eY-ER, ER*2, ER*2);
+  cx.restore();
+  cx.save(); cx.globalAlpha *= .5; ringC(eX, eY, ER*1.02, 'rgba(80,165,255,.9)', 2); cx.restore();
+
+  // ── Axial tilt ──
+  const axDx = Math.sin(TILT_S), axDy = -Math.cos(TILT_S), axLen = ER*1.6;
+  const npX = eX+axDx*axLen, npY = eY+axDy*axLen;
+  const spX = eX-axDx*axLen, spY = eY-axDy*axLen;
+  cx.save(); cx.globalAlpha *= .7;
+  cx.beginPath(); cx.moveTo(spX,spY); cx.lineTo(npX,npY);
+  cx.strokeStyle = 'rgba(160,220,255,.8)'; cx.lineWidth = 1.5;
+  cx.setLineDash([5,6]); cx.stroke(); cx.setLineDash([]);
+  circ(npX,npY,3.5,'rgba(180,230,255,.9)'); circ(spX,spY,3,'rgba(160,200,255,.7)');
+  cx.font = "700 7.5px 'Cousine',monospace"; cx.fillStyle = 'rgba(180,230,255,.8)'; cx.textAlign = 'center';
+  cx.fillText('NP',npX,npY-8); cx.fillText('SP',spX,spY+14);
+  cx.font = "500 6.5px 'Cousine',monospace"; cx.fillStyle = 'rgba(160,210,255,.5)';
+  cx.fillText('23,5°',eX+ER*.18,eY-ER*.8);
+  cx.textAlign = 'left'; cx.restore();
+
+  // ── Season panel ──
+  const sunVecX = sunX-eX, sunVecY = sunY-eY;
+  const sunVecLen = Math.sqrt(sunVecX*sunVecX + sunVecY*sunVecY);
+  // eAng decreases over time. normAng = how far through the year (0=Jan, increasing)
+  // -eAng increases as time passes, so normalize -eAng to 0..TAU
+  const normAng = (((- eAng) % TAU) + TAU) % TAU;
+  const monthNames = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  const monthIdx = Math.floor(normAng / TAU * 12);
+  const monthLabel = monthNames[monthIdx % 12];
+  let sNorth, sSouth, sColor;
+  // Perihelion=Jan=0, so q=0→Dec-Feb(Winter), q=1→Mar-May(Spring), q=2→Jun-Aug(Summer), q=3→Sep-Nov(Autumn)
+  const q = Math.floor(normAng / TAU * 4);
+  if (q === 0) { sNorth='Inverno ❄️'; sSouth='Estate ☀️'; sColor='#b0d8ff'; }
+  else if (q === 1) { sNorth='Primavera 🌸'; sSouth='Autunno 🍂'; sColor='#a8ff78'; }
+  else if (q === 2) { sNorth='Estate ☀️'; sSouth='Inverno ❄️'; sColor='#ffe56d'; }
+  else { sNorth='Autunno 🍂'; sSouth='Primavera 🌸'; sColor='#ffd580'; }
+
+  // Distance Earth-Sun (real scale)
+  const distMkm = (dSElen / a * 149.6).toFixed(1);
+
+  const panW = 148, panH = 56;
+  let panX = eX + ER * 2.2, panY = eY - ER * 1.5;
+  if (panX + panW > W - 10) panX = eX - ER * 2.2 - panW;
+  if (panY < 10) panY = eY + ER * 1.2;
+  cx.save(); cx.globalAlpha *= .92;
+  cx.fillStyle = 'rgba(2,7,20,.88)'; cx.strokeStyle = sColor + '55'; cx.lineWidth = 1.2;
+  cx.beginPath(); cx.roundRect(panX,panY,panW,panH,9); cx.fill(); cx.stroke();
+  cx.font = "700 9px 'Baloo 2',cursive"; cx.fillStyle = sColor;
+  cx.fillText('🌍 '+monthLabel+' — '+sNorth, panX+7, panY+15);
+  cx.font = "600 7px 'Cousine',monospace"; cx.fillStyle = '#a0d8ff';
+  cx.fillText('Nord: '+sNorth, panX+7, panY+28);
+  cx.fillText('Sud:  '+sSouth, panX+7, panY+40);
+  cx.font = "500 6.5px 'Cousine',monospace"; cx.fillStyle = 'rgba(150,200,255,.45)';
+  cx.fillText('Eccentricità reale: 0,017 (esagerata)', panX+7, panY+52);
+  cx.restore();
+
+  // ── DYNAMIC RULER: Sun ↔ Earth distance ──
+  // Line from Sun to Earth with distance label, moves with Earth
+  {
+    const dx = eX - sunX, dy = eY - sunY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const ang = Math.atan2(dy, dx);
+    const offX = Math.sin(ang) * 6, offY = -Math.cos(ang) * 6; // perpendicular offset
+    cx.save(); cx.globalAlpha *= .55;
+    // Main line (offset slightly so it doesn't overlap Earth/Sun)
+    cx.beginPath();
+    cx.moveTo(sunX + Math.cos(ang)*sunR*1.1 + offX, sunY + Math.sin(ang)*sunR*1.1 + offY);
+    cx.lineTo(eX - Math.cos(ang)*ER*1.3 + offX, eY - Math.sin(ang)*ER*1.3 + offY);
+    cx.strokeStyle = 'rgba(255,200,80,.6)'; cx.lineWidth = 1.2; cx.stroke();
+    // Tick marks at ends
+    const perpX = Math.sin(ang)*5, perpY = -Math.cos(ang)*5;
+    const startX = sunX + Math.cos(ang)*sunR*1.1 + offX;
+    const startY = sunY + Math.sin(ang)*sunR*1.1 + offY;
+    const endX = eX - Math.cos(ang)*ER*1.3 + offX;
+    const endY = eY - Math.sin(ang)*ER*1.3 + offY;
+    cx.beginPath(); cx.moveTo(startX-perpX,startY-perpY); cx.lineTo(startX+perpX,startY+perpY); cx.stroke();
+    cx.beginPath(); cx.moveTo(endX-perpX,endY-perpY); cx.lineTo(endX+perpX,endY+perpY); cx.stroke();
+    // Distance label at midpoint, rotated to follow line
+    const midX = (startX+endX)/2 + offX*.5, midY = (startY+endY)/2 + offY*.5;
+    cx.save(); cx.translate(midX, midY);
+    let textAng = ang;
+    // Keep text readable (not upside down)
+    if (textAng > Math.PI/2 || textAng < -Math.PI/2) textAng += Math.PI;
+    cx.rotate(textAng);
+    cx.font = "700 8px 'Cousine',monospace"; cx.fillStyle = 'rgba(255,210,80,.85)'; cx.textAlign = 'center';
+    cx.fillText('~'+distMkm+'M km', 0, -5);
+    cx.restore();
+    cx.restore();
+  }
+
+  // ── Earth label ──
+  cx.font = "700 10px 'Baloo 2',cursive"; cx.fillStyle = '#a0c8ff'; cx.textAlign = 'center';
+  cx.fillText('🌍 Terra', eX, eY + ER + 16); cx.textAlign = 'left';
+
+  // ── BIRTHDAY TRACKER ──
+  if (window._bdName && window._bdDate) {
+    const bd = window._bdDate;
+    const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+    let dayOfYear = bd.day;
+    for (let m=0; m<bd.month-1; m++) dayOfYear += daysInMonth[m];
+    // Birthday angle on orbit (negative = CCW on screen, same as markers)
+    const bdAng = -((dayOfYear - 3) / 365.25) * TAU;
+    const bdX = eCX + Math.cos(bdAng) * a;
+    const bdY = CY + Math.sin(bdAng) * b;
+
+    // Birthday marker on orbit
+    const pulse = 1 + Math.sin(ts * .005) * .2;
+    cx.save();
+    const bdGlow = rg(bdX,bdY,0,14*pulse,[[0,'rgba(255,100,150,.35)'],[1,'transparent']]);
+    cx.beginPath(); cx.arc(bdX,bdY,14*pulse,0,TAU); cx.fillStyle=bdGlow; cx.fill();
+    cx.font = '16px serif'; cx.textAlign = 'center';
+    cx.fillText('👶', bdX, bdY + 5);
+    cx.font = "700 8px 'Baloo 2',cursive"; cx.fillStyle = '#FFD166';
+    cx.fillText(window._bdName, bdX, bdY - 14);
+    cx.restore();
+
+    // bdAng is negative; in normAng space (0..TAU), it becomes (-bdAng % TAU)
+    const bdNormAng = (((-bdAng) % TAU) + TAU) % TAU;
+    // Detect crossing: normAng increases over time
+    if (!window._bdPrevNormAng && window._bdPrevNormAng !== 0) window._bdPrevNormAng = normAng;
+    if (!window._bdOrbitCount) window._bdOrbitCount = 0;
+    const prev = window._bdPrevNormAng;
+    const curr = normAng;
+    // Crossing happens when prev < bdNormAng and curr >= bdNormAng, or wraps around
+    if (prev <= bdNormAng && curr > bdNormAng && curr - prev < Math.PI) {
+      window._bdOrbitCount++;
+    } else if (curr < prev) {
+      // Wrapped around TAU boundary
+      if (prev <= bdNormAng || curr > bdNormAng) {
+        // Only count if we actually moved a reasonable amount (not a glitch)
+        if (TAU - prev + curr < Math.PI) window._bdOrbitCount++;
+      }
+    }
+    window._bdPrevNormAng = curr;
+
+    const completedYears = window._bdOrbitCount;
+
+    // Check if Earth is near the birthday point
+    let angDiff = Math.abs(normAng - bdNormAng);
+    if (angDiff > Math.PI) angDiff = TAU - angDiff;
+    const nearBD = angDiff < 0.08;
+
+    // Show birthday cake when passing the birthday point
+    if (nearBD && completedYears > 0) {
+      cx.save();
+      const cakeGlow = rg(eX,eY-ER*2.5,0,25,[[0,'rgba(255,209,102,.5)'],[1,'transparent']]);
+      cx.beginPath(); cx.arc(eX,eY-ER*2.5,25,0,TAU); cx.fillStyle=cakeGlow; cx.fill();
+      cx.font = '22px serif'; cx.textAlign = 'center';
+      cx.fillText('🎂', eX, eY - ER*2.2);
+      cx.font = "800 12px 'Baloo 2',cursive"; cx.fillStyle = '#FFD166';
+      cx.fillText('🎉 '+completedYears + ' anni!', eX, eY - ER*3.2);
+      cx.restore();
+    }
+
+    // Age counter box (always visible)
+    cx.save(); cx.globalAlpha *= .85;
+    const acX = 14, acY = H * .18;
+    cx.fillStyle = 'rgba(2,7,20,.8)'; cx.strokeStyle = 'rgba(255,209,102,.25)'; cx.lineWidth = 1;
+    cx.beginPath(); cx.roundRect(acX,acY,120,48,8); cx.fill(); cx.stroke();
+    cx.font = "700 9px 'Baloo 2',cursive"; cx.fillStyle = '#FFD166';
+    cx.fillText('👶 '+window._bdName, acX+8, acY+14);
+    cx.font = "600 10px 'Cousine',monospace"; cx.fillStyle = '#fff';
+    cx.fillText('🎂 '+completedYears+' giri = '+completedYears+' anni', acX+8, acY+30);
+    cx.font = "500 6.5px 'Cousine',monospace"; cx.fillStyle = 'rgba(200,220,255,.4)';
+    cx.fillText('ogni giro intorno al ☀ = 1 anno', acX+8, acY+42);
+    cx.restore();
+  }
+
+  // ── Bottom captions ──
+  cx.save(); cx.globalAlpha *= .4;
+  cx.font = "500 7.5px 'Cousine',monospace"; cx.fillStyle = 'rgba(180,210,255,.5)'; cx.textAlign = 'center';
+  cx.fillText('Il Sole si trova in uno dei due fuochi dell\'ellisse, non al centro — Kepler 1609', CX, H - 52);
+  cx.fillText('1 giro completo = 1 anno = 365,25 giorni  ·  Eccentricità reale: 0,017 (esagerata per chiarezza)', CX, H - 40);
+  cx.textAlign = 'left'; cx.restore();
+
+  // Scale ruler
+  drawRuler(KM_PER_AU, a*.5, CX-a*.25, H-68, 'rgba(72,202,228,.6)', .45);
+
+  cx.restore();
+}
+
+
+
+// ─────────────────────────────────────────────────────────────────
+// SOLAR SYSTEM — elliptical orbits + compact/scale view
+// Planetary data with eccentricities for elliptical orbits
+// ─────────────────────────────────────────────────────────────────
+// Eccentricities for ellipse rendering (amplified 3× for visual clarity)
+// Real values: Mercury .206, Venus .007, Earth .017, Mars .093, etc.
+const PLANET_ECC = {
+  mercury:.45, venus:.05, earth:.08, mars:.25,
+  jupiter:.15, saturn:.17, uranus:.14, neptune:.05
+};
+
+// Draw a planet's elliptical orbit ring  
+function drawOrbitEllipse(p, sc, alpha) {
+  const ecc = PLANET_ECC[p.id] || 0;
+  const a = p.R * sc;           // semi-major axis (screen)
+  const c = a * ecc;            // focus offset
+  const b = a * Math.sqrt(1 - ecc*ecc); // semi-minor
+  cx.save(); cx.globalAlpha *= alpha;
+  cx.beginPath(); cx.ellipse(CX - c, CY, a, b, 0, 0, TAU);
+  cx.strokeStyle = 'rgba(255,255,255,1)'; cx.lineWidth = .7; cx.stroke();
+  cx.restore();
+}
+
+// Get planet x,y from its angle + eccentricity
+function getPlanetPos(p, ang, sc) {
+  const ecc = PLANET_ECC[p.id] || 0;
+  const a = p.R * sc;
+  const c = a * ecc;
+  const b = a * Math.sqrt(1 - ecc*ecc);
+  // Sun at focus: offset center by -c
+  return {
+    x: CX - c + Math.cos(ang) * a,
+    y: CY + Math.sin(ang) * b
+  };
+}
+
+// Scale-mode relative distances (AU) — condensed for screen
+const PLANET_AU = {
+  mercury: .39, venus:.72, earth:1.0, mars:1.52,
+  jupiter:5.2, saturn:9.58, uranus:19.2, neptune:30.05
+};
+
+// ─────────────────────────────────────────────────────────────────
+// SOLAR SYSTEM
+// ─────────────────────────────────────────────────────────────────
+const PLANETS=[
+  {id:'mercury',name:'Mercurio',emoji:'⚫',col:'#a8a8a8',sz:4, R:58, sp:4.15,
+   rot:'58.6 giorni',rev:'88 giorni',  revD:88,   rotFact:'Il giorno dura più dell\'anno!',
+   text:'Il pianeta più vicino al Sole! Un anno dura 88 giorni.',fun:'Su Mercurio un giorno dura più di un anno! 🤯'},
+  {id:'venus',  name:'Venere',  emoji:'🌕',col:'#e8c86a',sz:7, R:84, sp:1.62,
+   rot:'243 giorni',rev:'225 giorni', revD:225,   rotFact:'Ruota al contrario (retrogrado)!',
+   text:'Il pianeta più caldo (460°C!) pur non essendo il più vicino.',fun:'Venere gira al contrario rispetto agli altri! ↩️'},
+  {id:'earth',  name:'Terra',   emoji:'🌍',col:'#4a9eff',sz:8, R:118,sp:1.0,
+   rot:'23h 56min', rev:'365.25 giorni',revD:365.25,rotFact:'Il nostro riferimento!',
+   text:'Casa nostra! Un giro intorno al Sole = 1 anno = il tuo compleanno! 🎂',fun:'Gli atomi del tuo corpo vengono dalle stelle 💫'},
+  {id:'mars',   name:'Marte',   emoji:'🔴',col:'#c1440e',sz:6, R:156,sp:0.53,
+   rot:'24h 37min', rev:'687 giorni',  revD:687,   rotFact:'Quasi uguale alla Terra!',
+   text:'Il pianeta rosso! Ha la montagna più alta del Sistema Solare.',fun:'Un giorno su Marte = 24h 37min. Quasi come qui! ✅'},
+  {id:'jupiter',name:'Giove',   emoji:'🟠',col:'#c88b3a',sz:16,R:212,sp:0.084,
+   rot:'9h 56min',  rev:'11.9 anni',   revD:4333,  rotFact:'Il più veloce a ruotare!',
+   text:'Il gigante! Protegge la Terra catturando asteroidi con la sua gravità.',fun:'Su Giove piove diamanti! 💎 Ha 95 lune!'},
+  {id:'saturn', name:'Saturno', emoji:'🪐',col:'#e4d191',sz:13,R:268,sp:0.034,ring:true,
+   rot:'10h 42min', rev:'29.5 anni',   revD:10759, rotFact:'Veloce per essere così grande!',
+   text:'Ha gli anelli più belli! Sono fatti di ghiaccio e roccia.',fun:'Saturno galleggerebbe sull\'acqua! È così leggero! 🛁'},
+  {id:'uranus', name:'Urano',   emoji:'🔵',col:'#7de8e8',sz:10,R:316,sp:0.012,
+   rot:'17h 14min', rev:'84 anni',     revD:30687, rotFact:'Ruota su un fianco (97.77°)!',
+   text:'Gigante di ghiaccio che ruota su un fianco!',fun:'Un polo riceve 42 anni di sole, poi 42 anni di buio! 😲'},
+  {id:'neptune',name:'Nettuno', emoji:'🌀',col:'#4b70dd',sz:9, R:362,sp:0.006,
+   rot:'16h 6min',  rev:'165 anni',    revD:60190, rotFact:'Un anno = 165 anni terrestri!',
+   text:'Il più lontano! Venti a 2.000 km/h!',fun:'Non ha ancora finito il suo primo giro da quando fu scoperto nel 1846! 🐢'},
+];
+const SUN_D={name:'Sole ☀️',emoji:'☀️',text:'La nostra stella! Brucia idrogeno da 4,6 miliardi di anni e ci riscalda da 150 milioni di km.',fun:'Ogni secondo trasforma 4 milioni di tonnellate di materia in luce e calore! ✨'};
+const MOON_SOL={name:'Luna 🌙',emoji:'🌙',text:'Orbita intorno alla Terra in 28 giorni. La vedi come puntino vicino alla Terra.',fun:'Da qui nel Sistema Solare sembra piccola, ma per noi è enorme nel cielo! 🌕'};
+const SGR_D={name:'Sagittarius A★',emoji:'🕳️',text:'Il buco nero al centro della Via Lattea. Pesa 4 milioni di volte il Sole!',fun:'Il Sole ci mette 230 MILIONI di anni per farci un giro. Ai dinosauri eravamo dall\'altra parte! 🦕'};
+
+const pAng={};
+PLANETS.forEach(p=>{pAng[p.id]=Math.random()*TAU;});
+let moonAngSolar=.4, galAng=.25, moonAngEarth=.8, earthRotAng=0.4;
+
+function drawSolarSystem(alpha,sc,ts,dt){
+  if(alpha<.005)return;
+  cx.save();cx.globalAlpha=alpha;
+
+  // Scale mode: planets spread to realistic AU proportions
+  // In scale mode the inner planets are tiny and outer ones far away
+  // We use a log scale for readability: r = maxR * log(1+AU)/log(1+maxAU)
+  const maxAU = PLANET_AU.neptune;
+  const maxR = solarScale ? Math.min(W,H)*.46*scaleZoom : null;
+  function getPlanetR(p) {
+    if(!solarScale) return p.R * sc;
+    const au = PLANET_AU[p.id] || 1;
+    return maxR * Math.log(1 + au) / Math.log(1 + maxAU);
+  }
+
+  // Orbit ellipses — ALWAYS elliptical (visually amplified)
+  cx.save();cx.globalAlpha*=.14;
+  PLANETS.forEach(p=>{
+    const r = getPlanetR(p);
+    const ecc = PLANET_ECC[p.id] || 0;
+    const a2=r, c2=a2*ecc, b2=a2*Math.sqrt(1-ecc*ecc);
+    cx.beginPath(); cx.ellipse(CX-c2, CY, a2, b2, 0, 0, TAU);
+    cx.strokeStyle='rgba(255,255,255,1)'; cx.lineWidth=.9; cx.stroke();
+  });
+  cx.restore();
+
+  // Moon
+  if(!paused) moonAngSolar+=BASE_SPD*13*dt;
+  const ep=PLANETS.find(p=>p.id==='earth');
+  const eOrbitR = getPlanetR(ep);
+  const ePos = solarScale
+    ? (()=>{const ecc=PLANET_ECC.earth||0; const a2=eOrbitR,c2=a2*ecc,b2=a2*Math.sqrt(1-ecc*ecc); return{x:CX-c2+Math.cos(pAng.earth)*a2, y:CY+Math.sin(pAng.earth)*b2};})()
+    : getPlanetPos(ep, pAng.earth, sc);
+  const eX=ePos.x, eY=ePos.y;
+  const msr=solarScale?eOrbitR*.08:22*sc;
+  const msx=eX+Math.cos(moonAngSolar)*msr;
+  const msy=eY+Math.sin(moonAngSolar)*msr;
+  const mspr=Math.max(1,2.5*sc*(solarScale?.4:1));
+  if(msr>3){
+    cx.save();cx.globalAlpha*=.08;
+    cx.beginPath();cx.arc(eX,eY,msr,0,TAU);
+    cx.strokeStyle='rgba(255,255,255,.5)';cx.lineWidth=.6;cx.stroke();cx.restore();
+    const mbg2=rg(msx,msy,0,Math.max(1.5,mspr),[[0,'#fff'],[.4,'#bbb'],[1,'#888']]);
+    circ(msx,msy,Math.max(1.5,mspr),mbg2);
+    hits.push({x:msx,y:msy,r:Math.max(mspr,8),d:MOON_SOL});
+  }
+
+  // Planets
+  PLANETS.forEach(p=>{
+    if(!paused) pAng[p.id]+=p.sp*BASE_SPD*dt;
+    const orbitR = getPlanetR(p);
+    const pos = solarScale
+      ? (()=>{const ecc=PLANET_ECC[p.id]||0; const a2=orbitR,c2=a2*ecc,b2=a2*Math.sqrt(1-ecc*ecc); return{x:CX-c2+Math.cos(pAng[p.id])*a2, y:CY+Math.sin(pAng[p.id])*b2};})()
+      : getPlanetPos(p, pAng[p.id], sc);
+    const px=pos.x, py=pos.y;
+    // Sizes: in scale mode planets are tiny (but min 2px for visibility)
+    const pr = solarScale ? Math.max(2, p.sz*sc*.5) : Math.max(1.5,p.sz*sc);
+
+    if(p.ring&&pr>2){
+      cx.save();cx.translate(px,py);cx.scale(1,.3);
+      ringC(0,0,pr*2.5,'rgba(228,209,145,.45)',pr*.6);cx.restore();
+    }
+    if(pr>2){
+      const gg=rg(px,py,0,pr*4,[[0,p.col+'66'],[1,'transparent']]);
+      cx.beginPath();cx.arc(px,py,pr*4,0,TAU);cx.fillStyle=gg;cx.fill();
+    }
+    const bg=rg(px-pr*.3,py-pr*.3,0,pr,[[0,'#fff'],[.35,p.col],[1,p.col+'88']]);
+    circ(px,py,pr,bg);
+    if(showLabels&&(pr>3||solarScale)) lbl(p.name,px+pr+4,py+4,p.col,Math.max(8,10*sc));
+    // In scale mode show AU distance
+    if(solarScale&&showData){
+      cx.save();cx.globalAlpha*=.6;
+      cx.font="500 7px 'Cousine',monospace";cx.fillStyle='rgba(180,210,255,.6)';
+      cx.textAlign='center';
+      cx.fillText(PLANET_AU[p.id]+' UA',px,py+pr+13);
+      cx.textAlign='left';cx.restore();
+    }
+    if(showData&&pr>3&&!solarScale){
+      const bw=98*Math.min(sc,1), bh=32*Math.min(sc,1), bScale=Math.min(sc,1);
+      cx.save();
+      cx.fillStyle='rgba(4,12,30,.82)';cx.strokeStyle='rgba(72,202,228,.3)';cx.lineWidth=.8;
+      const bx2=px-bw/2, by2=py-pr-bh-6*bScale;
+      cx.beginPath();cx.roundRect(bx2,by2,bw,bh,6*bScale);cx.fill();cx.stroke();
+      const fsz=Math.max(6,8*bScale);
+      cx.font=`600 ${fsz}px 'Cousine',monospace`;
+      cx.fillStyle='rgba(255,214,165,.9)';cx.textAlign='center';
+      cx.fillText('🔄 ' + p.rot, px, by2+fsz+3*bScale);
+      cx.fillStyle='rgba(202,255,191,.9)';
+      cx.fillText('🌍 ' + p.rev, px, by2+fsz*2+6*bScale);
+      cx.textAlign='left';cx.restore();
+    }
+    hits.push({x:px,y:py,r:Math.max(pr,10),d:p});
+  });
+
+  // Scale mode AU ruler (universal)
+  if(solarScale){
+    const r1UA = maxR * Math.log(2) / Math.log(1+maxAU);
+    drawRuler(KM_PER_AU, r1UA, CX-r1UA/2, H-58, 'rgba(72,202,228,.7)', .65);
+    cx.save();cx.globalAlpha*=.4;
+    cx.font="600 8px 'Cousine',monospace";cx.fillStyle='rgba(72,202,228,.6)';cx.textAlign='center';
+    cx.fillText('📐 Vista in scala logaritmica · Eccentricità amplificata 3× per visibilità',CX,H-38);
+    cx.textAlign='left';cx.restore();
+  } else {
+    // Normal mode: 1 AU ruler
+    const earthR = ep.R * sc;
+    drawRuler(KM_PER_AU, earthR, CX-earthR/2, H-58, 'rgba(72,202,228,.55)', .45);
+  }
+
+  // Sun
+  const sunR=Math.max(5,22*sc),pulse=1+Math.sin(ts*.0014)*.04,sr=sunR*pulse;
+  // In scale mode sun is at focus position
+  const sunX = CX, sunY = CY;
+  const sg=rg(sunX,sunY,0,sr*6,[[0,'rgba(255,240,100,.5)'],[.4,'rgba(255,150,0,.12)'],[1,'transparent']]);
+  cx.beginPath();cx.arc(sunX,sunY,sr*6,0,TAU);cx.fillStyle=sg;cx.fill();
+  for(let i=0;i<8;i++){
+    const a=i*Math.PI*.25+ts*.0003;
+    cx.save();cx.globalAlpha*=.18;
+    cx.beginPath();
+    cx.moveTo(sunX+Math.cos(a)*sr*1.1,sunY+Math.sin(a)*sr*1.1);
+    cx.lineTo(sunX+Math.cos(a)*(sr*1.8+Math.sin(ts*.002+i)*sr*.22),sunY+Math.sin(a)*(sr*1.8+Math.sin(ts*.002+i)*sr*.22));
+    cx.strokeStyle='#ffe066';cx.lineWidth=2;cx.stroke();cx.restore();
+  }
+  const sbg=rg(sunX-sr*.3,sunY-sr*.3,0,sr,[[0,'#fff8dc'],[.3,'#ffe066'],[.7,'#ff9900'],[1,'#ff6600']]);
+  circ(sunX,sunY,sr,sbg);
+  if(showLabels&&sc>.22) lbl('☀ Sole',sunX,sunY+sr+12*sc,'#FFD166',Math.max(9,11*sc),'center');
+  hits.push({x:sunX,y:sunY,r:Math.max(sr,14),d:SUN_D});
+
+  cx.restore();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GALAXY LEVEL — spiral + Sun dot orbiting
+// ─────────────────────────────────────────────────────────────────
+function drawGalaxyLevel(alpha,ts,dt){
+  if(alpha<.005)return;
+  if(!paused) galAng+=BASE_SPD*.016*dt;
+
+  // BIGGER galaxy
+  const galR=Math.min(W,H)*.58;
+  drawGalaxy(CX,CY,galR,galAng*.25,alpha);
+
+  cx.save();cx.globalAlpha=alpha;
+
+  // ── Sgr A* (center) ──
+  const sgrR=8+Math.sin(ts*.002)*2;
+  const gc=rg(CX,CY,0,sgrR*6,[[0,'white'],[.2,'#FFD166'],[.55,'rgba(255,80,0,.3)'],[1,'transparent']]);
+  cx.beginPath();cx.arc(CX,CY,sgrR*6,0,TAU);cx.fillStyle=gc;cx.fill();
+  circ(CX,CY,sgrR,'white');
+  if(showLabels){lbl('Sgr A★',CX,CY+sgrR+16,'rgba(255,209,102,.85)',11,'center');}
+  hits.push({x:CX,y:CY,r:sgrR*4,d:SGR_D});
+
+  // ── Sun orbiting Sgr A* ──
+  const orbitR=galR*.56;
+  const sX=CX+Math.cos(galAng)*orbitR;
+  const sY=CY+Math.sin(galAng)*orbitR*.36;
+  const ssr=4+Math.sin(ts*.002)*.6;
+
+  // Orbit trail
+  cx.save(); cx.globalAlpha*=.12;
+  cx.save(); cx.scale(1,.36);
+  cx.beginPath();
+  cx.arc(CX,CY/.36,orbitR,galAng+Math.PI*.5,galAng+Math.PI*2.5,false);
+  cx.strokeStyle='rgba(255,220,100,.9)'; cx.lineWidth=1; cx.setLineDash([5,12]); cx.stroke();
+  cx.restore(); cx.restore();
+
+  cx.save(); cx.scale(1,.36); cx.globalAlpha*=.07;
+  ringC(CX,CY/.36,orbitR,'rgba(255,255,255,1)',1,[8,14]);
+  cx.restore();
+
+  // Sun glow + dot
+  const ssg=rg(sX,sY,0,ssr*8,[[0,'rgba(255,230,100,.65)'],[.5,'rgba(255,200,60,.2)'],[1,'transparent']]);
+  cx.beginPath();cx.arc(sX,sY,ssr*8,0,TAU);cx.fillStyle=ssg;cx.fill();
+  circ(sX,sY,ssr,'#fff8dc');
+
+  // ── PLANETS orbiting Sun in galaxy view ──
+  if(showGalPlanets){
+    if(!galPlanetAngles.mercury) PLANETS.forEach(p=>{galPlanetAngles[p.id]=Math.random()*TAU;});
+    const miniOrbitBase=12;
+    PLANETS.forEach((p,i)=>{
+      if(!paused) galPlanetAngles[p.id]+=p.sp*BASE_SPD*3*dt;
+      const orbR=miniOrbitBase+i*5;
+      const ppx=sX+Math.cos(galPlanetAngles[p.id])*orbR;
+      const ppy=sY+Math.sin(galPlanetAngles[p.id])*orbR*.4;
+      cx.save();cx.globalAlpha*=.12;
+      cx.beginPath();cx.ellipse(sX,sY,orbR,orbR*.4,0,0,TAU);
+      cx.strokeStyle='rgba(255,255,255,.5)';cx.lineWidth=.4;cx.stroke();cx.restore();
+      circ(ppx,ppy,Math.max(1,p.sz*.16),p.col);
+    });
+    // Arrow showing system motion
+    const arrAng=galAng+.12;
+    const arrX=CX+Math.cos(arrAng)*(orbitR+18);
+    const arrY=CY+Math.sin(arrAng)*(orbitR+18)*.36;
+    cx.save();cx.globalAlpha*=.5;
+    cx.beginPath();cx.moveTo(sX,sY);cx.lineTo(arrX,arrY);
+    cx.strokeStyle='rgba(255,209,102,.5)';cx.lineWidth=1;cx.setLineDash([3,5]);cx.stroke();cx.setLineDash([]);
+    // arrowhead
+    const tipA=Math.atan2(arrY-sY,arrX-sX);
+    cx.beginPath();cx.moveTo(arrX,arrY);cx.lineTo(arrX-Math.cos(tipA-.4)*7,arrY-Math.sin(tipA-.4)*7);cx.stroke();
+    cx.beginPath();cx.moveTo(arrX,arrY);cx.lineTo(arrX-Math.cos(tipA+.4)*7,arrY-Math.sin(tipA+.4)*7);cx.stroke();
+    cx.restore();
+    cx.save();cx.globalAlpha*=.45;cx.font="600 7.5px 'Cousine',monospace";cx.fillStyle='rgba(255,200,80,.7)';cx.textAlign='center';
+    cx.fillText('☀+🪐 orbitano Sgr A★ a 220 km/s',sX,sY+ssr+52);cx.textAlign='left';cx.restore();
+  }
+
+  if(showLabels){
+    const lblSz = showData ? 12 : 10;
+    lbl('☀ Sole',sX,sY-ssr-10,'rgba(255,209,102,.95)',lblSz,'center');
+    cx.save(); cx.globalAlpha*=.6;
+    cx.font=`500 ${showData?8.5:7}px 'Cousine',monospace`;
+    cx.fillStyle='rgba(255,200,80,.7)'; cx.textAlign='center';
+    cx.fillText('230M anni/giro',sX,sY+ssr+14);
+    if(showData) cx.fillText('220 km/s attorno a Sgr A★',sX,sY+ssr+26);
+    cx.textAlign='left'; cx.restore();
+  }
+
+  // ── Galaxy scale ruler ── 
+  {const lyPerPx=100000/(galR*2); const rulerLY=25000; const rulerPx=rulerLY/lyPerPx;
+   drawRuler(rulerLY*KM_PER_LY, rulerPx, CX-rulerPx/2, H-58, 'rgba(72,202,228,.7)', .6);
+   cx.save();cx.globalAlpha*=.3;cx.font="500 7px 'Cousine',monospace";cx.fillStyle='rgba(72,202,228,.5)';cx.textAlign='center';
+   cx.fillText('diametro totale ≈ 100.000 a.l.',CX,H-40);cx.textAlign='left';cx.restore();}
+
+  hits.push({x:sX,y:sY,r:ssr*4,d:SUN_D});
+  cx.restore();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// UNIVERSE OBSERVABLE — level 4
+// Shows the observable universe: CMB shell, cosmic web structure,
+// superclusters as glowing nodes, voids, expansion visualization
+// ─────────────────────────────────────────────────────────────────
+let univNodes=[], univVoids=[], univInit=false;
+
+function mkUniverse(){
+  // ~30 supercluster/filament nodes scattered in sphere projection
+  univNodes=[];
+  const rng=(s)=>{let x=Math.sin(s)*43758.5453;return x-Math.floor(x);};
+  for(let i=0;i<280;i++){
+    const seed=i*7.3+1.1;
+    const theta=rng(seed)*TAU;
+    const phi=Math.acos(2*rng(seed+1)-1);
+    const r=.08+rng(seed+2)*.88;
+    // cluster at projected x,y (simple orthographic)
+    const x=.5+Math.sin(phi)*Math.cos(theta)*r*.48;
+    const y=.5+Math.sin(phi)*Math.sin(theta)*r*.48*(H/W);
+    const sz=1+rng(seed+3)*4;
+    const bright=.15+rng(seed+4)*.7;
+    const hue=200+rng(seed+5)*60;
+    univNodes.push({x,y,sz,bright,hue,r,theta,phi,
+      // filament connections: connect to 1-3 nearby
+      conn:[]
+    });
+  }
+  // Build sparse filament connections (nearest neighbors)
+  for(let i=0;i<univNodes.length;i++){
+    const a=univNodes[i];
+    let dists=[];
+    for(let j=0;j<univNodes.length;j++){
+      if(i===j)continue;
+      const b=univNodes[j];
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      dists.push({j,d});
+    }
+    dists.sort((a,b)=>a.d-b.d);
+    a.conn=dists.slice(0,2+Math.floor(a.sz*.5)).filter(d=>d.d<.12).map(d=>d.j);
+  }
+  // Large voids
+  univVoids=Array.from({length:18},(_,i)=>{
+    const s=i*11.7+3.3;
+    const rng2=(x)=>{let v=Math.sin(x)*43758.5453;return v-Math.floor(v);};
+    return {
+      x:.1+rng2(s)*.8, y:.1+rng2(s+1)*.8,
+      r:.04+rng2(s+2)*.09
+    };
+  });
+  univInit=true;
+}
+
+function drawUniverse(alpha,ts){
+  if(!univInit) mkUniverse();
+  if(alpha<.005)return;
+
+  cx.save(); cx.globalAlpha=alpha;
+  const R=Math.min(W,H)*.46; // universe sphere radius on screen
+
+  // ── Deep void / CMB background shell ──
+  // Outer CMB glow (relic radiation — the "edge" of the observable universe)
+  const cmbG=rg(CX,CY,R*.75,R*1.05,[
+    [0,'transparent'],
+    [.6,'rgba(255,140,60,.04)'],
+    [.85,'rgba(255,100,30,.12)'],
+    [.95,'rgba(255,80,20,.18)'],
+    [1,'rgba(200,60,10,.08)']
+  ]);
+  cx.beginPath(); cx.arc(CX,CY,R*1.05,0,TAU); cx.fillStyle=cmbG; cx.fill();
+
+  // CMB label
+  cx.save(); cx.globalAlpha*=.4;
+  cx.font="600 9px 'Cousine',monospace"; cx.fillStyle='rgba(255,120,60,.8)'; cx.textAlign='center';
+  cx.fillText('CMB — Radiazione di Fondo Cosmico (380.000 anni dopo il Big Bang)',CX,CY-R*.94);
+  cx.restore();
+
+  // Observable universe boundary
+  cx.save(); cx.globalAlpha*=.25; cx.setLineDash([8,16]);
+  ringC(CX,CY,R,'rgba(200,180,255,.8)',1.2);
+  cx.restore();
+  cx.font="600 8.5px 'Cousine',monospace"; cx.fillStyle='rgba(190,160,255,.25)'; cx.textAlign='center';
+  cx.fillText('Universo Osservabile (~46,5 miliardi di anni luce)',CX,CY+R+16);
+  cx.textAlign='left';
+
+  // ── Cosmic web filaments ──
+  cx.save();
+  const fw=R*2, fh=R*2, ox=CX-R, oy=CY-R;
+  for(const n of univNodes){
+    const px=ox+n.x*fw, py=oy+n.y*fh;
+    for(const ci of n.conn){
+      const m=univNodes[ci];
+      const qx=ox+m.x*fw, qy=oy+m.y*fh;
+      // only draw if inside sphere
+      const midD=Math.hypot((px+qx)/2-CX,(py+qy)/2-CY);
+      if(midD>R*.95)continue;
+      cx.save(); cx.globalAlpha*=n.bright*.18;
+      cx.beginPath(); cx.moveTo(px,py); cx.lineTo(qx,qy);
+      cx.strokeStyle=`hsla(${n.hue},60%,70%,1)`; cx.lineWidth=.6; cx.stroke();
+      cx.restore();
+    }
+  }
+  cx.restore();
+
+  // ── Voids (empty regions) ──
+  for(const v of univVoids){
+    const vx=ox+v.x*fw, vy=oy+v.y*fh;
+    if(Math.hypot(vx-CX,vy-CY)>R*.9)continue;
+    const vg=rg(vx,vy,0,v.r*R*2,[[0,'rgba(0,0,15,.25)'],[1,'transparent']]);
+    cx.beginPath(); cx.arc(vx,vy,v.r*R*2,0,TAU); cx.fillStyle=vg; cx.fill();
+  }
+
+  // ── Supercluster nodes ──
+  const pulse=Math.sin(ts*.0006)*.15;
+  for(const n of univNodes){
+    const px=ox+n.x*fw, py=oy+n.y*fh;
+    const d=Math.hypot(px-CX,py-CY);
+    if(d>R*.96)continue;
+    // fade near edges (limb darkening)
+    const limb=1-Math.pow(d/R,3);
+    const br=n.bright*limb*(1+pulse);
+    const nodeSz=n.sz*(1+pulse*.3);
+    // glow
+    if(nodeSz>2){
+      const g2=rg(px,py,0,nodeSz*3,[
+        [0,`hsla(${n.hue},70%,80%,${br*.4})`],[1,'transparent']]);
+      cx.beginPath(); cx.arc(px,py,nodeSz*3,0,TAU); cx.fillStyle=g2; cx.fill();
+    }
+    // core dot
+    cx.save(); cx.globalAlpha*=br;
+    circ(px,py,Math.max(.5,nodeSz*.6),`hsl(${n.hue},60%,80%)`);
+    cx.restore();
+  }
+
+  // ── "Noi siamo qui" marker (Laniakea → Via Lattea, tiny dot near center) ──
+  const noi_r=R*.12; // Laniakea is ~1% of observable radius, we show it a bit bigger
+  const noiX=CX+noi_r*.3, noiY=CY+noi_r*.1;
+  const noiPulse=1+Math.sin(ts*.002)*.2;
+  cx.save(); cx.globalAlpha*=.9*noiPulse;
+  circ(noiX,noiY,3,'#FFD166');
+  ringC(noiX,noiY,7,'rgba(255,209,102,.5)',1.5);
+  cx.font="700 9px 'Baloo 2',cursive"; cx.fillStyle='#FFD166'; cx.textAlign='left';
+  cx.fillText('← Laniakea (Noi!)',noiX+10,noiY+4);
+  cx.restore();
+
+  // ── Big Bang direction label (center) ──
+  cx.save(); cx.globalAlpha*=.18;
+  const bbG=rg(CX,CY,0,R*.3,[[0,'rgba(255,220,100,.6)'],[.6,'rgba(255,150,50,.15)'],[1,'transparent']]);
+  cx.beginPath(); cx.arc(CX,CY,R*.3,0,TAU); cx.fillStyle=bbG; cx.fill();
+  cx.restore();
+  cx.save(); cx.globalAlpha*=.3;
+  cx.font="600 8px 'Cousine',monospace"; cx.fillStyle='rgba(255,200,80,.8)'; cx.textAlign='center';
+  cx.fillText('← direzione Big Bang (13,8 miliardi di anni fa)',CX,CY+6);
+  cx.textAlign='left'; cx.restore();
+
+  // ── Scale annotation ──
+  // Scale ruler: Universe radius R px = 46.5 billion ly
+  {const rulerLY=10e9; const rulerPx=R*(rulerLY/46.5e9);
+   drawRuler(rulerLY*KM_PER_LY, rulerPx, CX-rulerPx/2, H-58, 'rgba(150,200,255,.6)', .5);}
+  cx.save(); cx.globalAlpha*=.35;
+  cx.font="600 8px 'Cousine',monospace"; cx.fillStyle='rgba(150,200,255,.7)'; cx.textAlign='center';
+  cx.fillText('Ogni punto luminoso = superammasso di migliaia di galassie',CX,CY+R*.85);
+  cx.textAlign='left'; cx.restore();
+
+  cx.restore();
+}
+let level=0,levelT=0,paused=false,speedMult=1,showLabels=true,showData=false,solarScale=false,earthAng=0,earthAngSeason=0;
+const BASE_SPD=.00042;
+let hits=[];
+let scaleZoom=1.0; // zoom factor for scale mode
+let showGalPlanets=false; // show planets around Sun in galaxy view
+let galPlanetAngles={};
+
+function setLevel(l){level=clamp(l,0,5);}
+
+// Solar system scale: max at level 2, fades at 1 and 3
+function solarSc(){
+  if(levelT<2)return clamp(levelT-1,0,1);
+  return clamp(1-(levelT-2)*2,0,1);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// MAIN LOOP
+// ─────────────────────────────────────────────────────────────────
+let last=null;
+const HINTS=[
+  '<b>Tocca la Terra o la Luna</b> per saperne di più<br>Usa ＋/－ o la rotella per zoomare',
+  '<b>Stagioni:</b> la Terra orbita il Sole in un anno<br>L\'asse inclinato di 23,5° causa le stagioni 🌸❄️',
+  '<b>Tocca un pianeta</b> · Usa 📐 per vista in scala reale<br>Premi 🚀 per accelerare',
+  '<b>Via Lattea:</b> il Sole orbita attorno a Sgr A★ ☀<br>Un giro galattico = 230 milioni di anni',
+  '<b>Laniakea:</b> il nostro superammasso<br>Tocca un ammasso per saperne di più 🔭',
+  '<b>Universo Osservabile:</b> 93 miliardi di anni luce<br>Ogni punto = un superammasso di galassie 🌐'
+];
+
+function frame(ts){
+  if(last===null)last=ts;
+  const dt=paused?0:(ts-last)*speedMult;
+  last=ts;
+
+  const dl=level-levelT;
+  if(Math.abs(dl)>.002)levelT+=dl*.058;else levelT=level;
+
+  cx.clearRect(0,0,W,H);
+  const bg=cx.createRadialGradient(CX,CY,0,CX,CY,Math.max(W,H));
+  bg.addColorStop(0,'#070e1e');bg.addColorStop(1,'#010610');
+  cx.fillStyle=bg;cx.fillRect(0,0,W,H);
+
+  hits=[];
+
+  // Stars — always present, brighter at higher levels
+  drawStars(clamp(levelT*.7,.05,1));
+
+  // UNIVERSE level 5
+  const uA=clamp(levelT-4,0,1);
+  if(uA>0) drawUniverse(uA,ts);
+
+  // LANIAKEA level 4, fades out into universe
+  const lA=levelT<4?clamp(levelT-3,0,1):clamp(1-(levelT-4)*3,0,1);
+  if(lA>0) drawLaniakea(lA,ts);
+
+  // GALAXY level 3, fades out into laniakea
+  const gA=levelT<3?clamp(levelT-2,0,1):clamp(1-(levelT-3)*2,0,1);
+  if(gA>0) drawGalaxyLevel(gA,ts,dt);
+
+  // SOLAR SYSTEM level 2, fades out into galaxy
+  const sA=clamp(Math.min(levelT-1,3-levelT)*3,0,1);
+  const sSc=solarSc();
+  if(sA>0&&sSc>.004) drawSolarSystem(sA,sSc,ts,dt);
+
+  // SEASONS level 1
+  const seA=levelT<1?clamp(levelT,0,1):clamp(1-(levelT-1)*3,0,1);
+  if(seA>0) drawSeasonsLevel(seA,ts,dt);
+
+  // EARTH+MOON level 0
+  const eA=clamp(1-levelT*4,0,1);
+  if(eA>0) drawEarthLevel(eA,ts,dt);
+
+  // UI update
+  document.querySelectorAll('.lb').forEach((b,i)=>b.classList.toggle('on',Math.round(levelT)===i));
+  document.getElementById('hint').innerHTML=HINTS[clamp(Math.round(levelT),0,5)];
+  if(typeof checkLevelChange==='function') checkLevelChange();
+  if(typeof updateCtxBtns==='function') updateCtxBtns();
+
+  requestAnimationFrame(frame);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// INTERACTIONS
+// ─────────────────────────────────────────────────────────────────
+const panel=document.getElementById('info');
+document.getElementById('icl').addEventListener('click',e=>{e.stopPropagation();panel.classList.remove('show');});
+
+function showInfo(d){
+  document.getElementById('ie').textContent=d.emoji||'✨';
+  document.getElementById('iname').textContent=d.name;
+  document.getElementById('itext').textContent=d.text;
+  document.getElementById('ifun').textContent=d.fun||'';
+  panel.classList.add('show');
+}
+
+function getHit(ex,ey){
+  const r=cv.getBoundingClientRect();
+  const mx=ex-r.left,my=ey-r.top;
+  for(let i=hits.length-1;i>=0;i--){
+    if(Math.hypot(mx-hits[i].x,my-hits[i].y)<=hits[i].r+10)return hits[i].d;
+  }
+  // Laniakea cluster check
+  if(levelT>2.5){
+    const pad=70,fw=W-pad*2,fh=H-pad*2;
+    for(const p of lanClusters){
+      const px=pad+p.rx*fw,py=pad+p.ry*fh;
+      if(Math.hypot(mx-px,my-py)<=p.r*5+10&&p.key&&CLUSTER_INFO[p.key])
+        return CLUSTER_INFO[p.key];
+    }
+  }
+  return null;
+}
+
+cv.addEventListener('click',e=>{
+  const d=getHit(e.clientX,e.clientY);
+  if(d)showInfo(d);else panel.classList.remove('show');
+});
+cv.addEventListener('touchend',e=>{
+  e.preventDefault();
+  const t=e.changedTouches[0];
+  const d=getHit(t.clientX,t.clientY);
+  if(d)showInfo(d);else panel.classList.remove('show');
+},{passive:false});
+cv.addEventListener('wheel',e=>{
+  e.preventDefault();
+  if(solarScale && Math.round(levelT)===2){
+    // Zoom in scale mode
+    scaleZoom*=e.deltaY>0?0.85:1.18;
+    scaleZoom=clamp(scaleZoom,0.3,4);
+  } else {
+    setLevel(level+(e.deltaY>0?1:-1));
+  }
+},{passive:false});
+
+document.querySelectorAll('.lb').forEach(b=>b.addEventListener('click',()=>setLevel(+b.dataset.lv)));
+
+const bpause=document.getElementById('bpause');
+const splbl=document.getElementById('splbl');
+bpause.addEventListener('click',()=>{
+  paused=!paused;bpause.textContent=paused?'▶ Riprendi':'⏸ Pausa';bpause.classList.toggle('on',paused);
+});
+document.getElementById('bslow').addEventListener('click',()=>{
+  speedMult=Math.max(.25,speedMult/2);splbl.textContent=(speedMult<1?speedMult.toFixed(2):speedMult)+'×';
+});
+document.getElementById('bfast').addEventListener('click',()=>{
+  speedMult=Math.min(32,speedMult*2);splbl.textContent=speedMult+'×';
+});
+document.getElementById('bzi').addEventListener('click',()=>setLevel(level-1));
+document.getElementById('bzo').addEventListener('click',()=>setLevel(level+1));
+const blbl=document.getElementById('blbl');
+blbl.addEventListener('click',()=>{showLabels=!showLabels;blbl.classList.toggle('on',!showLabels);});
+
+// SCALE button — toggles solar system scale view with zoom
+const bscale=document.getElementById('bscale');
+bscale.addEventListener('click',()=>{
+  if(Math.round(levelT)===2){
+    solarScale=!solarScale;
+    bscale.classList.toggle('on',solarScale);
+    if(solarScale) scaleZoom=1.0;
+  }
+});
+
+// GALAXY PLANETS button
+const bgalp=document.getElementById('bgalp');
+bgalp.addEventListener('click',()=>{
+  showGalPlanets=!showGalPlanets;
+  bgalp.classList.toggle('on',showGalPlanets);
+  if(showGalPlanets&&!galPlanetAngles.mercury) PLANETS.forEach(p=>{galPlanetAngles[p.id]=Math.random()*TAU;});
+});
+
+// UNIT toggle button
+const bunit=document.getElementById('bunit');
+bunit.addEventListener('click',()=>{
+  scaleUnitMode=scaleUnitMode==='km'?'ly':'km';
+  bunit.textContent='📏 '+(scaleUnitMode==='km'?'km':'a.l.');
+});
+
+// NAV popup
+document.getElementById('bnav').addEventListener('click',()=>{
+  document.getElementById('navpop').classList.toggle('show');
+});
+
+// Show/hide context-specific buttons per level
+function updateCtxBtns(){
+  const lv=Math.round(levelT);
+  bgalp.style.display=lv===3?'inline-block':'none';
+  // Solar system: always in scale mode, hide scale toggle
+  bscale.style.display='none';
+  if(lv===2&&!solarScale){solarScale=true;bscale.classList.add('on');}
+  if(lv!==2&&solarScale){solarScale=false;bscale.classList.remove('on');}
+  if(lv!==3&&showGalPlanets){showGalPlanets=false;bgalp.classList.remove('on');}
+  // Birthday form toggle
+  document.getElementById('bbd').style.display=lv===1?'inline-block':'none';
+  document.getElementById('bdform').style.display=(lv===1&&window._bdFormOpen)?'block':'none';
+}
+
+// Birthday form
+document.getElementById('bbd').addEventListener('click',()=>{
+  window._bdFormOpen=!window._bdFormOpen;
+  document.getElementById('bdform').style.display=window._bdFormOpen?'block':'none';
+});
+document.getElementById('bdclose').addEventListener('click',()=>{
+  window._bdFormOpen=false;
+  document.getElementById('bdform').style.display='none';
+});
+document.getElementById('bdok').addEventListener('click',()=>{
+  const name=document.getElementById('bdname').value.trim();
+  const day=parseInt(document.getElementById('bdday').value);
+  const month=parseInt(document.getElementById('bdmonth').value);
+  if(name&&day>=1&&day<=31&&month>=1&&month<=12){
+    window._bdName=name;
+    window._bdDate={day,month};
+    window._bdFormOpen=false;
+    document.getElementById('bdform').style.display='none';
+    document.getElementById('bbd').classList.add('on');
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────
+// DYNAMIC DATA PANEL — 4 levels, different data per level
+// ─────────────────────────────────────────────────────────────────
+const LEVEL_DATA = [
+  // ── LEVEL 0: Terra + Luna ──
+  {
+    title:'🌍 Terra & Luna',
+    badge:'TERRA + LUNA',
+    heads:['Corpo','','',''],
+    cols:['n','a','b','c'],
+    rows:[
+      ['🌍 Terra','Diametro: 12.742 km','Gravità: 9.8 m/s²','1 giorno = 23h 56min'],
+      ['','Distanza Sole: 150M km','Temperatura: −88 / +58°C','1 anno = 365.25 giorni'],
+      ['🔄 Rotazione','1.670 km/h all\'equatore','= 465 m/s ← veloce!','Asse inclinato 23,5°'],
+      ['🌕 Luna','Diametro: 3.474 km','Gravità: 1.62 m/s²','1 giorno lunare = 29.5 gg'],
+      ['','Distanza Terra: 384.400 km','Temp: −173 / +127°C','Orbita Terra in 27.3 gg'],
+      ['🔵 Fasi Luna','Ciclo completo: 29.5 gg','Luna Nuova → Piena → Nuova','Controlla le maree 🌊'],
+    ],
+    legend:'<i class="da"></i>Misure fisiche &nbsp;<i class="db"></i>Condizioni &nbsp;<i class="dc"></i>Tempi'
+  },
+  // ── LEVEL 1: Stagioni ──
+  {
+    title:'🌸 Terra & Stagioni',
+    badge:'STAGIONI',
+    heads:['Stagione','Nord','Sud','Causa'],
+    cols:['n','a','b','c'],
+    rows:[
+      ['☀️ Giugno (solstizio)','Estate ☀️ – giorni lunghi','Inverno ❄️ – giorni corti','N. Polo verso il Sole'],
+      ['🍂 Settembre (equinozio)','Autunno 🍂 – 12h luce','Primavera 🌸 – 12h luce','Asse perpendicolare'],
+      ['❄️ Dicembre (solstizio)','Inverno ❄️ – giorni corti','Estate ☀️ – giorni lunghi','N. Polo lontano dal Sole'],
+      ['🌸 Marzo (equinozio)','Primavera 🌸 – 12h luce','Autunno 🍂 – 12h luce','Asse perpendicolare'],
+      ['🌍 Orbita','Durata: 365.25 giorni','Ellittica (e=0.017)','Quasi circolare!'],
+      ['📐 Asse','Inclinazione: 23,5°','Fisso nello spazio','Causa delle stagioni'],
+    ],
+    legend:'<i class="da"></i>Emisfero Nord &nbsp;<i class="db"></i>Emisfero Sud &nbsp;<i class="dc"></i>Causa astronomica'
+  },
+  // ── LEVEL 2: Sistema Solare ──
+  {
+    title:'☀️ Sistema Solare',
+    badge:'PIANETI',
+    heads:['Pianeta','🔄 Rotazione','🌍 Rivoluzione','vs Terra'],
+    cols:['n','a','b','c'],
+    rows:(()=>{
+      const sun=['☀️ Sole','25–35 giorni','—','Centro del Sistema'];
+      const prows=PLANETS.map(p=>{
+        const ratio=p.revD/365.25;
+        const rs=ratio<1?ratio.toFixed(2)+'×':(ratio<2?ratio.toFixed(1)+'×':Math.round(ratio)+'×');
+        return[p.emoji+' '+p.name, p.rot, p.rev, rs+' Terra'];
+      });
+      return[sun,...prows];
+    })(),
+    legend:'<i class="da"></i>Rotazione = durata del giorno sul pianeta &nbsp;<i class="db"></i>Rivoluzione = durata dell\'anno &nbsp;<i class="dc"></i>Confronto con Terra'
+  },
+  // ── LEVEL 3: Via Lattea ──
+  {
+    title:'🌌 Via Lattea',
+    badge:'GALASSIA',
+    heads:['Dato','Valore','','Note'],
+    cols:['n','a','b','c'],
+    rows:[
+      ['📏 Diametro','100.000 anni luce','','Ci vorrà la luce 100k anni!'],
+      ['⭐ Stelle','200–400 miliardi','','Forse di più…'],
+      ['🕳️ Buco nero','Sgr A★: 4M ☀️','','Al centro galattico'],
+      ['☀️ Il Sole','Braccio di Orione','26.000 a.l. dal centro','Orbita galattica: 230M anni'],
+      ['🚀 Velocità Sole','220 km/s attorno Sgr A★','= 792.000 km/h!','Nostra velocità galattica'],
+      ['📐 Scala','↔ vedi righello in basso','25.000 a.l. per confronto','(attiva Dati)'],
+      ['🔄 Rotazione','Non uniforme','Differenziale','Bracci più veloci del centro'],
+      ['🧲 Materia oscura','~90% della massa','Invisibile!','Tiene unita la galassia'],
+      ['📡 Vicine','Andromeda: 2.5M a.l.','Nube di Magellano: 160k','Fusione tra 4.5 miliardi di anni'],
+      ['🦕 Dinosauri','Il Sole era dall\'altra parte!','Un giro = 230M anni','Ultimo giro al Cretaceo'],
+    ],
+    legend:'<i class="da"></i>Distanze in anni luce (a.l.) &nbsp;<i class="dc"></i>Dati astronomici reali della Via Lattea'
+  },
+  // ── LEVEL 4: Laniakea ──
+  {
+    title:'🔭 Laniakea',
+    badge:'SUPERAMMASSO',
+    heads:['Struttura','Dimensione','Galassie/Stelle','Curiosità'],
+    cols:['n','a','b','c'],
+    rows:[
+      ['🔭 Laniakea','520M anni luce','~100.000 galassie','Scoperto nel 2014!'],
+      ['🌌 Via Lattea','100k a.l.','200–400 miliardi ⭐','Siamo qui 📍'],
+      ['🎯 Virgo Cluster','8M a.l.','1.300 galassie','Centro gravitaz. locale'],
+      ['💫 Grande Attrattore','250M a.l.','Migliaia di galassie','Attra tutto verso di sé'],
+      ['🕸️ Filamenti','Miliardi a.l.','Connettono gli ammassi','Web cosmica'],
+      ['🌑 Void cosmici','Vuoti enormi','Quasi nessuna galassia','Dove finisce tutto?'],
+      ['📡 Osservabile','93 miliardi a.l.','~2 trilioni galassie','Laniakea è minuscola!'],
+      ['🏃 Espansione','68 km/s per Mpc','Accelera sempre più','Energia oscura 🔮'],
+    ],
+    legend:'<i class="da"></i>Dimensioni in anni luce &nbsp;<i class="db"></i>Contenuto &nbsp;<i class="dc"></i>Fatti notevoli'
+  },
+  // ── LEVEL 4: Universo Osservabile ──
+  {
+    title:'🌐 Universo Osservabile',
+    badge:'UNIVERSO',
+    heads:['Dato','Valore','','Note'],
+    cols:['n','a','b','c'],
+    rows:[
+      ['📏 Diametro','93 miliardi a.l.','','Quello che riusciamo a vedere'],
+      ['⏱ Età','13,8 miliardi di anni','','Dal Big Bang ad oggi'],
+      ['🌌 Galassie','~2 trilioni','(2.000.000.000.000)','Ognuna con miliardi di stelle'],
+      ['🕸️ Web cosmica','Filamenti + Voids','Struttura a gran scala','Come una spugna o una ragnatela'],
+      ['📡 CMB','Radiaz. di fondo','380.000 anni dopo Bang','"Eco" del Big Bang ancora visibile'],
+      ['🔮 Energia oscura','68% dell\'universo','Accelera l\'espansione','Non sappiamo cosa sia!'],
+      ['🌑 Materia oscura','27% dell\'universo','Invisibile ma gravita','Tiene uniti galassie e ammassi'],
+      ['✨ Materia normale','5% dell\'universo','Stelle, pianeti, noi!','Solo il 5% è "visibile"'],
+      ['🏃 Espansione','70 km/s per Mpc','Tutto si allontana da tutto','Come palloncino che si gonfia'],
+      ['🔭 Laniakea','0,0001% del tot.','520 milioni a.l.','Minuscola nell\'universo!'],
+    ],
+    legend:'<i class="da"></i>Dati cosmologici reali &nbsp;<i class="db"></i>Percentuali &nbsp;<i class="dc"></i>Curiosità per bambini'
+  }
+];
+
+const bdata=document.getElementById('bdata');
+const dtable=document.getElementById('dtable');
+const dtcontent=document.getElementById('dtcontent');
+const dttitle=document.getElementById('dttitle').childNodes[0];
+const dtbadge=document.getElementById('dtbadge');
+
+function buildDataPanel(lv){
+  const d=LEVEL_DATA[lv];
+  dtbadge.textContent=d.badge;
+  // update title emoji+text (keep badge span)
+  document.getElementById('dttitle').childNodes[0].textContent=d.title+' ';
+
+  let html=`<table><thead><tr>`;
+  d.heads.forEach((h,i)=>{
+    if(h) html+=`<th${i>0?' class="r"':''}>${h}</th>`;
+    else  html+=`<th></th>`;
+  });
+  html+=`</tr></thead><tbody>`;
+  d.rows.forEach(row=>{
+    html+=`<tr>`;
+    row.forEach((cell,i)=>{
+      const cls=i===0?'n':(d.cols[i]||'');
+      html+=`<td class="${cls}${i>0?' r':''}">${cell}</td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table>`;
+  if(d.legend) html+=`<div class="leg">${d.legend}</div>`;
+  dtcontent.innerHTML=html;
+}
+
+// Build initial panel
+buildDataPanel(0);
+
+// Auto-rebuild when level changes
+let lastPanelLevel=-1;
+const _origFrame=requestAnimationFrame;
+function checkLevelChange(){
+  const lv=Math.round(levelT);
+  if(lv!==lastPanelLevel && showData){
+    lastPanelLevel=lv;
+    buildDataPanel(clamp(lv,0,5));
+  }
+}
+// Hook into frame loop via the UI update
+const _origUIupdate=()=>{
+  document.querySelectorAll('.lb').forEach((b,i)=>b.classList.toggle('on',Math.round(levelT)===i));
+  document.getElementById('hint').innerHTML=HINTS[clamp(Math.round(levelT),0,4)];
+  checkLevelChange();
+};
+
+bdata.addEventListener('click',()=>{
+  showData=!showData;
+  bdata.classList.toggle('on',showData);
+  if(showData){
+    lastPanelLevel=-1; // force rebuild
+    buildDataPanel(clamp(Math.round(levelT),0,5));
+    lastPanelLevel=Math.round(levelT);
+  }
+  dtable.classList.toggle('show',showData);
+});
+document.getElementById('brst').addEventListener('click',()=>{
+  paused=false;speedMult=1;splbl.textContent='1×';
+  bpause.textContent='⏸ Pausa';bpause.classList.remove('on');
+  showData=false;bdata.classList.remove('on');dtable.classList.remove('show');
+  lastPanelLevel=-1;
+  solarScale=false;bscale.classList.remove('on');scaleZoom=1.0;
+  showGalPlanets=false;bgalp.classList.remove('on');
+  window._bdOrbitCount=0;window._bdPrevNormAng=0;
+  PLANETS.forEach(p=>{pAng[p.id]=Math.random()*TAU;});
+  moonAngSolar=.4;moonAngEarth=.8;galAng=.25;earthRotAng=0.4;earthAngSeason=0;setLevel(0);
+});
+
+// roundRect polyfill
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    this.beginPath();this.moveTo(x+r,y);this.lineTo(x+w-r,y);
+    this.arcTo(x+w,y,x+w,y+r,r);this.lineTo(x+w,y+h-r);
+    this.arcTo(x+w,y+h,x+w-r,y+h,r);this.lineTo(x+r,y+h);
+    this.arcTo(x,y+h,x,y+h-r,r);this.lineTo(x,y+r);
+    this.arcTo(x,y,x+r,y,r);this.closePath();
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────
+resize();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
