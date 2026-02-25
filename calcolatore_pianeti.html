@@ -2,300 +2,486 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Col Naso all'Insù – Calcolatore Planetario</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Col Naso all'Ins&#xF9; &#x2013; Calcolatore Planetario</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Cousine:wght@400;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;min-height:100vh;background:#06081a;color:#e0e8f8;font-family:'Baloo 2',cursive;overflow-x:hidden;}
-a{color:#48cae4;text-decoration:none;}a:hover{text-decoration:underline;}
+html,body{width:100%;min-height:100dvh;background:#050a1a;font-family:'Baloo 2',cursive;color:#e0e8f8;
+  -webkit-tap-highlight-color:transparent;overflow-x:hidden;}
+a{color:#48cae4;text-decoration:none;}
 
-header{text-align:center;padding:18px 16px 6px;}
-header h1{font-size:clamp(1.1rem,3vw,1.6rem);font-weight:800;color:#FFD166;
-  text-shadow:0 0 20px rgba(255,209,102,.4);letter-spacing:.04em;}
-header p{font-family:'Cousine',monospace;font-size:clamp(.55rem,.9vw,.72rem);color:#48cae4;opacity:.65;margin-top:2px;}
-.nav-links{margin-top:6px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
-.nav-links a{font-family:'Cousine',monospace;font-size:.6rem;padding:3px 10px;
-  border:1.5px solid rgba(72,202,228,.25);border-radius:14px;color:rgba(72,202,228,.7);transition:all .2s;}
-.nav-links a:hover{background:rgba(72,202,228,.1);border-color:#48cae4;color:#48cae4;text-decoration:none;}
+/* Stars */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(1.2px 1.2px at 20% 30%,rgba(255,255,255,.5),transparent),
+  radial-gradient(1px 1px at 60% 15%,rgba(255,255,255,.4),transparent),
+  radial-gradient(.8px .8px at 80% 60%,rgba(255,255,255,.35),transparent),
+  radial-gradient(1px 1px at 35% 75%,rgba(255,255,255,.3),transparent),
+  radial-gradient(1.5px 1.5px at 90% 40%,rgba(255,209,102,.35),transparent),
+  radial-gradient(.6px .6px at 10% 90%,rgba(72,202,228,.4),transparent);}
 
-.section{max-width:720px;margin:0 auto;padding:16px 20px;}
-.section h2{font-size:clamp(.95rem,2.2vw,1.25rem);font-weight:800;color:#FFD166;margin-bottom:10px;
-  text-shadow:0 0 12px rgba(255,209,102,.3);}
+header{position:sticky;top:0;z-index:10;text-align:center;padding:10px 12px 6px;
+  background:linear-gradient(180deg,rgba(5,10,26,.97) 60%,rgba(5,10,26,.85));}
+header h1{font-size:clamp(.95rem,2.6vw,1.35rem);font-weight:800;color:#FFD166;
+  text-shadow:0 0 16px rgba(255,209,102,.3);}
+header .sub{font-family:'Cousine',monospace;font-size:clamp(.42rem,.7vw,.52rem);color:#48cae4;opacity:.4;}
+.nav-links{margin-top:3px;display:flex;gap:4px;justify-content:center;flex-wrap:wrap;}
+.nav-links a{font-family:'Cousine',monospace;font-size:clamp(.4rem,.6vw,.48rem);padding:1px 6px;
+  border:1px solid rgba(72,202,228,.15);border-radius:10px;color:rgba(72,202,228,.5);}
 
-/* INPUT AREA */
-.input-area{background:rgba(0,0,0,.35);border:1px solid rgba(72,202,228,.15);border-radius:18px;
-  padding:18px;display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:16px;}
-.input-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;}
-.input-row label{font-size:.85rem;font-weight:700;color:#FFD166;}
-.input-row input{width:80px;padding:6px 10px;border-radius:12px;border:2px solid rgba(72,202,228,.3);
-  background:rgba(0,0,0,.5);color:#fff;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;text-align:center;
-  transition:border-color .2s;}
-.input-row input:focus{outline:none;border-color:#FFD166;}
-.input-row select{padding:6px 10px;border-radius:12px;border:2px solid rgba(72,202,228,.3);
-  background:rgba(0,0,0,.5);color:#fff;font-family:'Baloo 2',cursive;font-size:.85rem;
-  cursor:pointer;transition:border-color .2s;appearance:auto;}
-.input-row select:focus{outline:none;border-color:#FFD166;}
-.calc-btn{padding:8px 24px;border-radius:24px;border:2px solid #FFD166;background:rgba(255,209,102,.1);
-  color:#FFD166;font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;cursor:pointer;
-  transition:all .25s;letter-spacing:.04em;}
-.calc-btn:hover{background:rgba(255,209,102,.2);transform:translateY(-2px);box-shadow:0 4px 16px rgba(255,209,102,.2);}
+.wrap{position:relative;z-index:1;max-width:540px;margin:0 auto;padding:8px 12px 40px;}
 
-/* RESULTS */
-.results{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px;}
-.planet-result{background:rgba(0,0,0,.3);border:1.5px solid var(--pc,rgba(255,255,255,.08));
-  border-radius:16px;padding:14px 12px;text-align:center;transition:all .3s;cursor:default;
-  position:relative;overflow:hidden;}
-.planet-result::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:var(--pc,#444);opacity:.5;}
-.planet-result:hover{transform:translateY(-3px);border-color:var(--pc,#FFD166);
-  box-shadow:0 6px 20px rgba(0,0,0,.4);}
-.pr-emoji{font-size:2rem;line-height:1;margin-bottom:4px;}
-.pr-name{font-size:.85rem;font-weight:800;color:var(--pc,#FFD166);}
-.pr-age{font-size:1.6rem;font-weight:800;color:#fff;margin:4px 0;line-height:1.1;}
-.pr-age-unit{font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.4);}
-.pr-weight{font-family:'Cousine',monospace;font-size:.85rem;font-weight:700;color:#48cae4;margin:4px 0;}
-.pr-year{font-family:'Cousine',monospace;font-size:.52rem;color:rgba(255,255,255,.3);margin-top:4px;line-height:1.4;}
-.pr-fun{font-size:.6rem;color:rgba(255,209,102,.5);font-style:italic;margin-top:6px;line-height:1.4;}
-.pr-gravity-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.06);margin:6px 0 2px;position:relative;overflow:hidden;}
-.pr-gravity-fill{height:100%;border-radius:3px;background:var(--pc,#48cae4);transition:width .6s ease;}
-.pr-gravity-label{font-family:'Cousine',monospace;font-size:.48rem;color:rgba(255,255,255,.3);display:flex;justify-content:space-between;}
+/* ── INPUT SECTION ── */
+.input-section{background:rgba(0,0,0,.3);border:1.5px solid rgba(255,209,102,.12);border-radius:18px;
+  padding:14px 16px;margin-bottom:12px;text-align:center;}
+.input-section h2{font-size:clamp(.85rem,2vw,1.05rem);font-weight:800;color:#FFD166;margin-bottom:10px;}
+.input-grid{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;}
+.inp-group{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.inp-group label{font-size:clamp(.55rem,.85vw,.65rem);font-weight:700;color:#48cae4;}
+.inp-group input{width:70px;padding:8px;border-radius:14px;border:2px solid rgba(72,202,228,.2);
+  background:rgba(0,0,0,.5);color:#fff;font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;
+  text-align:center;}
+.inp-group input:focus{outline:none;border-color:#FFD166;}
+.inp-unit{font-family:'Cousine',monospace;font-size:clamp(.42rem,.6vw,.48rem);color:rgba(255,255,255,.3);}
 
-/* EXPLANATION */
-.explain{margin-top:16px;padding:14px;background:rgba(3,10,30,.8);border:1px solid rgba(72,202,228,.15);
-  border-radius:14px;font-size:.72rem;line-height:1.65;color:#a0c4e8;}
-.explain h3{color:#FFD166;font-size:.85rem;margin-bottom:6px;}
-.note{font-family:'Cousine',monospace;font-size:.62rem!important;color:#48cae4!important;opacity:.7;
-  padding:6px 10px;border-left:3px solid rgba(72,202,228,.3);margin:8px 0;background:rgba(72,202,228,.04);border-radius:0 8px 8px 0;}
+/* ── PLANET SELECTOR ── */
+.planet-selector{margin-bottom:12px;}
+.planet-selector h3{font-size:clamp(.7rem,1.3vw,.82rem);font-weight:700;color:rgba(255,255,255,.4);
+  text-align:center;margin-bottom:8px;}
+.planet-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.pbtn{display:flex;flex-direction:column;align-items:center;gap:1px;
+  padding:6px 4px;border-radius:14px;border:2px solid transparent;
+  background:rgba(0,0,0,.25);cursor:pointer;transition:all .25s;min-width:52px;position:relative;}
+.pbtn:active{transform:scale(.93);}
+.pbtn.active{border-color:var(--c);background:rgba(255,255,255,.06);
+  box-shadow:0 0 12px color-mix(in srgb,var(--c) 30%,transparent);}
+.pbtn-dot{width:clamp(22px,5vw,30px);height:clamp(22px,5vw,30px);border-radius:50%;
+  background:var(--c);box-shadow:0 0 8px color-mix(in srgb,var(--c) 40%,transparent);
+  display:flex;align-items:center;justify-content:center;font-size:clamp(11px,2.2vw,15px);position:relative;}
+.pbtn-ring{position:absolute;inset:-3px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--c) 25%,transparent);}
+.pbtn-name{font-size:clamp(.42rem,.7vw,.5rem);font-weight:700;color:rgba(255,255,255,.5);
+  text-align:center;line-height:1.1;max-width:56px;}
+.pbtn.active .pbtn-name{color:var(--c);}
+.sep{width:1px;height:28px;background:rgba(255,255,255,.06);margin:0 2px;align-self:center;}
 
-footer{text-align:center;padding:20px 16px 30px;font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.2);}
+/* ── RESULT AREA ── */
+.result-area{min-height:200px;}
+
+/* Balance */
+.balance-wrap{background:rgba(0,0,0,.25);border:1.5px solid rgba(255,209,102,.1);border-radius:18px;
+  padding:12px;margin-bottom:10px;}
+.balance-title{text-align:center;font-size:clamp(.6rem,1vw,.72rem);font-weight:700;color:rgba(255,255,255,.3);margin-bottom:4px;}
+canvas#balanceCanvas{width:100%;height:auto;display:block;}
+
+/* Bars */
+.bars-wrap{background:rgba(0,0,0,.25);border:1.5px solid rgba(72,202,228,.1);border-radius:18px;
+  padding:14px;margin-bottom:10px;}
+.bars-title{text-align:center;font-size:clamp(.6rem,1vw,.72rem);font-weight:700;color:rgba(255,255,255,.3);margin-bottom:8px;}
+.bars-container{display:flex;align-items:flex-end;justify-content:center;gap:16px;height:clamp(120px,25vw,180px);}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;max-width:100px;}
+.bar-value{font-size:clamp(.8rem,1.5vw,1rem);font-weight:800;text-align:center;white-space:nowrap;}
+.bar-track{width:clamp(40px,10vw,60px);height:clamp(90px,20vw,140px);background:rgba(255,255,255,.04);
+  border-radius:12px;border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;}
+.bar-fill{width:100%;border-radius:10px;transition:height .6s cubic-bezier(.34,1.56,.64,1);min-height:6px;position:relative;}
+.bar-icon{position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:clamp(14px,3vw,20px);
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.5));}
+.bar-label{font-size:clamp(.6rem,1vw,.72rem);font-weight:800;text-align:center;}
+.bars-mult{font-family:'Cousine',monospace;font-size:clamp(.7rem,1.2vw,.85rem);font-weight:700;
+  color:rgba(255,209,102,.5);align-self:center;white-space:nowrap;min-width:50px;text-align:center;}
+
+/* Age / cakes */
+.age-wrap{background:rgba(0,0,0,.25);border:1.5px solid rgba(72,202,228,.1);border-radius:18px;
+  padding:12px;margin-bottom:10px;}
+.age-title{text-align:center;font-size:clamp(.65rem,1.1vw,.78rem);font-weight:700;color:rgba(255,255,255,.35);margin-bottom:6px;}
+.age-big{text-align:center;font-size:clamp(2rem,6vw,3.5rem);font-weight:800;color:#FFD166;line-height:1;}
+.age-unit{text-align:center;font-size:clamp(.6rem,1vw,.75rem);color:rgba(255,255,255,.4);font-weight:600;}
+.cake-row{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin-top:8px;min-height:28px;}
+.cake{font-size:clamp(16px,3.5vw,24px);transition:all .3s;animation:cakePop .3s ease-out;}
+.cake.dim{opacity:.3;filter:grayscale(1);}
+@keyframes cakePop{0%{transform:scale(0);opacity:0;}70%{transform:scale(1.2);}100%{transform:scale(1);opacity:1;}}
+.age-note{text-align:center;font-family:'Cousine',monospace;font-size:clamp(.45rem,.72vw,.52rem);
+  color:rgba(255,255,255,.25);margin-top:6px;line-height:1.4;}
+
+/* Info card */
+.info-card{background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.06);border-radius:18px;
+  padding:14px 16px;margin-bottom:10px;}
+.info-card .ic-name{font-size:clamp(1.1rem,2.2vw,1.4rem);font-weight:800;margin-bottom:6px;}
+.info-card .ic-fun{font-size:clamp(.7rem,1.1vw,.82rem);color:rgba(255,209,102,.55);font-style:italic;line-height:1.5;margin-bottom:8px;}
+.info-card .ic-fact{font-family:'Cousine',monospace;font-size:clamp(.52rem,.8vw,.6rem);
+  color:rgba(150,200,255,.35);margin-top:8px;line-height:1.5;}
+.info-card .ic-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;margin-bottom:8px;}
+.info-card .ic-stat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);border-radius:10px;
+  padding:6px 8px;text-align:center;}
+.info-card .ic-stat-label{display:block;font-family:'Cousine',monospace;font-size:clamp(.4rem,.6vw,.45rem);
+  color:rgba(255,255,255,.25);margin-bottom:2px;}
+.info-card .ic-stat-val{display:block;font-size:clamp(.75rem,1.2vw,.9rem);font-weight:800;color:#FFD166;}
+
+/* Gravity bar */
+.gbar-wrap{margin-top:8px;}
+.gbar-label{font-family:'Cousine',monospace;font-size:clamp(.42rem,.65vw,.48rem);color:rgba(255,255,255,.25);
+  display:flex;justify-content:space-between;margin-bottom:2px;}
+.gbar{height:8px;border-radius:4px;background:rgba(255,255,255,.05);overflow:hidden;}
+.gbar-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+
+/* Note */
+.sci-note{font-family:'Cousine',monospace;font-size:clamp(.42rem,.65vw,.48rem);color:rgba(150,200,255,.25);
+  padding:8px 10px;border-left:2px solid rgba(72,202,228,.2);margin:10px 0;line-height:1.5;
+  background:rgba(72,202,228,.02);border-radius:0 8px 8px 0;}
+
+footer{text-align:center;padding:16px 12px 30px;font-family:'Cousine',monospace;
+  font-size:clamp(.4rem,.6vw,.45rem);color:rgba(255,255,255,.15);}
 </style>
 </head>
 <body>
-
 <header>
-  <h1>🪐 Calcolatore Planetario</h1>
-  <p>Quanti anni avresti e quanto peseresti sugli altri pianeti?</p>
+  <h1>Calcolatore Planetario</h1>
+  <div class="sub">Quanto pesi e quanti anni hai sugli altri mondi?</div>
   <div class="nav-links">
-    <a href="universo_interattivo.html">🌌 Universo</a>
-    <a href="luce_colori.html">🌈 Luce e Colori</a>
+    <a href="index.html">Home</a>
+    <a href="universo_interattivo.html">Universo</a>
+    <a href="luce_colori.html">Luce</a>
+    <a href="compleanno_orbitale.html">Compleanno</a>
   </div>
 </header>
 
-<div class="section">
-  <h2>🎂 Inserisci i tuoi dati</h2>
-  
-  <div class="input-area">
-    <div class="input-row">
-      <label>Età:</label>
-      <input type="number" id="inAge" min="1" max="120" value="5" inputmode="numeric">
-      <label>anni terrestri</label>
+<div class="wrap">
+  <div class="input-section">
+    <h2>I tuoi dati</h2>
+    <div class="input-grid">
+      <div class="inp-group">
+        <label>Peso</label>
+        <input type="number" id="inW" min="1" max="300" value="20" inputmode="numeric">
+        <span class="inp-unit">kg</span>
+      </div>
+      <div class="inp-group">
+        <label>Et&#xE0;</label>
+        <input type="number" id="inA" min="1" max="120" value="5" inputmode="numeric">
+        <span class="inp-unit">anni</span>
+      </div>
     </div>
-    <div class="input-row">
-      <label>Peso:</label>
-      <input type="number" id="inWeight" min="1" max="300" value="20" inputmode="numeric">
-      <label>kg sulla Terra</label>
-    </div>
-    <button class="calc-btn" id="calcBtn">🚀 Calcola!</button>
   </div>
-  
-  <div class="results" id="results"></div>
-  
-  <div class="explain" id="explain" style="display:none">
-    <h3>📚 Come funziona?</h3>
-    <p><b>Età su un pianeta</b> = la tua età terrestre divisa per la durata dell'anno di quel pianeta. 
-    Ad esempio: se hai 5 anni sulla Terra e l'anno di Giove dura 11,86 anni terrestri, 
-    su Giove avresti solo <b>5 ÷ 11,86 = 0,42 anni</b> — meno di mezzo compleanno gioviano!</p>
-    <p style="margin-top:8px"><b>Peso su un pianeta</b> = il tuo peso terrestre × la gravità di quel pianeta rispetto alla Terra. 
-    La gravità dipende dalla <b>massa</b> e dalla <b>dimensione</b> del pianeta. 
-    Giove è enorme → gravità forte → pesi di più. La Luna è piccola → gravità debole → pesi di meno.</p>
+
+  <div class="planet-selector">
+    <h3>Scegli un mondo</h3>
+    <div class="planet-grid" id="planetGrid"></div>
   </div>
-  
-  <div class="note" style="margin-top:12px">
-    ⚠️ <b>Nota scientifica:</b> Il "peso" è una forza (si misura in Newton), non una massa. 
-    La tua <b>massa</b> (quantità di materia) resta uguale ovunque! 
-    Quello che cambia è la <b>forza di gravità</b> che ti attira verso il suolo del pianeta.
-    Qui usiamo "kg" per semplicità, ma il peso vero si calcola: Peso = massa × gravità.
+
+  <div class="result-area" id="resultArea"></div>
+
+  <div class="sci-note">
+    Il "peso" dipende dalla gravit&#xE0;: la tua massa (quantit&#xE0; di materia) resta uguale ovunque!
+    Qui usiamo "kg" per semplicit&#xE0;. Dati: NASA Planetary Fact Sheets, Exoplanet Archive.
   </div>
 </div>
 
 <footer>
-  <p>✦ Col Naso all'Insù — Scuola dell'Infanzia Fratello Sole, Rivotorto di Assisi ✦</p>
-  <p>Progetto di Mario Mele — IC Assisi 1</p>
+  Col Naso all'Ins&#xF9; &#x2014; Scuola dell'Infanzia Fratello Sole, Rivotorto di Assisi<br>
+  Progetto di Mario Mele &#x2014; IC Assisi 1
 </footer>
 
 <script>
 'use strict';
 
-// ═══════════════════════════════════════════════════
-// REAL ASTRONOMICAL DATA
-// Orbital periods: NASA Planetary Fact Sheets
-// Surface gravity relative to Earth (g_planet / g_earth)
-// ═══════════════════════════════════════════════════
-const PLANETS = [
-  { name: 'Mercurio', emoji: '⚫', col: '#a8a8a8',
-    yearDays: 87.97,     // Orbital period in Earth days
-    yearEarth: 0.2408,   // Orbital period in Earth years
-    gRatio: 0.378,       // Surface gravity / Earth gravity
-    radius_km: 2439.7,
-    fun: 'Un giorno su Mercurio (176 gg terrestri) dura PIÙ di un anno mercuriano! 🤯',
-    fact: 'Temperatura: da -173°C di notte a +427°C di giorno' },
-  { name: 'Venere', emoji: '🌕', col: '#e8c86a',
-    yearDays: 224.7,
-    yearEarth: 0.6152,
-    gRatio: 0.907,
-    radius_km: 6051.8,
-    fun: 'Venere ruota al contrario! Il Sole sorge a Ovest. ↩️',
-    fact: 'Il pianeta più caldo: 462°C per effetto serra estremo' },
-  { name: 'Terra', emoji: '🌍', col: '#4a9eff',
-    yearDays: 365.25,
-    yearEarth: 1.0,
-    gRatio: 1.0,
-    radius_km: 6371,
-    fun: 'Casa nostra! Il riferimento per tutte le misure. 🏠',
-    fact: 'L\'unico pianeta con acqua liquida in superficie' },
-  { name: 'Luna', emoji: '🌙', col: '#c8c8c8',
-    yearDays: 365.25,  // Orbits Sun with Earth
-    yearEarth: 1.0,     // Same year as Earth (orbits Sun together)
-    gRatio: 0.166,      // 1/6 of Earth
-    radius_km: 1737.4,
-    fun: 'Pesa come 6 volte di meno! Potresti saltare altissimo! 🦘',
-    fact: 'Distanza dalla Terra: 384.400 km. Orbita lunare: 27,3 giorni',
-    isMoon: true },
-  { name: 'Marte', emoji: '🔴', col: '#c1440e',
-    yearDays: 687.0,
-    yearEarth: 1.8808,
-    gRatio: 0.377,
-    radius_km: 3389.5,
-    fun: 'Ha il Monte Olimpo: 22 km di altezza (3× l\'Everest)! 🏔️',
-    fact: 'Un giorno marziano (sol) dura 24h 37min' },
-  { name: 'Giove', emoji: '🟠', col: '#c88b3a',
-    yearDays: 4332.59,
-    yearEarth: 11.862,
-    gRatio: 2.528,
-    radius_km: 69911,
-    fun: 'Piove diamanti! Ha una tempesta (Grande Macchia Rossa) grande 2 volte la Terra! 💎',
-    fact: 'Ha 95 lune confermate. 11× il diametro della Terra' },
-  { name: 'Saturno', emoji: '🪐', col: '#e4d191',
-    yearDays: 10759.22,
-    yearEarth: 29.457,
-    gRatio: 1.065,
-    radius_km: 58232,
-    fun: 'I suoi anelli sono fatti di miliardi di pezzi di ghiaccio! 🧊',
-    fact: 'Così poco denso che galleggerebbe sull\'acqua (se esistesse un oceano così grande)' },
-  { name: 'Urano', emoji: '🔵', col: '#7de8e8',
-    yearDays: 30688.5,
-    yearEarth: 84.011,
-    gRatio: 0.886,
-    radius_km: 25362,
-    fun: 'Ruota su un fianco — inclinato di 98°! 42 anni di sole, 42 di buio per polo. 🌀',
-    fact: 'Temperatura: -224°C. Scoperto nel 1781 da William Herschel' },
-  { name: 'Nettuno', emoji: '🌀', col: '#4b70dd',
-    yearDays: 60195.0,
-    yearEarth: 164.79,
-    gRatio: 1.137,
-    radius_km: 24622,
-    fun: 'Venti a 2.100 km/h — i più veloci del Sistema Solare! 🌪️',
-    fact: 'Non ha completato un\'orbita da quando fu scoperto nel 1846' },
-  { name: 'Sole', emoji: '☀️', col: '#ffcc00',
-    yearDays: null,  // Not a planet
-    yearEarth: null,
-    gRatio: 27.94,   // Surface gravity
-    radius_km: 695700,
-    fun: 'La sua gravità è così forte che peseresti quasi 28 volte di più! Non potresti stare in piedi. 🫠',
-    fact: '99,86% della massa di tutto il Sistema Solare',
-    isStar: true },
+const BODIES=[
+  // Sistema Solare
+  {id:'mercury',name:'Mercurio',col:'#a8a8a8',g:.378,yearE:.2408,yearD:87.97,r:2440,
+   icon:'Me',fun:'Un giorno dura pi\u00f9 di un anno! Temperatura: da -173\u00b0C a +427\u00b0C',
+   fact:'Pianeta pi\u00f9 vicino al Sole, senza atmosfera',group:'solar'},
+  {id:'venus',name:'Venere',col:'#e8c86a',g:.907,yearE:.6152,yearD:224.7,r:6052,
+   icon:'Ve',fun:'Ruota al contrario! Il Sole sorge a Ovest. 462\u00b0C per effetto serra estremo',
+   fact:'Dimensioni simili alla Terra ma invivibile',group:'solar'},
+  {id:'earth',name:'Terra',col:'#4a9eff',g:1,yearE:1,yearD:365.25,r:6371,
+   icon:'\u{1F30D}',fun:'Casa nostra! L\'unico pianeta con acqua liquida in superficie',
+   fact:'Riferimento: gravit\u00e0 = 1g, anno = 365,25 giorni',group:'solar',isRef:true},
+  {id:'moon',name:'Luna',col:'#c8c8c8',g:.166,yearE:1,yearD:365.25,r:1737,
+   icon:'\u{1F319}',fun:'1/6 della gravit\u00e0 terrestre \u2014 salteresti 6 volte pi\u00f9 in alto!',
+   fact:'Orbita la Terra in 27,3 giorni. Distanza: 384.400 km',group:'solar',isMoon:true},
+  {id:'mars',name:'Marte',col:'#c1440e',g:.377,yearE:1.881,yearD:687,r:3390,
+   icon:'Ma',fun:'Ha il Monte Olimpo: 22 km (3\u00d7 l\'Everest)! Un giorno dura 24h37m',
+   fact:'Il pianeta rosso \u2014 ossido di ferro nel suolo',group:'solar'},
+  {id:'jupiter',name:'Giove',col:'#c88b3a',g:2.528,yearE:11.86,yearD:4333,r:69911,
+   icon:'Gi',fun:'Piove diamanti! La Grande Macchia Rossa \u00e8 grande 2\u00d7 la Terra',
+   fact:'Il pi\u00f9 grande: 11\u00d7 il diametro terrestre, 95 lune',group:'solar'},
+  {id:'saturn',name:'Saturno',col:'#e4d191',g:1.065,yearE:29.46,yearD:10759,r:58232,
+   icon:'Sa',fun:'Gli anelli sono miliardi di pezzi di ghiaccio! Galleggerebbe sull\'acqua',
+   fact:'146 lune confermate. Anelli larghi 282.000 km',group:'solar'},
+  {id:'uranus',name:'Urano',col:'#7de8e8',g:.886,yearE:84.01,yearD:30689,r:25362,
+   icon:'Ur',fun:'Ruota su un fianco (98\u00b0)! 42 anni di sole, 42 di buio per polo',
+   fact:'Scoperto nel 1781. Temperatura: -224\u00b0C',group:'solar'},
+  {id:'neptune',name:'Nettuno',col:'#4b70dd',g:1.137,yearE:164.8,yearD:60195,r:24622,
+   icon:'Ne',fun:'Venti a 2.100 km/h \u2014 i pi\u00f9 veloci del Sistema Solare!',
+   fact:'Non ha completato un\'orbita dalla scoperta (1846)',group:'solar'},
+  // Extra
+  {id:'ceres',name:'Cerere',col:'#8a8a7a',g:.029,yearE:4.6,yearD:1682,r:473,
+   icon:'Ce',fun:'Pianeta nano nella fascia degli asteroidi. Gravit\u00e0 bassissima: salteresti 35\u00d7 pi\u00f9 in alto!',
+   fact:'Scoperto nel 1801. Ha acqua ghiacciata sotto la superficie',group:'extra'},
+  {id:'titan',name:'Titano',col:'#d4a54a',g:.138,yearE:29.46,yearD:10759,r:2575,
+   icon:'Ti',fun:'Luna di Saturno con atmosfera densa e laghi di metano liquido!',
+   fact:'L\'unica luna con atmosfera spessa. Piove metano!',group:'extra'},
+  {id:'trappist',name:'TRAPPIST-1e',col:'#e07050',g:.93,yearE:.0167,yearD:6.1,r:5797,
+   icon:'Tr',fun:'Esopianeta a 40 anni luce! Un anno dura solo 6 giorni \u2014 avresti centinaia di compleanni!',
+   fact:'Nella zona abitabile della stella TRAPPIST-1. Simile alla Terra',group:'exo'},
+  {id:'kepler',name:'Kepler-442b',col:'#66aa88',g:1.3,yearE:.3075,yearD:112.3,r:8347,
+   icon:'Ke',fun:'Super-Terra a 1.206 anni luce! Gravit\u00e0 1,3\u00d7 la Terra \u2014 ti sentiresti pi\u00f9 pesante',
+   fact:'Zona abitabile. Potrebbe avere acqua liquida e vita!',group:'exo'},
+  {id:'neutron',name:'Stella di neutroni',col:'#e0e0ff',g:2e11,yearE:null,yearD:null,r:10,
+   icon:'\u{2605}',fun:'Gravit\u00e0 200 MILIARDI di volte la Terra! Un cucchiaino pesa 6 miliardi di tonnellate',
+   fact:'Resto di una supernova. Diametro ~20 km, massa 1,4\u00d7 il Sole',group:'exo',noAge:true},
 ];
 
-const results = document.getElementById('results');
-const explain = document.getElementById('explain');
+let selected='earth';
+const grid=document.getElementById('planetGrid');
+const area=document.getElementById('resultArea');
 
-function calculate() {
-  const age = parseFloat(document.getElementById('inAge').value) || 5;
-  const weight = parseFloat(document.getElementById('inWeight').value) || 20;
-  
-  results.innerHTML = '';
-  explain.style.display = 'block';
-  
-  const ageDays = age * 365.25;
-  
-  PLANETS.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'planet-result';
-    card.style.setProperty('--pc', p.col);
-    
-    // Calculate age on this planet
-    let ageStr = '', ageUnit = '', yearInfo = '';
-    if (p.isStar) {
-      ageStr = '—';
-      ageUnit = 'non è un pianeta!';
-      yearInfo = 'Il Sole è una stella';
-    } else if (p.isMoon) {
-      const ageOnMoon = age; // Same as Earth year
-      const moonOrbits = ageDays / 27.3; // Number of lunar months lived
-      ageStr = ageOnMoon.toFixed(1);
-      ageUnit = 'anni (= Terra)';
-      yearInfo = `Ma hai vissuto ${Math.floor(moonOrbits)} orbite lunari!`;
-    } else {
-      const ageOnPlanet = age / p.yearEarth;
-      if (ageOnPlanet < 0.01) {
-        ageStr = (ageOnPlanet * 365.25).toFixed(0);
-        ageUnit = 'giorni ' + p.name.toLowerCase() + 'iani';
-      } else if (ageOnPlanet < 1) {
-        ageStr = (ageOnPlanet * 12).toFixed(1);
-        ageUnit = 'mesi ' + p.name.toLowerCase() + 'iani';
-      } else {
-        ageStr = ageOnPlanet.toFixed(ageOnPlanet >= 10 ? 0 : ageOnPlanet >= 1 ? 1 : 2);
-        ageUnit = 'anni ' + p.name.toLowerCase() + 'iani';
-      }
-      yearInfo = `1 anno = ${p.yearDays < 365 ? p.yearDays.toFixed(0) + ' gg' : p.yearEarth.toFixed(1) + ' anni'} terrestri`;
-    }
-    
-    // Calculate weight
-    const weightOnPlanet = (weight * p.gRatio).toFixed(1);
-    const gravPercent = Math.min(100, (p.gRatio / 2.6) * 100); // Scale bar max ~2.6g (Jupiter)
-    
-    // Birthday count (how many birthdays would you have celebrated)
-    let bdayNote = '';
-    if (!p.isStar && !p.isMoon) {
-      const bdays = Math.floor(age / p.yearEarth);
-      if (bdays === 0) bdayNote = `🎂 Nemmeno 1 compleanno!`;
-      else if (bdays === 1) bdayNote = `🎂 Solo 1 compleanno!`;
-      else bdayNote = `🎂 ${bdays} compleanni!`;
-    }
-    
-    card.innerHTML = `
-      <div class="pr-emoji">${p.emoji}</div>
-      <div class="pr-name">${p.name}</div>
-      ${!p.isStar ? `<div class="pr-age">${ageStr}</div>
-      <div class="pr-age-unit">${ageUnit}</div>` : ''}
-      <div class="pr-weight">⚖️ ${weightOnPlanet} kg</div>
-      <div class="pr-gravity-bar"><div class="pr-gravity-fill" style="width:${gravPercent}%"></div></div>
-      <div class="pr-gravity-label"><span>Gravità: ${p.gRatio.toFixed(2)}g</span><span>${(p.gRatio * 100).toFixed(0)}% Terra</span></div>
-      <div class="pr-year">${yearInfo}</div>
-      ${bdayNote ? `<div class="pr-year" style="color:rgba(255,209,102,.45)">${bdayNote}</div>` : ''}
-      <div class="pr-fun">${p.fun}</div>
-    `;
-    
-    results.appendChild(card);
+// Build planet buttons
+let lastGroup='';
+BODIES.forEach(b=>{
+  if(lastGroup&&lastGroup!==b.group){const s=document.createElement('div');s.className='sep';grid.appendChild(s);}
+  lastGroup=b.group;
+  const btn=document.createElement('div');
+  btn.className='pbtn'+(b.id===selected?' active':'');
+  btn.style.setProperty('--c',b.col);
+  btn.dataset.id=b.id;
+  btn.innerHTML=`<div class="pbtn-dot">${b.icon}<div class="pbtn-ring"></div></div><div class="pbtn-name">${b.name}</div>`;
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.pbtn').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');selected=b.id;update();
   });
-  
-  // Animate gravity bars
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.pr-gravity-fill').forEach(el => {
-      el.style.width = el.style.width; // trigger reflow
-    });
-  });
-}
-
-document.getElementById('calcBtn').addEventListener('click', calculate);
-// Also calculate on Enter key
-document.querySelectorAll('#inAge, #inWeight').forEach(el => {
-  el.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+  grid.appendChild(btn);
 });
 
-// Auto-calculate on load
-calculate();
+// Input listeners
+document.getElementById('inW').addEventListener('input',update);
+document.getElementById('inA').addEventListener('input',update);
+
+function update(){
+  const w=parseFloat(document.getElementById('inW').value)||20;
+  const a=parseFloat(document.getElementById('inA').value)||5;
+  const b=BODIES.find(x=>x.id===selected);
+  if(!b)return;
+
+  const wPlanet=b.g*w;
+  const wEarth=w;
+
+  // Age calculation
+  let ageVal=null,ageUnit='',ageNote='',cakes=0;
+  if(b.noAge){
+    ageUnit='Non orbita una stella!';
+  }else if(b.isMoon){
+    ageVal=a;ageUnit='anni (come sulla Terra)';
+    const moonOrbits=Math.floor(a*365.25/27.3);
+    ageNote=moonOrbits+' orbite lunari completate!';
+    cakes=Math.min(a,50);
+  }else{
+    const ageOnP=a/b.yearE;
+    cakes=Math.min(Math.floor(ageOnP),200);
+    if(ageOnP>=1000){ageVal=Math.floor(ageOnP);ageUnit='anni!';
+    }else if(ageOnP>=1){ageVal=+ageOnP.toFixed(ageOnP>=10?0:1);ageUnit='anni';
+    }else if(ageOnP*12>=1){ageVal=+(ageOnP*12).toFixed(1);ageUnit='mesi';cakes=0;
+    }else{ageVal=+(ageOnP*365.25).toFixed(0);ageUnit='giorni';cakes=0;}
+    if(!b.isRef){
+      ageNote='1 anno = '+(b.yearD<365?(b.yearD<1?b.yearD.toFixed(1):Math.round(b.yearD))+' giorni terrestri':b.yearE.toFixed(b.yearE<1?3:1)+' anni terrestri');
+    }
+  }
+
+  // Format weight label
+  function fmtW(v){
+    if(v>=1e12)return(v/1e12).toFixed(0)+' T kg';
+    if(v>=1e9)return(v/1e9).toFixed(0)+' G kg';
+    if(v>=1e6)return(v/1e6).toFixed(0)+' M kg';
+    if(v>=1e3)return(v/1e3).toFixed(0)+'k kg';
+    return v.toFixed(v>=10?0:1)+' kg';
+  }
+
+  let html='';
+
+  // ── BARS VISUALIZATION ──
+  html+=`<div class="bars-wrap"><div class="bars-title">Peso: Terra vs ${b.name}</div>
+    <div class="bars-container">
+      <div class="bar-col">
+        <div class="bar-value" style="color:#4a9eff">${fmtW(wEarth)}</div>
+        <div class="bar-track"><div class="bar-fill" id="barEarth" style="background:linear-gradient(0deg,#1060dd,#4a9eff);height:0%"></div>
+          <div class="bar-icon" id="barIconE">&#x1F30D;</div></div>
+        <div class="bar-label" style="color:#4a9eff">Terra</div>
+      </div>
+      <div class="bars-mult" id="barsMult"></div>
+      <div class="bar-col">
+        <div class="bar-value" style="color:${b.col}">${fmtW(wPlanet)}</div>
+        <div class="bar-track"><div class="bar-fill" id="barPlanet" style="background:linear-gradient(0deg,${b.col}88,${b.col});height:0%"></div>
+          <div class="bar-icon" id="barIconP">${b.icon.length<=2&&!b.icon.match(/[\u2600-\u{1F9FF}]/u)?'':b.icon}</div></div>
+        <div class="bar-label" style="color:${b.col}">${b.name}</div>
+      </div>
+    </div></div>`;
+
+  // ── BALANCE ──
+  html+=`<div class="balance-wrap"><div class="balance-title">Bilancia</div>
+    <canvas id="balanceCanvas" width="500" height="200"></canvas></div>`;
+
+  // ── AGE / CAKES ──
+  if(!b.noAge){
+    html+=`<div class="age-wrap"><div class="age-title">La tua et\u00e0 su ${b.name}</div>`;
+    html+=`<div class="age-big">${ageVal!==null?ageVal:'--'}</div>`;
+    html+=`<div class="age-unit">${ageUnit}</div>`;
+    if(cakes>0){
+      html+=`<div class="cake-row">`;
+      const show=Math.min(cakes,50);
+      for(let i=0;i<show;i++)html+=`<span class="cake" style="animation-delay:${i*40}ms">\u{1F382}</span>`;
+      if(cakes>50)html+=`<span class="cake" style="font-size:12px;align-self:center;color:rgba(255,255,255,.3)">+${cakes-50}</span>`;
+      html+=`</div>`;
+    }else if(!b.noAge&&ageVal!==null&&cakes===0){
+      html+=`<div class="cake-row"><span class="cake dim">\u{1F382}</span></div>`;
+      html+=`<div class="age-note">Nemmeno un compleanno!</div>`;
+    }
+    if(ageNote)html+=`<div class="age-note">${ageNote}</div>`;
+    html+=`</div>`;
+  }
+
+  // ── INFO CARD (bigger) ──
+  const gLabel=b.g>=1e9?(b.g/1e9).toFixed(0)+' miliardi g':b.g>=1000?(b.g/1e3).toFixed(0)+'k g':b.g.toFixed(b.g<.1?3:b.g<10?2:0)+' g';
+  html+=`<div class="info-card">
+    <div class="ic-name" style="color:${b.col}">${b.name}</div>
+    <div class="ic-fun">${b.fun}</div>
+    <div class="ic-stats">
+      <div class="ic-stat"><span class="ic-stat-label">Gravit\u00e0</span><span class="ic-stat-val">${gLabel}</span></div>
+      <div class="ic-stat"><span class="ic-stat-label">% Terra</span><span class="ic-stat-val">${b.g>=1e6?(b.g).toExponential(0):(b.g*100).toFixed(0)}%</span></div>
+      <div class="ic-stat"><span class="ic-stat-label">Raggio</span><span class="ic-stat-val">${b.r>=10000?(b.r/1000).toFixed(0)+'k':b.r.toLocaleString()} km</span></div>
+      ${b.yearD?`<div class="ic-stat"><span class="ic-stat-label">Anno</span><span class="ic-stat-val">${b.yearD<2?b.yearD.toFixed(1)+' gg':b.yearD<365?Math.round(b.yearD)+' gg':b.yearE.toFixed(b.yearE<1?3:1)+' anni T'}</span></div>`:''}
+    </div>
+    <div class="ic-fact">${b.fact}</div>
+    <div class="gbar-wrap"><div class="gbar"><div class="gbar-fill" style="width:${Math.min(100,b.g/(b.g>100?b.g:2.6)*100)}%;background:${b.col}"></div></div></div>
+  </div>`;
+
+  area.innerHTML=html;
+
+  // Animate bars
+  requestAnimationFrame(()=>{
+    const maxW=Math.max(wEarth,wPlanet);
+    const eH=Math.max(8,(wEarth/maxW)*100);
+    const pH=Math.max(8,(wPlanet/maxW)*100);
+    const bE=document.getElementById('barEarth');
+    const bP=document.getElementById('barPlanet');
+    if(bE)bE.style.height=eH+'%';
+    if(bP)bP.style.height=pH+'%';
+    // Multiplier
+    let ratio=wPlanet/Math.max(wEarth,.01);
+    let mt;
+    if(ratio>=1e6)mt=ratio.toExponential(0)+'x';
+    else if(ratio>=100)mt=Math.round(ratio)+'x';
+    else if(ratio>=1)mt=ratio.toFixed(1)+'x';
+    else mt=ratio.toFixed(2)+'x';
+    const bm=document.getElementById('barsMult');
+    if(bm){
+      if(ratio>1)bm.innerHTML=`<span style="color:${b.col}">\u25B6</span> ${mt}`;
+      else if(ratio<1)bm.innerHTML=`${mt} <span style="color:#4a9eff">\u25C0</span>`;
+      else bm.textContent='= 1x';
+    }
+  });
+
+  // Draw balance
+  drawBalance(wEarth,wPlanet,b);
+}
+
+function drawBalance(wE,wP,body){
+  const cv=document.getElementById('balanceCanvas');
+  if(!cv)return;
+  const dpr=window.devicePixelRatio||1;
+  const cw=cv.parentElement.clientWidth-24;
+  const ch=Math.min(190,cw*.44);
+  cv.width=cw*dpr;cv.height=ch*dpr;
+  cv.style.width=cw+'px';cv.style.height=ch+'px';
+  const c=cv.getContext('2d');
+  c.scale(dpr,dpr);
+
+  const cx=cw/2,baseY=ch-12;
+  const pillarH=ch*.52,pillarW=6;
+  const armLen=cw*.36,armH=4;
+
+  // FIXED TILT: heavier side goes DOWN
+  // Left = Earth, Right = Planet
+  // If Planet heavier (ratio>1) → right goes DOWN → positive tilt (arm rotates so right dips)
+  // On canvas: positive angle → right end goes DOWN (y increases)
+  let ratio=wP/Math.max(wE,.01);
+  if(ratio>1e6)ratio=1e6;
+  // Use log scale for visual tilt, clamped to ±22deg
+  let tiltDeg;
+  if(ratio===1)tiltDeg=0;
+  else if(ratio>1)tiltDeg=Math.min(22,Math.log10(ratio)*15);
+  else tiltDeg=Math.max(-22,-Math.log10(1/ratio)*15);
+  const tiltRad=tiltDeg*Math.PI/180;
+
+  const pivotX=cx,pivotY=baseY-pillarH;
+
+  // Base
+  c.fillStyle='rgba(255,255,255,.05)';
+  c.beginPath();c.moveTo(cx-28,baseY);c.lineTo(cx+28,baseY);c.lineTo(cx+7,baseY-7);c.lineTo(cx-7,baseY-7);c.closePath();c.fill();
+  c.fillStyle='rgba(255,255,255,.07)';
+  c.fillRect(cx-pillarW/2,pivotY,pillarW,pillarH);
+
+  // Pivot
+  c.beginPath();c.arc(pivotX,pivotY,5,0,Math.PI*2);c.fillStyle='rgba(255,209,102,.25)';c.fill();
+  c.strokeStyle='rgba(255,209,102,.4)';c.lineWidth=1.2;c.stroke();
+
+  // Arm endpoints: left and right
+  // Positive tiltRad → right end goes down (higher y)
+  const lx=pivotX-armLen;
+  const ly=pivotY-Math.sin(tiltRad)*armLen; // left goes UP when right is heavy
+  const rx=pivotX+armLen;
+  const ry=pivotY+Math.sin(tiltRad)*armLen; // right goes DOWN when right is heavy
+
+  c.beginPath();c.moveTo(lx,ly);c.lineTo(rx,ry);
+  c.strokeStyle='rgba(200,220,255,.25)';c.lineWidth=armH;c.lineCap='round';c.stroke();
+
+  // Chains
+  const chainLen=18;
+  [[lx,ly],[rx,ry]].forEach(([px,py])=>{
+    c.beginPath();c.moveTo(px,py);c.lineTo(px-10,py+chainLen);c.moveTo(px,py);c.lineTo(px+10,py+chainLen);
+    c.strokeStyle='rgba(200,220,255,.12)';c.lineWidth=.8;c.stroke();
+  });
+
+  // Pans
+  const panW=cw*.18;
+  // Left pan (Earth) — position follows arm end
+  c.fillStyle='rgba(74,158,255,.1)';c.strokeStyle='rgba(74,158,255,.25)';c.lineWidth=1.2;
+  c.beginPath();c.ellipse(lx,ly+chainLen+3,panW/2,6,0,0,Math.PI*2);c.fill();c.stroke();
+  // Right pan (Planet)
+  c.fillStyle=body.col+'15';c.strokeStyle=body.col+'40';c.lineWidth=1.2;
+  c.beginPath();c.ellipse(rx,ry+chainLen+3,panW/2,6,0,0,Math.PI*2);c.fill();c.stroke();
+
+  const mob=cw<340;
+  const fs1=mob?11:13,fs3=mob?7:8;
+
+  // Left label
+  c.textAlign='center';
+  c.font=`800 ${fs1}px 'Baloo 2',cursive`;c.fillStyle='#4a9eff';
+  c.fillText(wE.toFixed(wE>=10?0:1)+' kg',lx,ly-6);
+  c.font=`600 ${fs3}px 'Baloo 2',cursive`;c.fillStyle='rgba(74,158,255,.45)';
+  c.fillText('Terra',lx,ly-6-fs1+1);
+
+  // Right label
+  c.font=`800 ${fs1}px 'Baloo 2',cursive`;c.fillStyle=body.col;
+  let wLabel;
+  if(wP>=1e12)wLabel=(wP/1e12).toFixed(0)+'T kg';
+  else if(wP>=1e9)wLabel=(wP/1e9).toFixed(0)+'G kg';
+  else if(wP>=1e6)wLabel=(wP/1e6).toFixed(0)+'M kg';
+  else if(wP>=1e3)wLabel=(wP/1e3).toFixed(0)+'k kg';
+  else wLabel=wP.toFixed(wP>=10?0:1)+' kg';
+  c.fillText(wLabel,rx,ry-6);
+  c.font=`600 ${fs3}px 'Baloo 2',cursive`;c.fillStyle=body.col+'77';
+  c.fillText(body.name,rx,ry-6-fs1+1);
+
+  // Center arrow showing which is heavier
+  const arrowY=pivotY+pillarH*.35;
+  c.font=`700 ${mob?9:11}px 'Cousine',monospace`;c.fillStyle='rgba(255,209,102,.35)';c.textAlign='center';
+  if(ratio>1.01)c.fillText('\u25BC pi\u00f9 pesante \u25B6',pivotX,arrowY);
+  else if(ratio<0.99)c.fillText('\u25C0 pi\u00f9 leggero \u25BC',pivotX,arrowY);
+  else c.fillText('= uguale =',pivotX,arrowY);
+}
+
+// Init
+update();
+// Recalc on resize (for canvas)
+addEventListener('resize',()=>{if(document.getElementById('balanceCanvas'))update();});
 </script>
 </body>
 </html>
