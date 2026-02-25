@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Col Naso all'Insù</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Cousine:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-height:100vh;background:#06081a;color:#e0e8f8;font-family:'Baloo 2',cursive;overflow-x:hidden;}
+
+/* Stars background */
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:radial-gradient(1.2px 1.2px at 20% 30%,rgba(255,255,255,.6),transparent),
+  radial-gradient(1px 1px at 60% 15%,rgba(255,255,255,.5),transparent),
+  radial-gradient(.8px .8px at 80% 60%,rgba(255,255,255,.4),transparent),
+  radial-gradient(1px 1px at 35% 75%,rgba(255,255,255,.35),transparent),
+  radial-gradient(1.5px 1.5px at 90% 40%,rgba(255,209,102,.4),transparent),
+  radial-gradient(.6px .6px at 10% 90%,rgba(72,202,228,.5),transparent),
+  radial-gradient(.7px .7px at 50% 50%,rgba(255,255,255,.3),transparent),
+  radial-gradient(1px 1px at 75% 85%,rgba(255,255,255,.35),transparent),
+  radial-gradient(.9px .9px at 42% 20%,rgba(72,202,228,.4),transparent),
+  radial-gradient(1.1px 1.1px at 15% 55%,rgba(255,209,102,.35),transparent);
+  pointer-events:none;}
+
+.wrap{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:40px 24px 60px;text-align:center;}
+
+h1{font-size:clamp(1.6rem,5vw,2.6rem);font-weight:800;color:#FFD166;
+  text-shadow:0 0 30px rgba(255,209,102,.35);letter-spacing:.04em;line-height:1.2;margin-bottom:4px;}
+.stars-deco{font-size:clamp(1.2rem,3vw,1.8rem);letter-spacing:.3em;opacity:.5;margin-bottom:16px;}
+.subtitle{font-family:'Cousine',monospace;font-size:clamp(.6rem,1.1vw,.78rem);color:#48cae4;opacity:.6;margin-bottom:28px;line-height:1.5;}
+
+.intro{font-size:clamp(.78rem,1.2vw,.92rem);line-height:1.75;color:#a8c0dd;text-align:left;
+  margin-bottom:32px;padding:0 4px;}
+.intro b{color:#e0ecff;}
+.intro em{color:#FFD166;font-style:normal;}
+
+.cards{display:flex;flex-direction:column;gap:14px;margin-bottom:36px;}
+.card{display:flex;align-items:center;gap:16px;padding:18px 20px;
+  background:rgba(0,0,0,.3);border:1.5px solid rgba(255,255,255,.06);border-radius:18px;
+  text-decoration:none;color:inherit;transition:all .3s ease;text-align:left;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac);opacity:.4;}
+.card:hover{transform:translateY(-3px);border-color:var(--ac);
+  box-shadow:0 8px 30px rgba(0,0,0,.4),0 0 20px color-mix(in srgb,var(--ac) 15%,transparent);}
+.card-emoji{font-size:2.2rem;flex-shrink:0;width:50px;text-align:center;}
+.card-text h2{font-size:clamp(.88rem,1.4vw,1.05rem);font-weight:800;color:var(--ac);margin-bottom:3px;}
+.card-text p{font-family:'Cousine',monospace;font-size:clamp(.55rem,.85vw,.65rem);color:rgba(255,255,255,.4);line-height:1.5;}
+
+footer{font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.18);line-height:1.7;text-align:center;}
+footer a{color:rgba(72,202,228,.4);text-decoration:none;}
+footer a:hover{color:#48cae4;text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="stars-deco">✦ ✦ ✦</div>
+  <h1>Col Naso all'Insù</h1>
+  <p class="subtitle">Astrofisica, Cinema e Intelligenza Artificiale per bambini 3–6 anni</p>
+
+  <div class="intro">
+    <em>Col Naso all'Insù</em> è il primo progetto che porta l'<b>astrofisica</b> e l'<b>intelligenza artificiale</b> 
+    nella scuola dell'infanzia. Nato alla <b>Scuola Fratello Sole</b> di Rivotorto di Assisi (IC Assisi 1), 
+    il percorso è ideato e condotto da <b>Mario Mele</b>, esperto di cinematografia, fotografia e AI.
+    <br><br>
+    I bambini esplorano la luce, i colori, i pianeti e le galassie attraverso esperimenti reali, 
+    gioco corporeo e strumenti digitali — trasformando la meraviglia per il cielo in conoscenza 
+    scientifica e creatività condivisa.
+  </div>
+
+  <div class="cards">
+    <a class="card" href="universo_interattivo.html" style="--ac:#FFD166">
+      <div class="card-emoji">🌌</div>
+      <div class="card-text">
+        <h2>Viaggio nell'Universo</h2>
+        <p>Dalla Terra alla Luna, dal Sistema Solare alle galassie — 6 livelli di zoom interattivo con dati reali</p>
+      </div>
+    </a>
+    <a class="card" href="luce_colori.html" style="--ac:#48cae4">
+      <div class="card-emoji">🌈</div>
+      <div class="card-text">
+        <h2>Luce e Colori delle Stelle</h2>
+        <p>Mischia i fasci RGB, scopri perché le stelle hanno colori diversi e esplora lo spettro elettromagnetico</p>
+      </div>
+    </a>
+    <a class="card" href="calcolatore_pianeti.html" style="--ac:#c08aff">
+      <div class="card-emoji">🪐</div>
+      <div class="card-text">
+        <h2>Calcolatore Planetario</h2>
+        <p>Quanti anni avresti su Giove? Quanto peseresti su Marte? Calcola con i dati NASA reali</p>
+      </div>
+    </a>
+    <a class="card" href="compleanno_orbitale.html" style="--ac:#ff7eb3">
+      <div class="card-emoji">🎂</div>
+      <div class="card-text">
+        <h2>Compleanno Orbitale</h2>
+        <p>Guarda la Terra girare intorno al Sole e conta i tuoi anni — ogni giro è un compleanno!</p>
+      </div>
+    </a>
+  </div>
+
+  <footer>
+    <p>✦ Scuola dell'Infanzia Fratello Sole — Rivotorto di Assisi — IC Assisi 1 ✦</p>
+    <p>Progetto di <a href="https://www.mariomele.com" target="_blank">Mario Mele</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

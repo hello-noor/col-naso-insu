@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Col Naso all'Insù – Compleanno Orbitale 🎂</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Cousine:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100vh;overflow:hidden;background:#050a1a;font-family:'Baloo 2',cursive;color:#e0e8f8;}
+a{color:#48cae4;text-decoration:none;}
+
+/* ── HEADER ── */
+header{position:fixed;top:0;left:0;right:0;z-index:10;text-align:center;padding:8px 12px 2px;
+  background:linear-gradient(180deg,rgba(5,10,26,.95) 60%,transparent);}
+header h1{font-size:clamp(1rem,2.8vw,1.5rem);font-weight:800;color:#FFD166;
+  text-shadow:0 0 20px rgba(255,209,102,.4);letter-spacing:.04em;}
+header p{font-family:'Cousine',monospace;font-size:clamp(.48rem,.8vw,.62rem);color:#48cae4;opacity:.5;margin-top:1px;}
+.nav-links{margin-top:4px;display:flex;gap:6px;justify-content:center;}
+.nav-links a{font-family:'Cousine',monospace;font-size:.55rem;padding:2px 8px;
+  border:1px solid rgba(72,202,228,.2);border-radius:12px;color:rgba(72,202,228,.6);transition:all .2s;}
+.nav-links a:hover{background:rgba(72,202,228,.08);border-color:#48cae4;color:#48cae4;text-decoration:none;}
+
+/* ── CANVAS ── */
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;}
+
+/* ── INPUT FORM (overlay) ── */
+#formWrap{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+  background:rgba(5,10,26,.85);backdrop-filter:blur(8px);}
+#formBox{background:rgba(8,16,40,.95);border:2px solid rgba(255,209,102,.25);border-radius:24px;
+  padding:28px 24px;text-align:center;max-width:340px;width:90vw;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);}
+#formBox h2{font-size:1.5rem;font-weight:800;color:#FFD166;margin-bottom:4px;}
+#formBox .sub{font-family:'Cousine',monospace;font-size:.65rem;color:rgba(255,255,255,.35);margin-bottom:16px;line-height:1.5;}
+#formBox .emoji-big{font-size:3rem;margin-bottom:8px;}
+.field{margin-bottom:12px;text-align:left;}
+.field label{display:block;font-size:.75rem;font-weight:700;color:#48cae4;margin-bottom:4px;padding-left:4px;}
+.field input,.field select{width:100%;padding:10px 14px;border-radius:14px;
+  border:2px solid rgba(72,202,228,.2);background:rgba(0,0,0,.4);color:#fff;
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;transition:border-color .2s;}
+.field input:focus,.field select:focus{outline:none;border-color:#FFD166;}
+.field select{appearance:auto;font-size:.9rem;}
+.row2{display:flex;gap:8px;}
+.row2 .field{flex:1;}
+#goBtn{width:100%;padding:12px;border-radius:20px;border:2px solid #FFD166;
+  background:linear-gradient(135deg,rgba(255,209,102,.15),rgba(255,150,50,.1));
+  color:#FFD166;font-family:'Baloo 2',cursive;font-weight:800;font-size:1.2rem;
+  cursor:pointer;transition:all .3s;letter-spacing:.04em;margin-top:4px;}
+#goBtn:hover{background:rgba(255,209,102,.2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,209,102,.2);}
+
+/* ── HUD (heads-up display) ── */
+#hud{position:fixed;bottom:0;left:0;right:0;z-index:10;
+  display:flex;justify-content:center;align-items:center;gap:8px;padding:8px 12px;
+  background:linear-gradient(transparent,rgba(5,10,26,.9) 40%);pointer-events:none;flex-wrap:wrap;}
+.hud-btn{pointer-events:auto;font-family:'Baloo 2',cursive;font-weight:700;font-size:.7rem;
+  border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#c8d8f2;
+  padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .2s;}
+.hud-btn:hover{background:rgba(255,255,255,.1);border-color:#48cae4;color:#48cae4;}
+.hud-btn.on{background:rgba(72,202,228,.14);border-color:#48cae4;color:#48cae4;}
+
+/* ── AGE DISPLAY (big, for children) ── */
+#ageDisplay{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;
+  text-align:center;pointer-events:none;display:none;opacity:0;transition:opacity .4s;}
+#ageDisplay.show{display:block;opacity:1;}
+#ageNum{font-size:clamp(4rem,12vw,8rem);font-weight:800;color:#FFD166;line-height:1;
+  text-shadow:0 0 40px rgba(255,209,102,.4);}
+#ageLabel{font-size:clamp(.9rem,2.2vw,1.3rem);font-weight:700;color:rgba(255,255,255,.6);margin-top:-4px;}
+
+/* ── CELEBRATION OVERLAY ── */
+#celebration{position:fixed;inset:0;z-index:15;pointer-events:none;display:none;}
+#celebration.show{display:block;}
+
+/* ── INFO CARDS ── */
+#infoCards{position:fixed;left:10px;bottom:56px;z-index:8;display:none;pointer-events:none;}
+.info-card{background:rgba(3,10,26,.85);border:1px solid rgba(72,202,228,.15);border-radius:12px;
+  padding:8px 10px;margin-bottom:6px;backdrop-filter:blur(6px);max-width:170px;}
+.info-card .ic-title{font-size:.65rem;font-weight:700;color:#48cae4;margin-bottom:2px;}
+.info-card .ic-val{font-family:'Cousine',monospace;font-size:.85rem;font-weight:700;color:#FFD166;}
+.info-card .ic-sub{font-family:'Cousine',monospace;font-size:.5rem;color:rgba(255,255,255,.3);margin-top:1px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎂 Compleanno Orbitale</h1>
+  <p>Quanti giri intorno al Sole hai fatto?</p>
+  <div class="nav-links">
+    <a href="index.html">🏠 Home</a>
+    <a href="universo_interattivo.html">🌌 Universo</a>
+    <a href="luce_colori.html">🌈 Luce</a>
+    <a href="calcolatore_pianeti.html">🪐 Pianeti</a>
+  </div>
+</header>
+
+<canvas id="c"></canvas>
+
+<!-- INPUT FORM -->
+<div id="formWrap">
+  <div id="formBox">
+    <div class="emoji-big">🌍☀️🎂</div>
+    <h2>Il tuo Compleanno Orbitale</h2>
+    <div class="sub">Ogni volta che la Terra fa un giro completo<br>intorno al Sole, tu compi un anno!</div>
+    <div class="field">
+      <label>👶 Come ti chiami?</label>
+      <input type="text" id="inName" placeholder="Il tuo nome" maxlength="15" autocomplete="off">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>📅 Giorno</label>
+        <input type="number" id="inDay" min="1" max="31" placeholder="GG" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>📅 Mese</label>
+        <select id="inMonth">
+          <option value="">—</option>
+          <option value="1">Gennaio</option><option value="2">Febbraio</option>
+          <option value="3">Marzo</option><option value="4">Aprile</option>
+          <option value="5">Maggio</option><option value="6">Giugno</option>
+          <option value="7">Luglio</option><option value="8">Agosto</option>
+          <option value="9">Settembre</option><option value="10">Ottobre</option>
+          <option value="11">Novembre</option><option value="12">Dicembre</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>📅 Anno</label>
+        <input type="number" id="inYear" min="2015" max="2026" placeholder="AAAA" inputmode="numeric">
+      </div>
+    </div>
+    <button id="goBtn">🚀 Parti!</button>
+  </div>
+</div>
+
+<!-- AGE DISPLAY -->
+<div id="ageDisplay">
+  <div id="ageNum">0</div>
+  <div id="ageLabel">giri intorno al Sole</div>
+</div>
+
+<!-- CELEBRATION -->
+<canvas id="celebration" width="1" height="1"></canvas>
+
+<!-- INFO CARDS -->
+<div id="infoCards">
+  <div class="info-card">
+    <div class="ic-title">☀️ Distanza Terra–Sole</div>
+    <div class="ic-val" id="icDist">~150 M km</div>
+    <div class="ic-sub">cambia durante l'anno!</div>
+  </div>
+  <div class="info-card">
+    <div class="ic-title">🌍 Asse terrestre</div>
+    <div class="ic-val">inclinato 23,5°</div>
+    <div class="ic-sub">per questo esistono le stagioni</div>
+  </div>
+  <div class="info-card">
+    <div class="ic-title">⏱️ Un giro completo</div>
+    <div class="ic-val">365,25 giorni</div>
+    <div class="ic-sub">= 1 anno = 1 compleanno 🎂</div>
+  </div>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <button class="hud-btn" id="btnPause">⏸ Pausa</button>
+  <button class="hud-btn" id="btnSpeed">🚀 Veloce</button>
+  <button class="hud-btn" id="btnReset">🔄 Ricomincia</button>
+</div>
+
+<script>
+'use strict';
+const TAU = Math.PI * 2;
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const celCv = document.getElementById('celebration');
+const celCtx = celCv.getContext('2d');
+
+let W, H, CX, CY;
+function resize() {
+  W = cv.width = celCv.width = window.innerWidth;
+  H = cv.height = celCv.height = window.innerHeight;
+  CX = W / 2; CY = H / 2;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── Utility ──
+function rg(x,y,r1,r2,stops){ const g=ctx.createRadialGradient(x,y,r1,x,y,r2); stops.forEach(s=>g.addColorStop(s[0],s[1])); return g; }
+function circ(x,y,r,fill){ ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.fillStyle=fill; ctx.fill(); }
+
+// ── STARS ──
+const stars = Array.from({length:200},()=>({
+  x:Math.random(), y:Math.random(), s:Math.random()*.8+.3, b:Math.random()
+}));
+function drawStars(ts){
+  stars.forEach(s=>{
+    const flicker = .5 + .5*Math.sin(ts*.001 + s.b*100);
+    ctx.globalAlpha = (.15 + s.b*.4) * flicker;
+    circ(s.x*W, s.y*H, s.s, '#fff');
+  });
+  ctx.globalAlpha = 1;
+}
+
+// ── ORBITAL PARAMETERS ──
+const ECC = 0.35; // exaggerated for visual clarity (real: 0.017)
+const TILT = 23.5 * Math.PI / 180;
+const MONTHS = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+const MONTH_DAYS = [31,28,31,30,31,30,31,31,30,31,30,31];
+const MONTH_EMOJI = ['❄️','❄️','🌸','🌸','🌸','☀️','☀️','☀️','🍂','🍂','🍂','❄️'];
+
+// Convert a date (month 1-12, day 1-31) to orbital angle
+// Perihelion ≈ Jan 3 = angle 0. Earth goes CCW on screen (negative angles).
+function dateToAng(month, day) {
+  let doy = day;
+  for (let m = 0; m < month - 1; m++) doy += MONTH_DAYS[m];
+  return -((doy - 3) / 365.25) * TAU;
+}
+
+// Today's angle
+function todayAng() {
+  const now = new Date();
+  return dateToAng(now.getMonth() + 1, now.getDate());
+}
+
+// ── STATE ──
+let started = false;
+let paused = false;
+let speedMult = 1; // 1 = normal, 3 = fast
+let userName = '';
+let birthAng = 0;    // angle of birth date on orbit
+let birthYear = 2020;
+let targetAng = 0;   // today's angle (where to stop)
+let targetYears = 0; // how many full orbits to today
+let eAng = 0;        // current Earth angle
+let orbitCount = 0;   // completed orbits
+let prevAng = 0;      // for crossing detection
+let reachedTarget = false;
+let animSpeed = 0.04; // radians per frame at speed 1
+let lastCelebration = -1;
+
+// ── CONFETTI ──
+let confetti = [];
+function spawnConfetti() {
+  const colors = ['#FFD166','#48cae4','#ff6b6b','#a8ff78','#c08aff','#ff9f43','#fff'];
+  for (let i = 0; i < 80; i++) {
+    confetti.push({
+      x: CX + (Math.random()-.5)*100,
+      y: CY - 40,
+      vx: (Math.random()-.5)*8,
+      vy: -Math.random()*6 - 2,
+      r: Math.random()*5+2,
+      col: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*TAU,
+      vr: (Math.random()-.5)*.3,
+      life: 1,
+      shape: Math.random() > .5 ? 'rect' : 'circle'
+    });
+  }
+}
+
+function updateConfetti(dt) {
+  confetti.forEach(c => {
+    c.x += c.vx * dt;
+    c.y += c.vy * dt;
+    c.vy += .15 * dt; // gravity
+    c.rot += c.vr * dt;
+    c.life -= .008 * dt;
+  });
+  confetti = confetti.filter(c => c.life > 0);
+}
+
+function drawConfetti() {
+  celCtx.clearRect(0,0,W,H);
+  if (!confetti.length) { celCv.classList.remove('show'); return; }
+  celCv.classList.add('show');
+  confetti.forEach(c => {
+    celCtx.save();
+    celCtx.globalAlpha = c.life;
+    celCtx.translate(c.x, c.y);
+    celCtx.rotate(c.rot);
+    celCtx.fillStyle = c.col;
+    if (c.shape === 'rect') {
+      celCtx.fillRect(-c.r, -c.r*.4, c.r*2, c.r*.8);
+    } else {
+      celCtx.beginPath(); celCtx.arc(0,0,c.r,0,TAU); celCtx.fill();
+    }
+    celCtx.restore();
+  });
+}
+
+// ── DRAW ORBIT SCENE ──
+function drawScene(ts) {
+  const a = Math.min(W*.38, H*.32);
+  const b = a * Math.sqrt(1 - ECC*ECC);
+  const foc = a * ECC;
+  const eCX_off = CX + foc * 0.3;
+  const sunX = eCX_off + foc;
+  const sunY = CY;
+  const ER = Math.min(W,H) * .038;
+  const sunR = Math.min(W,H) * .045;
+
+  // Earth position
+  const eX = eCX_off + Math.cos(eAng) * a;
+  const eY = CY + Math.sin(eAng) * b;
+
+  // ── Orbit path ──
+  ctx.save(); ctx.globalAlpha = .2;
+  ctx.beginPath(); ctx.ellipse(eCX_off, CY, a, b, 0, 0, TAU);
+  ctx.strokeStyle = 'rgba(150,180,220,.8)'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.restore();
+
+  // ── Month markers around orbit ──
+  for (let m = 0; m < 12; m++) {
+    // Mid-month day
+    const midDay = Math.floor(MONTH_DAYS[m] / 2);
+    const mAng = dateToAng(m + 1, midDay);
+    const mx = eCX_off + Math.cos(mAng) * a;
+    const my = CY + Math.sin(mAng) * b;
+    const nx = Math.cos(mAng), ny = Math.sin(mAng);
+    // Outer label position
+    const lx = eCX_off + Math.cos(mAng) * (a + 28);
+    const ly = CY + Math.sin(mAng) * (b + 28);
+
+    // Dot on orbit
+    ctx.save(); ctx.globalAlpha = .35;
+    circ(mx, my, 3, 'rgba(200,220,255,.7)');
+    ctx.restore();
+    // Radial tick
+    ctx.save(); ctx.globalAlpha = .15;
+    ctx.beginPath(); ctx.moveTo(mx, my);
+    ctx.lineTo(mx + nx*16, my + ny*16);
+    ctx.strokeStyle = 'rgba(200,220,255,.5)'; ctx.lineWidth = .8; ctx.stroke();
+    ctx.restore();
+    // Label
+    ctx.save(); ctx.globalAlpha = .5;
+    ctx.font = "700 clamp(9px,1.5vw,12px) 'Baloo 2',cursive";
+    ctx.fillStyle = 'rgba(200,220,255,.7)'; ctx.textAlign = 'center';
+    ctx.fillText(MONTH_EMOJI[m] + ' ' + MONTHS[m], lx, ly + 4);
+    ctx.restore();
+  }
+
+  // ── Birthday marker (static on orbit) ──
+  if (started) {
+    const bx = eCX_off + Math.cos(birthAng) * a;
+    const by = CY + Math.sin(birthAng) * b;
+    const pulse = 1 + Math.sin(ts * .005) * .15;
+    // Glow
+    const bg = rg(bx,by,0,18*pulse,[[0,'rgba(255,100,150,.3)'],[1,'transparent']]);
+    ctx.beginPath(); ctx.arc(bx,by,18*pulse,0,TAU); ctx.fillStyle=bg; ctx.fill();
+    ctx.font = '20px serif'; ctx.textAlign = 'center';
+    ctx.fillText('👶', bx, by + 7);
+    ctx.font = "700 10px 'Baloo 2',cursive"; ctx.fillStyle = '#FFD166';
+    ctx.fillText(userName, bx, by - 16);
+    ctx.textAlign = 'left';
+  }
+
+  // ── Trail (arc showing path traveled) ──
+  if (started && orbitCount < 100) {
+    ctx.save(); ctx.globalAlpha = .12;
+    // Draw from birthAng to eAng (going negative = CCW)
+    ctx.beginPath();
+    ctx.ellipse(eCX_off, CY, a - 2, b - 2, 0, birthAng, eAng, eAng > birthAng);
+    ctx.strokeStyle = '#FFD166'; ctx.lineWidth = 4; ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── SUN ──
+  const sg = rg(sunX, sunY, 0, sunR*6, [[0,'rgba(255,240,100,.5)'],[.35,'rgba(255,150,0,.12)'],[1,'transparent']]);
+  ctx.beginPath(); ctx.arc(sunX, sunY, sunR*6, 0, TAU); ctx.fillStyle = sg; ctx.fill();
+  // Rays
+  ctx.save(); ctx.globalAlpha = .2;
+  for (let i = 0; i < 10; i++) {
+    const ra = i * TAU/10 + ts * .0003;
+    ctx.beginPath();
+    ctx.moveTo(sunX + Math.cos(ra)*sunR*1.1, sunY + Math.sin(ra)*sunR*1.1);
+    ctx.lineTo(sunX + Math.cos(ra)*sunR*2.2, sunY + Math.sin(ra)*sunR*2.2);
+    ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 2; ctx.stroke();
+  }
+  ctx.restore();
+  const sbg = rg(sunX - sunR*.3, sunY - sunR*.3, 0, sunR,
+    [[0,'#fff8dc'],[.3,'#ffe066'],[.7,'#ff9900'],[1,'#ff6600']]);
+  circ(sunX, sunY, sunR, sbg);
+  ctx.font = "800 clamp(12px,2vw,16px) 'Baloo 2',cursive"; ctx.fillStyle = '#FFD166';
+  ctx.textAlign = 'center'; ctx.fillText('☀️ Sole', sunX, sunY + sunR + 18); ctx.textAlign = 'left';
+
+  // ── EARTH ──
+  // Atmosphere
+  const atm = rg(eX,eY,ER*.9,ER*1.6,[[0,'rgba(90,165,255,.6)'],[.5,'rgba(40,90,230,.2)'],[1,'transparent']]);
+  ctx.beginPath(); ctx.arc(eX,eY,ER*1.6,0,TAU); ctx.fillStyle=atm; ctx.fill();
+  // Body
+  ctx.save(); ctx.beginPath(); ctx.arc(eX,eY,ER,0,TAU); ctx.clip();
+  const oc = rg(eX,eY-ER*.2, ER*.1, ER*1.3, [[0,'#2a88ff'],[.4,'#1060dd'],[.75,'#083898'],[1,'#051e6a']]);
+  ctx.fillStyle = oc; ctx.fillRect(eX-ER, eY-ER, ER*2, ER*2);
+  ctx.fillStyle = '#3a9a55';
+  ctx.beginPath(); ctx.ellipse(eX+ER*.1,eY+ER*.03,ER*.12,ER*.28,-.1,0,TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(eX-ER*.28,eY+ER*.04,ER*.11,ER*.28,.15,0,TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(eX+ER*.32,eY-ER*.1,ER*.2,ER*.2,-.06,0,TAU); ctx.fill();
+  ctx.restore();
+  // Limb
+  ctx.save(); ctx.globalAlpha = .5;
+  ctx.beginPath(); ctx.arc(eX,eY,ER*1.02,0,TAU);
+  ctx.strokeStyle = 'rgba(80,165,255,.9)'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.restore();
+  // Axial tilt
+  ctx.save(); ctx.globalAlpha = .4;
+  const axL = ER * 1.8;
+  const axDx = Math.sin(TILT), axDy = -Math.cos(TILT);
+  ctx.beginPath(); ctx.moveTo(eX-axDx*axL,eY-axDy*axL); ctx.lineTo(eX+axDx*axL,eY+axDy*axL);
+  ctx.strokeStyle = 'rgba(160,210,255,.6)'; ctx.lineWidth = 1.2;
+  ctx.setLineDash([4,6]); ctx.stroke(); ctx.setLineDash([]);
+  circ(eX+axDx*axL, eY+axDy*axL, 2.5, 'rgba(180,230,255,.7)');
+  ctx.restore();
+  // Label
+  ctx.font = "800 clamp(11px,1.8vw,14px) 'Baloo 2',cursive"; ctx.fillStyle = '#a0c8ff';
+  ctx.textAlign = 'center'; ctx.fillText('🌍 Terra', eX, eY + ER + 16); ctx.textAlign = 'left';
+
+  // ── DYNAMIC DISTANCE RULER Sun ↔ Earth ──
+  {
+    const dx = eX - sunX, dy = eY - sunY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const ang = Math.atan2(dy, dx);
+    const off = 8; // perpendicular offset
+    const offX = Math.sin(ang)*off, offY = -Math.cos(ang)*off;
+    const sx = sunX + Math.cos(ang)*sunR*1.2 + offX;
+    const sy = sunY + Math.sin(ang)*sunR*1.2 + offY;
+    const ex2 = eX - Math.cos(ang)*ER*1.5 + offX;
+    const ey2 = eY - Math.sin(ang)*ER*1.5 + offY;
+    ctx.save(); ctx.globalAlpha = .5;
+    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex2,ey2);
+    ctx.strokeStyle = 'rgba(255,200,80,.6)'; ctx.lineWidth = 1.5; ctx.stroke();
+    // Ticks
+    const pX = Math.sin(ang)*5, pY = -Math.cos(ang)*5;
+    ctx.beginPath(); ctx.moveTo(sx-pX,sy-pY); ctx.lineTo(sx+pX,sy+pY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ex2-pX,ey2-pY); ctx.lineTo(ex2+pX,ey2+pY); ctx.stroke();
+    // Distance text
+    const distKm = (dist / a * 149.6).toFixed(1);
+    const mx2 = (sx+ex2)/2 + offX*.5, my2 = (sy+ey2)/2 + offY*.5;
+    ctx.save(); ctx.translate(mx2, my2);
+    let tAng = ang;
+    if (tAng > Math.PI/2 || tAng < -Math.PI/2) tAng += Math.PI;
+    ctx.rotate(tAng);
+    ctx.font = "700 clamp(8px,1.2vw,10px) 'Cousine',monospace";
+    ctx.fillStyle = 'rgba(255,210,80,.85)'; ctx.textAlign = 'center';
+    ctx.fillText('~'+distKm+' milioni km', 0, -6);
+    ctx.restore();
+    ctx.restore();
+    // Update info card
+    document.getElementById('icDist').textContent = '~'+distKm+' M km';
+  }
+
+  return { eX, eY, sunX, sunY, a, b, eCX_off };
+}
+
+// ── LOGIC ──
+function startAnimation() {
+  const name = document.getElementById('inName').value.trim();
+  const day = parseInt(document.getElementById('inDay').value);
+  const month = parseInt(document.getElementById('inMonth').value);
+  const year = parseInt(document.getElementById('inYear').value);
+  if (!name || !day || !month || !year) return;
+
+  userName = name;
+  birthYear = year;
+  birthAng = dateToAng(month, day);
+  eAng = birthAng;
+  prevAng = eAng;
+
+  // Calculate target: today's angle + full orbits for each year
+  const now = new Date();
+  const ageYears = now.getFullYear() - year;
+  // If birthday hasn't happened yet this year, subtract 1
+  const nowDoy = (() => { let d = now.getDate(); for(let m=0;m<now.getMonth();m++) d+=MONTH_DAYS[m]; return d; })();
+  const bdDoy = (() => { let d = day; for(let m=0;m<month-1;m++) d+=MONTH_DAYS[m]; return d; })();
+  targetYears = nowDoy >= bdDoy ? ageYears : ageYears - 1;
+  if (targetYears < 0) targetYears = 0;
+
+  // Target angle = birthAng - targetYears * TAU - extra fraction to today
+  const todayFrac = ((nowDoy - bdDoy + 365.25) % 365.25) / 365.25;
+  targetAng = birthAng - targetYears * TAU - todayFrac * TAU;
+
+  orbitCount = 0;
+  reachedTarget = false;
+  lastCelebration = -1;
+  confetti = [];
+  paused = false;
+  started = true;
+
+  document.getElementById('formWrap').style.display = 'none';
+  document.getElementById('ageDisplay').classList.add('show');
+  document.getElementById('infoCards').style.display = 'block';
+  document.getElementById('ageNum').textContent = '0';
+  document.getElementById('ageLabel').textContent = userName + ' — giri intorno al ☀️';
+  document.getElementById('btnPause').textContent = '⏸ Pausa';
+}
+
+document.getElementById('goBtn').addEventListener('click', startAnimation);
+// Also on Enter
+document.querySelectorAll('#inName,#inDay,#inYear').forEach(el => {
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') startAnimation(); });
+});
+
+// ── HUD BUTTONS ──
+document.getElementById('btnPause').addEventListener('click', () => {
+  if (!started) return;
+  if (reachedTarget) {
+    // Resume from target
+    reachedTarget = false;
+    paused = false;
+    document.getElementById('btnPause').textContent = '⏸ Pausa';
+    return;
+  }
+  paused = !paused;
+  document.getElementById('btnPause').textContent = paused ? '▶️ Riprendi' : '⏸ Pausa';
+});
+
+let speedLevel = 1;
+document.getElementById('btnSpeed').addEventListener('click', () => {
+  speedLevel = speedLevel >= 3 ? 1 : speedLevel + 1;
+  speedMult = speedLevel;
+  document.getElementById('btnSpeed').textContent = ['','🚀 ×1','🚀 ×2','🚀 ×3'][speedLevel];
+  document.getElementById('btnSpeed').classList.toggle('on', speedLevel > 1);
+});
+
+document.getElementById('btnReset').addEventListener('click', () => {
+  started = false;
+  paused = false;
+  confetti = [];
+  document.getElementById('formWrap').style.display = 'flex';
+  document.getElementById('ageDisplay').classList.remove('show');
+  document.getElementById('infoCards').style.display = 'none';
+  celCv.classList.remove('show');
+  celCtx.clearRect(0,0,W,H);
+});
+
+// ── ANIMATION LOOP ──
+let lastT = 0;
+function frame(ts) {
+  const dt = Math.min((ts - lastT) / 16.67, 3); // cap delta
+  lastT = ts;
+
+  ctx.clearRect(0, 0, W, H);
+  drawStars(ts);
+
+  if (started && !paused && !reachedTarget) {
+    // Move Earth CCW (angle decreasing)
+    const step = animSpeed * speedMult * dt;
+    eAng -= step;
+
+    // Detect orbit completion (crossing birthAng going negative)
+    // birthAng is the reference. Each time eAng crosses birthAng - n*TAU, it's one orbit.
+    const threshold = birthAng - (orbitCount + 1) * TAU;
+    if (eAng <= threshold) {
+      orbitCount++;
+      lastCelebration = orbitCount;
+      spawnConfetti();
+      document.getElementById('ageNum').textContent = orbitCount;
+    }
+
+    // Check if reached target
+    if (eAng <= targetAng) {
+      eAng = targetAng;
+      reachedTarget = true;
+      paused = true;
+      document.getElementById('btnPause').textContent = '▶️ Continua';
+      document.getElementById('ageLabel').textContent = userName + ' ha ' + orbitCount + ' anni! 🎉';
+    }
+  }
+
+  // If resumed past target, keep counting
+  if (started && !paused && !reachedTarget && eAng < targetAng) {
+    // Free running mode
+  }
+
+  // Re-detect orbits in free-running mode (past target)
+  if (started && !paused && !reachedTarget) {
+    // Already handled above
+  }
+
+  drawScene(ts);
+
+  // Confetti
+  if (confetti.length) {
+    updateConfetti(dt);
+    drawConfetti();
+  }
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
