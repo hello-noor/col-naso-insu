@@ -161,7 +161,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;}
 <!-- HUD -->
 <div id="hud">
   <button class="hud-btn" id="btnPause">⏸ Pausa</button>
-  <button class="hud-btn" id="btnSpeed">🚀 Veloce</button>
+  <button class="hud-btn" id="btnSpeed">🐢 ×1</button>
   <button class="hud-btn" id="btnReset">🔄 Ricomincia</button>
 </div>
 
@@ -223,7 +223,7 @@ function todayAng() {
 // ── STATE ──
 let started = false;
 let paused = false;
-let speedMult = 1; // 1 = normal, 3 = fast
+let speedMult = 1; // speed multiplier
 let userName = '';
 let birthAng = 0;    // angle of birth date on orbit
 let birthYear = 2020;
@@ -233,7 +233,7 @@ let eAng = 0;        // current Earth angle
 let orbitCount = 0;   // completed orbits
 let prevAng = 0;      // for crossing detection
 let reachedTarget = false;
-let animSpeed = 0.04; // radians per frame at speed 1
+let animSpeed = 0.012; // radians per frame — slow enough to watch
 let lastCelebration = -1;
 
 // ── CONFETTI ──
@@ -512,10 +512,12 @@ document.getElementById('btnPause').addEventListener('click', () => {
 });
 
 let speedLevel = 1;
+const SPEED_VALS = [0, 1, 2, 4, 8, 16];
+const SPEED_LABELS = ['','🐢 ×1','🚶 ×2','🚀 ×4','⚡ ×8','💨 ×16'];
 document.getElementById('btnSpeed').addEventListener('click', () => {
-  speedLevel = speedLevel >= 3 ? 1 : speedLevel + 1;
-  speedMult = speedLevel;
-  document.getElementById('btnSpeed').textContent = ['','🚀 ×1','🚀 ×2','🚀 ×3'][speedLevel];
+  speedLevel = speedLevel >= 5 ? 1 : speedLevel + 1;
+  speedMult = SPEED_VALS[speedLevel];
+  document.getElementById('btnSpeed').textContent = SPEED_LABELS[speedLevel];
   document.getElementById('btnSpeed').classList.toggle('on', speedLevel > 1);
 });
 
