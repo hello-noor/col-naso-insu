@@ -3,587 +3,392 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Col Naso all'Insù – Compleanno Orbitale 🎂</title>
+<title>Col Naso all'Ins&#xF9; &#x2013; Compleanno Orbitale</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Cousine:wght@400;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100vh;overflow:hidden;background:#050a1a;font-family:'Baloo 2',cursive;color:#e0e8f8;}
+html,body{width:100%;height:100dvh;overflow:hidden;background:#050a1a;font-family:'Baloo 2',cursive;color:#e0e8f8;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 a{color:#48cae4;text-decoration:none;}
-
-/* ── HEADER ── */
-header{position:fixed;top:0;left:0;right:0;z-index:10;text-align:center;padding:8px 12px 2px;
-  background:linear-gradient(180deg,rgba(5,10,26,.95) 60%,transparent);}
-header h1{font-size:clamp(1rem,2.8vw,1.5rem);font-weight:800;color:#FFD166;
-  text-shadow:0 0 20px rgba(255,209,102,.4);letter-spacing:.04em;}
-header p{font-family:'Cousine',monospace;font-size:clamp(.48rem,.8vw,.62rem);color:#48cae4;opacity:.5;margin-top:1px;}
-.nav-links{margin-top:4px;display:flex;gap:6px;justify-content:center;}
-.nav-links a{font-family:'Cousine',monospace;font-size:.55rem;padding:2px 8px;
-  border:1px solid rgba(72,202,228,.2);border-radius:12px;color:rgba(72,202,228,.6);transition:all .2s;}
-.nav-links a:hover{background:rgba(72,202,228,.08);border-color:#48cae4;color:#48cae4;text-decoration:none;}
-
-/* ── CANVAS ── */
+header{position:fixed;top:0;left:0;right:0;z-index:10;text-align:center;padding:6px 10px 2px;
+  background:linear-gradient(180deg,rgba(5,10,26,.96) 55%,transparent);}
+header h1{font-size:clamp(.9rem,2.6vw,1.35rem);font-weight:800;color:#FFD166;
+  text-shadow:0 0 18px rgba(255,209,102,.35);letter-spacing:.03em;}
+header .sub{font-family:'Cousine',monospace;font-size:clamp(.42rem,.7vw,.55rem);color:#48cae4;opacity:.45;}
+.nav-links{margin-top:3px;display:flex;gap:4px;justify-content:center;flex-wrap:wrap;}
+.nav-links a{font-family:'Cousine',monospace;font-size:clamp(.42rem,.65vw,.5rem);padding:1px 6px;
+  border:1px solid rgba(72,202,228,.15);border-radius:10px;color:rgba(72,202,228,.5);}
 canvas{position:fixed;top:0;left:0;width:100%;height:100%;}
-
-/* ── INPUT FORM (overlay) ── */
 #formWrap{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
-  background:rgba(5,10,26,.85);backdrop-filter:blur(8px);}
-#formBox{background:rgba(8,16,40,.95);border:2px solid rgba(255,209,102,.25);border-radius:24px;
-  padding:28px 24px;text-align:center;max-width:340px;width:90vw;position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);}
-#formBox h2{font-size:1.5rem;font-weight:800;color:#FFD166;margin-bottom:4px;}
-#formBox .sub{font-family:'Cousine',monospace;font-size:.65rem;color:rgba(255,255,255,.35);margin-bottom:16px;line-height:1.5;}
-#formBox .emoji-big{font-size:3rem;margin-bottom:8px;}
-.field{margin-bottom:12px;text-align:left;}
-.field label{display:block;font-size:.75rem;font-weight:700;color:#48cae4;margin-bottom:4px;padding-left:4px;}
-.field input,.field select{width:100%;padding:10px 14px;border-radius:14px;
-  border:2px solid rgba(72,202,228,.2);background:rgba(0,0,0,.4);color:#fff;
-  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;transition:border-color .2s;}
+  background:rgba(5,10,26,.88);backdrop-filter:blur(8px);}
+#formBox{background:rgba(8,16,40,.95);border:2px solid rgba(255,209,102,.2);border-radius:22px;
+  padding:20px;text-align:center;max-width:320px;width:92vw;box-shadow:0 16px 50px rgba(0,0,0,.6);}
+#formBox h2{font-size:clamp(1.1rem,3vw,1.4rem);font-weight:800;color:#FFD166;margin-bottom:2px;}
+#formBox .sub{font-family:'Cousine',monospace;font-size:clamp(.5rem,.75vw,.6rem);color:rgba(255,255,255,.3);
+  margin-bottom:12px;line-height:1.45;}
+#formBox .icon-row{font-size:clamp(1.8rem,5vw,2.5rem);margin-bottom:6px;letter-spacing:6px;}
+.field{margin-bottom:10px;text-align:left;}
+.field label{display:block;font-size:clamp(.6rem,1vw,.72rem);font-weight:700;color:#48cae4;margin-bottom:3px;padding-left:3px;}
+.field input,.field select{width:100%;padding:8px 12px;border-radius:12px;
+  border:1.5px solid rgba(72,202,228,.18);background:rgba(0,0,0,.4);color:#fff;
+  font-family:'Baloo 2',cursive;font-size:clamp(.85rem,1.2vw,.95rem);font-weight:700;}
 .field input:focus,.field select:focus{outline:none;border-color:#FFD166;}
-.field select{appearance:auto;font-size:.9rem;}
-.row2{display:flex;gap:8px;}
-.row2 .field{flex:1;}
-#goBtn{width:100%;padding:12px;border-radius:20px;border:2px solid #FFD166;
-  background:linear-gradient(135deg,rgba(255,209,102,.15),rgba(255,150,50,.1));
-  color:#FFD166;font-family:'Baloo 2',cursive;font-weight:800;font-size:1.2rem;
-  cursor:pointer;transition:all .3s;letter-spacing:.04em;margin-top:4px;}
-#goBtn:hover{background:rgba(255,209,102,.2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,209,102,.2);}
-
-/* ── HUD (heads-up display) ── */
+.field select{appearance:auto;}
+.row3{display:flex;gap:6px;}.row3 .field{flex:1;}
+#goBtn{width:100%;padding:10px;border-radius:18px;border:2px solid #FFD166;
+  background:linear-gradient(135deg,rgba(255,209,102,.12),rgba(255,150,50,.08));
+  color:#FFD166;font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(1rem,1.6vw,1.15rem);
+  cursor:pointer;margin-top:2px;}
 #hud{position:fixed;bottom:0;left:0;right:0;z-index:10;
-  display:flex;justify-content:center;align-items:center;gap:8px;padding:8px 12px;
-  background:linear-gradient(transparent,rgba(5,10,26,.9) 40%);pointer-events:none;flex-wrap:wrap;}
-.hud-btn{pointer-events:auto;font-family:'Baloo 2',cursive;font-weight:700;font-size:.7rem;
-  border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#c8d8f2;
-  padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .2s;}
-.hud-btn:hover{background:rgba(255,255,255,.1);border-color:#48cae4;color:#48cae4;}
-.hud-btn.on{background:rgba(72,202,228,.14);border-color:#48cae4;color:#48cae4;}
-
-/* ── AGE DISPLAY (big, for children) ── */
-#ageDisplay{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;
-  text-align:center;pointer-events:none;display:none;opacity:0;transition:opacity .4s;}
+  display:flex;justify-content:center;align-items:center;gap:6px;padding:6px 10px 8px;
+  background:linear-gradient(transparent,rgba(5,10,26,.92) 35%);pointer-events:none;flex-wrap:wrap;}
+.hud-btn{pointer-events:auto;font-family:'Baloo 2',cursive;font-weight:700;
+  font-size:clamp(.58rem,.9vw,.68rem);
+  border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#c8d8f2;
+  padding:4px 10px;border-radius:18px;cursor:pointer;white-space:nowrap;}
+.hud-btn:active{transform:scale(.95);}
+.hud-btn.on{background:rgba(72,202,228,.12);border-color:#48cae4;color:#48cae4;}
+.hud-btn.accent{border-color:rgba(255,209,102,.3);color:#FFD166;background:rgba(255,209,102,.06);}
+#ageDisplay{position:fixed;z-index:5;pointer-events:none;display:none;opacity:0;transition:opacity .5s;
+  top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:90vw;max-width:400px;}
 #ageDisplay.show{display:block;opacity:1;}
-#ageNum{font-size:clamp(4rem,12vw,8rem);font-weight:800;color:#FFD166;line-height:1;
-  text-shadow:0 0 40px rgba(255,209,102,.4);}
-#ageLabel{font-size:clamp(.9rem,2.2vw,1.3rem);font-weight:700;color:rgba(255,255,255,.6);margin-top:-4px;}
-
-/* ── CELEBRATION OVERLAY ── */
+#ageNum{font-size:clamp(3.5rem,11vw,7rem);font-weight:800;color:#FFD166;line-height:1;
+  text-shadow:0 0 35px rgba(255,209,102,.35);}
+#ageLabel{font-size:clamp(.75rem,2vw,1.1rem);font-weight:700;color:rgba(255,255,255,.55);margin-top:-2px;}
+#ageDays{font-family:'Cousine',monospace;font-size:clamp(.55rem,1.1vw,.72rem);font-weight:600;
+  color:rgba(72,202,228,.6);margin-top:4px;}
+#birthBanner{position:fixed;z-index:16;pointer-events:none;display:none;
+  top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:90vw;max-width:380px;}
+#birthBanner.show{display:block;animation:birthIn .8s ease-out;}
+@keyframes birthIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.5);}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.08);}
+  100%{transform:translate(-50%,-50%) scale(1);}}
+.bb-star{font-size:clamp(2rem,6vw,3.5rem);animation:sparkle 1.5s infinite alternate;}
+@keyframes sparkle{0%{opacity:.6;transform:scale(.9);}100%{opacity:1;transform:scale(1.1);}}
+.bb-name{font-size:clamp(1.5rem,5vw,2.2rem);font-weight:800;color:#FFD166;margin:4px 0;}
+.bb-date{font-family:'Cousine',monospace;font-size:clamp(.7rem,1.3vw,.85rem);color:rgba(255,255,255,.5);font-weight:600;}
+.bb-msg{font-size:clamp(.8rem,1.6vw,1rem);color:rgba(200,220,255,.6);margin-top:6px;}
+#infoStrip{position:fixed;left:6px;bottom:42px;z-index:8;display:none;pointer-events:none;}
+.is-row{font-family:'Cousine',monospace;font-size:clamp(.48rem,.75vw,.56rem);color:rgba(150,200,255,.45);
+  margin-bottom:3px;background:rgba(3,10,26,.75);padding:3px 8px;border-radius:8px;
+  border:1px solid rgba(72,202,228,.08);}
+.is-big{font-size:clamp(.6rem,.95vw,.72rem);}
+.is-val{color:#FFD166;font-weight:700;}
+.is-lg{font-size:clamp(.75rem,1.2vw,.9rem);}
+.is-birth{color:rgba(255,209,102,.6);font-weight:700;font-size:clamp(.5rem,.8vw,.6rem);border-color:rgba(255,209,102,.12);}
 #celebration{position:fixed;inset:0;z-index:15;pointer-events:none;display:none;}
 #celebration.show{display:block;}
-
-/* ── INFO CARDS ── */
-#infoCards{position:fixed;left:10px;bottom:56px;z-index:8;display:none;pointer-events:none;}
-.info-card{background:rgba(3,10,26,.85);border:1px solid rgba(72,202,228,.15);border-radius:12px;
-  padding:8px 10px;margin-bottom:6px;backdrop-filter:blur(6px);max-width:170px;}
-.info-card .ic-title{font-size:.65rem;font-weight:700;color:#48cae4;margin-bottom:2px;}
-.info-card .ic-val{font-family:'Cousine',monospace;font-size:.85rem;font-weight:700;color:#FFD166;}
-.info-card .ic-sub{font-family:'Cousine',monospace;font-size:.5rem;color:rgba(255,255,255,.3);margin-top:1px;}
 </style>
 </head>
 <body>
-
 <header>
-  <h1>🎂 Compleanno Orbitale</h1>
-  <p>Quanti giri intorno al Sole hai fatto?</p>
+  <h1>Compleanno Orbitale</h1>
+  <div class="sub">Quanti giri intorno al Sole hai fatto?</div>
   <div class="nav-links">
-    <a href="index.html">🏠 Home</a>
-    <a href="universo_interattivo.html">🌌 Universo</a>
-    <a href="luce_colori.html">🌈 Luce</a>
-    <a href="calcolatore_pianeti.html">🪐 Pianeti</a>
+    <a href="index.html">Home</a>
+    <a href="universo_interattivo.html">Universo</a>
+    <a href="luce_colori.html">Luce</a>
+    <a href="calcolatore_pianeti.html">Pianeti</a>
   </div>
 </header>
-
 <canvas id="c"></canvas>
-
-<!-- INPUT FORM -->
 <div id="formWrap">
   <div id="formBox">
-    <div class="emoji-big">🌍☀️🎂</div>
+    <div class="icon-row">&#x1F30D; &#x2600;&#xFE0F; &#x1F382;</div>
     <h2>Il tuo Compleanno Orbitale</h2>
-    <div class="sub">Ogni volta che la Terra fa un giro completo<br>intorno al Sole, tu compi un anno!</div>
+    <div class="sub">Ogni volta che la Terra fa un giro<br>intorno al Sole, tu compi un anno!</div>
     <div class="field">
-      <label>👶 Come ti chiami?</label>
+      <label>Come ti chiami?</label>
       <input type="text" id="inName" placeholder="Il tuo nome" maxlength="15" autocomplete="off">
     </div>
-    <div class="row2">
-      <div class="field">
-        <label>📅 Giorno</label>
-        <input type="number" id="inDay" min="1" max="31" placeholder="GG" inputmode="numeric">
-      </div>
-      <div class="field">
-        <label>📅 Mese</label>
-        <select id="inMonth">
-          <option value="">—</option>
-          <option value="1">Gennaio</option><option value="2">Febbraio</option>
-          <option value="3">Marzo</option><option value="4">Aprile</option>
-          <option value="5">Maggio</option><option value="6">Giugno</option>
-          <option value="7">Luglio</option><option value="8">Agosto</option>
-          <option value="9">Settembre</option><option value="10">Ottobre</option>
-          <option value="11">Novembre</option><option value="12">Dicembre</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>📅 Anno</label>
-        <input type="number" id="inYear" min="2015" max="2026" placeholder="AAAA" inputmode="numeric">
-      </div>
+    <div class="row3">
+      <div class="field"><label>Giorno</label>
+        <input type="number" id="inDay" min="1" max="31" placeholder="GG" inputmode="numeric"></div>
+      <div class="field"><label>Mese</label>
+        <select id="inMonth"><option value="">--</option>
+          <option value="1">Gen</option><option value="2">Feb</option><option value="3">Mar</option>
+          <option value="4">Apr</option><option value="5">Mag</option><option value="6">Giu</option>
+          <option value="7">Lug</option><option value="8">Ago</option><option value="9">Set</option>
+          <option value="10">Ott</option><option value="11">Nov</option><option value="12">Dic</option>
+        </select></div>
+      <div class="field"><label>Anno</label>
+        <input type="number" id="inYear" min="1950" max="2026" placeholder="AAAA" inputmode="numeric"></div>
     </div>
-    <button id="goBtn">🚀 Parti!</button>
+    <button id="goBtn">Parti!</button>
   </div>
 </div>
-
-<!-- AGE DISPLAY -->
+<div id="birthBanner">
+  <div class="bb-star">&#x2728; &#x2B50; &#x2728;</div>
+  <div class="bb-name" id="bbName"></div>
+  <div class="bb-date" id="bbDate"></div>
+  <div class="bb-msg">Inizia il viaggio intorno al Sole!</div>
+</div>
 <div id="ageDisplay">
   <div id="ageNum">0</div>
-  <div id="ageLabel">giri intorno al Sole</div>
+  <div id="ageLabel"></div>
+  <div id="ageDays"></div>
 </div>
-
-<!-- CELEBRATION -->
 <canvas id="celebration" width="1" height="1"></canvas>
-
-<!-- INFO CARDS -->
-<div id="infoCards">
-  <div class="info-card">
-    <div class="ic-title">☀️ Distanza Terra–Sole</div>
-    <div class="ic-val" id="icDist">~150 M km</div>
-    <div class="ic-sub">cambia durante l'anno!</div>
-  </div>
-  <div class="info-card">
-    <div class="ic-title">🌍 Asse terrestre</div>
-    <div class="ic-val">inclinato 23,5°</div>
-    <div class="ic-sub">per questo esistono le stagioni</div>
-  </div>
-  <div class="info-card">
-    <div class="ic-title">⏱️ Un giro completo</div>
-    <div class="ic-val">365,25 giorni</div>
-    <div class="ic-sub">= 1 anno = 1 compleanno 🎂</div>
-  </div>
+<div id="infoStrip">
+  <div class="is-row is-birth" id="isBirth"></div>
+  <div class="is-row is-big">Giorni: <span class="is-val is-lg" id="isTotalDays">0</span></div>
+  <div class="is-row is-big">Mesi: <span class="is-val is-lg" id="isTotalMonths">0</span></div>
+  <div class="is-row">Distanza Terra-Sole: <span class="is-val" id="isDist">~150M km</span></div>
+  <div class="is-row">Asse terrestre: <span class="is-val">inclinato 23,5&#xB0;</span></div>
 </div>
-
-<!-- HUD -->
 <div id="hud">
-  <button class="hud-btn" id="btnPause">⏸ Pausa</button>
-  <button class="hud-btn" id="btnSpeed">🐢 ×1</button>
-  <button class="hud-btn" id="btnReset">🔄 Ricomincia</button>
+  <button class="hud-btn" id="btnPause">Pausa</button>
+  <button class="hud-btn" id="btnSpeed">x1</button>
+  <button class="hud-btn accent" id="btnNext" style="display:none">E poi?</button>
+  <button class="hud-btn" id="btnReset">Ricomincia</button>
 </div>
-
 <script>
 'use strict';
-const TAU = Math.PI * 2;
-const cv = document.getElementById('c');
-const ctx = cv.getContext('2d');
-const celCv = document.getElementById('celebration');
-const celCtx = celCv.getContext('2d');
+const TAU=Math.PI*2,cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const celCv=document.getElementById('celebration'),celCtx=celCv.getContext('2d');
+let W,H,CX,CY;
+function resize(){W=cv.width=celCv.width=innerWidth;H=cv.height=celCv.height=innerHeight;CX=W/2;CY=H/2;}
+resize();addEventListener('resize',resize);
+function rg(x,y,r1,r2,s){const g=ctx.createRadialGradient(x,y,r1,x,y,r2);s.forEach(v=>g.addColorStop(v[0],v[1]));return g;}
+function circ(x,y,r,f){ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fillStyle=f;ctx.fill();}
 
-let W, H, CX, CY;
-function resize() {
-  W = cv.width = celCv.width = window.innerWidth;
-  H = cv.height = celCv.height = window.innerHeight;
-  CX = W / 2; CY = H / 2;
+const stars=Array.from({length:160},()=>({x:Math.random(),y:Math.random(),s:Math.random()*.6+.3,b:Math.random()}));
+function drawStars(ts){stars.forEach(s=>{ctx.globalAlpha=(.1+s.b*.3)*(.5+.5*Math.sin(ts*.001+s.b*80));circ(s.x*W,s.y*H,s.s,'#fff');});ctx.globalAlpha=1;}
+
+const ECC=0.35,TILT=23.5*Math.PI/180;
+const MONTHS=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+const MONTH_FULL=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const MDAYS=[31,28,31,30,31,30,31,31,30,31,30,31];
+const SCOL=['#b0d8ff','#b0d8ff','#a8ff78','#a8ff78','#a8ff78','#ffe56d','#ffe56d','#ffe56d','#ffd580','#ffd580','#ffd580','#b0d8ff'];
+function dateToAng(m,d){let doy=d;for(let i=0;i<m-1;i++)doy+=MDAYS[i];return -((doy-3)/365.25)*TAU;}
+
+let started=false,paused=false,speedMult=1,userName='',birthMonth=1,birthDay=1,birthYear=2020;
+let birthAng=0,eAng=0,targetAng=0,targetYears=0,orbitCount=0,reachedTarget=false;
+let animSpeed=0.005,totalDays=0,tsNow=0;
+
+let confetti=[],sparkles=[];
+function spawnConfetti(){
+  const c=['#FFD166','#48cae4','#ff6b6b','#a8ff78','#c08aff','#ff9f43','#fff','#f0e68c'];
+  for(let i=0;i<90;i++)confetti.push({x:CX+(Math.random()-.5)*120,y:CY-30,
+    vx:(Math.random()-.5)*9,vy:-Math.random()*7-3,r:Math.random()*5+2,
+    col:c[Math.floor(Math.random()*c.length)],rot:Math.random()*TAU,vr:(Math.random()-.5)*.3,life:1,
+    sh:Math.random()>.4?'r':'c'});
 }
-resize();
-window.addEventListener('resize', resize);
-
-// ── Utility ──
-function rg(x,y,r1,r2,stops){ const g=ctx.createRadialGradient(x,y,r1,x,y,r2); stops.forEach(s=>g.addColorStop(s[0],s[1])); return g; }
-function circ(x,y,r,fill){ ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.fillStyle=fill; ctx.fill(); }
-
-// ── STARS ──
-const stars = Array.from({length:200},()=>({
-  x:Math.random(), y:Math.random(), s:Math.random()*.8+.3, b:Math.random()
-}));
-function drawStars(ts){
-  stars.forEach(s=>{
-    const flicker = .5 + .5*Math.sin(ts*.001 + s.b*100);
-    ctx.globalAlpha = (.15 + s.b*.4) * flicker;
-    circ(s.x*W, s.y*H, s.s, '#fff');
-  });
-  ctx.globalAlpha = 1;
+function spawnBirthSparkles(x,y){
+  for(let i=0;i<45;i++){const a=Math.random()*TAU,sp=Math.random()*3.5+1;
+    sparkles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:Math.random()*3+1.5,life:1,
+      col:Math.random()>.3?'#FFD166':'#fff'});}
 }
+function updConfetti(dt){confetti.forEach(c=>{c.x+=c.vx*dt;c.y+=c.vy*dt;c.vy+=.18*dt;c.rot+=c.vr*dt;c.life-=.007*dt;});confetti=confetti.filter(c=>c.life>0);}
+function drawConfetti(){celCtx.clearRect(0,0,W,H);if(!confetti.length){celCv.classList.remove('show');return;}
+  celCv.classList.add('show');confetti.forEach(c=>{celCtx.save();celCtx.globalAlpha=c.life;celCtx.translate(c.x,c.y);celCtx.rotate(c.rot);celCtx.fillStyle=c.col;
+  if(c.sh==='r')celCtx.fillRect(-c.r,-c.r*.4,c.r*2,c.r*.8);else{celCtx.beginPath();celCtx.arc(0,0,c.r,0,TAU);celCtx.fill();}celCtx.restore();});}
+function updSparkles(dt){sparkles.forEach(s=>{s.x+=s.vx*dt;s.y+=s.vy*dt;s.vy+=.05*dt;s.life-=.01*dt;});sparkles=sparkles.filter(s=>s.life>0);}
 
-// ── ORBITAL PARAMETERS ──
-const ECC = 0.35; // exaggerated for visual clarity (real: 0.017)
-const TILT = 23.5 * Math.PI / 180;
-const MONTHS = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
-const MONTH_DAYS = [31,28,31,30,31,30,31,31,30,31,30,31];
-const MONTH_EMOJI = ['❄️','❄️','🌸','🌸','🌸','☀️','☀️','☀️','🍂','🍂','🍂','❄️'];
+function drawScene(ts){
+  const mob=W<500;
+  const a=Math.min(W*.37,H*.30),b=a*Math.sqrt(1-ECC*ECC),foc=a*ECC;
+  const eCX=CX+foc*.3,sunX=eCX+foc,sunY=CY;
+  const ER=Math.min(W,H)*(mob?.028:.032),sunR=Math.min(W,H)*(mob?.035:.04);
+  const eX=eCX+Math.cos(eAng)*a,eY=CY+Math.sin(eAng)*b;
 
-// Convert a date (month 1-12, day 1-31) to orbital angle
-// Perihelion ≈ Jan 3 = angle 0. Earth goes CCW on screen (negative angles).
-function dateToAng(month, day) {
-  let doy = day;
-  for (let m = 0; m < month - 1; m++) doy += MONTH_DAYS[m];
-  return -((doy - 3) / 365.25) * TAU;
-}
+  // Orbit
+  ctx.save();ctx.globalAlpha=.18;ctx.beginPath();ctx.ellipse(eCX,CY,a,b,0,0,TAU);
+  ctx.strokeStyle='rgba(150,180,220,.8)';ctx.lineWidth=1.8;ctx.stroke();ctx.restore();
 
-// Today's angle
-function todayAng() {
-  const now = new Date();
-  return dateToAng(now.getMonth() + 1, now.getDate());
-}
-
-// ── STATE ──
-let started = false;
-let paused = false;
-let speedMult = 1; // speed multiplier
-let userName = '';
-let birthAng = 0;    // angle of birth date on orbit
-let birthYear = 2020;
-let targetAng = 0;   // today's angle (where to stop)
-let targetYears = 0; // how many full orbits to today
-let eAng = 0;        // current Earth angle
-let orbitCount = 0;   // completed orbits
-let prevAng = 0;      // for crossing detection
-let reachedTarget = false;
-let animSpeed = 0.012; // radians per frame — slow enough to watch
-let lastCelebration = -1;
-
-// ── CONFETTI ──
-let confetti = [];
-function spawnConfetti() {
-  const colors = ['#FFD166','#48cae4','#ff6b6b','#a8ff78','#c08aff','#ff9f43','#fff'];
-  for (let i = 0; i < 80; i++) {
-    confetti.push({
-      x: CX + (Math.random()-.5)*100,
-      y: CY - 40,
-      vx: (Math.random()-.5)*8,
-      vy: -Math.random()*6 - 2,
-      r: Math.random()*5+2,
-      col: colors[Math.floor(Math.random()*colors.length)],
-      rot: Math.random()*TAU,
-      vr: (Math.random()-.5)*.3,
-      life: 1,
-      shape: Math.random() > .5 ? 'rect' : 'circle'
-    });
-  }
-}
-
-function updateConfetti(dt) {
-  confetti.forEach(c => {
-    c.x += c.vx * dt;
-    c.y += c.vy * dt;
-    c.vy += .15 * dt; // gravity
-    c.rot += c.vr * dt;
-    c.life -= .008 * dt;
-  });
-  confetti = confetti.filter(c => c.life > 0);
-}
-
-function drawConfetti() {
-  celCtx.clearRect(0,0,W,H);
-  if (!confetti.length) { celCv.classList.remove('show'); return; }
-  celCv.classList.add('show');
-  confetti.forEach(c => {
-    celCtx.save();
-    celCtx.globalAlpha = c.life;
-    celCtx.translate(c.x, c.y);
-    celCtx.rotate(c.rot);
-    celCtx.fillStyle = c.col;
-    if (c.shape === 'rect') {
-      celCtx.fillRect(-c.r, -c.r*.4, c.r*2, c.r*.8);
-    } else {
-      celCtx.beginPath(); celCtx.arc(0,0,c.r,0,TAU); celCtx.fill();
-    }
-    celCtx.restore();
-  });
-}
-
-// ── DRAW ORBIT SCENE ──
-function drawScene(ts) {
-  const a = Math.min(W*.38, H*.32);
-  const b = a * Math.sqrt(1 - ECC*ECC);
-  const foc = a * ECC;
-  const eCX_off = CX + foc * 0.3;
-  const sunX = eCX_off + foc;
-  const sunY = CY;
-  const ER = Math.min(W,H) * .038;
-  const sunR = Math.min(W,H) * .045;
-
-  // Earth position
-  const eX = eCX_off + Math.cos(eAng) * a;
-  const eY = CY + Math.sin(eAng) * b;
-
-  // ── Orbit path ──
-  ctx.save(); ctx.globalAlpha = .2;
-  ctx.beginPath(); ctx.ellipse(eCX_off, CY, a, b, 0, 0, TAU);
-  ctx.strokeStyle = 'rgba(150,180,220,.8)'; ctx.lineWidth = 2; ctx.stroke();
-  ctx.restore();
-
-  // ── Month markers around orbit ──
-  for (let m = 0; m < 12; m++) {
-    // Mid-month day
-    const midDay = Math.floor(MONTH_DAYS[m] / 2);
-    const mAng = dateToAng(m + 1, midDay);
-    const mx = eCX_off + Math.cos(mAng) * a;
-    const my = CY + Math.sin(mAng) * b;
-    const nx = Math.cos(mAng), ny = Math.sin(mAng);
-    // Outer label position
-    const lx = eCX_off + Math.cos(mAng) * (a + 28);
-    const ly = CY + Math.sin(mAng) * (b + 28);
-
-    // Dot on orbit
-    ctx.save(); ctx.globalAlpha = .35;
-    circ(mx, my, 3, 'rgba(200,220,255,.7)');
-    ctx.restore();
-    // Radial tick
-    ctx.save(); ctx.globalAlpha = .15;
-    ctx.beginPath(); ctx.moveTo(mx, my);
-    ctx.lineTo(mx + nx*16, my + ny*16);
-    ctx.strokeStyle = 'rgba(200,220,255,.5)'; ctx.lineWidth = .8; ctx.stroke();
-    ctx.restore();
-    // Label
-    ctx.save(); ctx.globalAlpha = .5;
-    ctx.font = "700 clamp(9px,1.5vw,12px) 'Baloo 2',cursive";
-    ctx.fillStyle = 'rgba(200,220,255,.7)'; ctx.textAlign = 'center';
-    ctx.fillText(MONTH_EMOJI[m] + ' ' + MONTHS[m], lx, ly + 4);
-    ctx.restore();
+  // Month labels
+  const fs=mob?8:11;
+  for(let m=0;m<12;m++){
+    const mAng=dateToAng(m+1,Math.floor(MDAYS[m]/2));
+    const outR=mob?14:24;
+    const mx=eCX+Math.cos(mAng)*a,my=CY+Math.sin(mAng)*b;
+    const lx=eCX+Math.cos(mAng)*(a+outR),ly=CY+Math.sin(mAng)*(b+outR);
+    ctx.save();ctx.globalAlpha=.25;circ(mx,my,2,'rgba(200,220,255,.5)');ctx.restore();
+    ctx.save();ctx.globalAlpha=.4;ctx.font=`700 ${fs}px 'Baloo 2',cursive`;
+    ctx.fillStyle=SCOL[m];ctx.textAlign='center';ctx.fillText(MONTHS[m],lx,ly+4);ctx.restore();
   }
 
-  // ── Birthday marker (static on orbit) ──
-  if (started) {
-    const bx = eCX_off + Math.cos(birthAng) * a;
-    const by = CY + Math.sin(birthAng) * b;
-    const pulse = 1 + Math.sin(ts * .005) * .15;
-    // Glow
-    const bg = rg(bx,by,0,18*pulse,[[0,'rgba(255,100,150,.3)'],[1,'transparent']]);
-    ctx.beginPath(); ctx.arc(bx,by,18*pulse,0,TAU); ctx.fillStyle=bg; ctx.fill();
-    ctx.font = '20px serif'; ctx.textAlign = 'center';
-    ctx.fillText('👶', bx, by + 7);
-    ctx.font = "700 10px 'Baloo 2',cursive"; ctx.fillStyle = '#FFD166';
-    ctx.fillText(userName, bx, by - 16);
-    ctx.textAlign = 'left';
-  }
-
-  // ── Trail (arc showing path traveled) ──
-  if (started && orbitCount < 100) {
-    ctx.save(); ctx.globalAlpha = .12;
-    // Draw from birthAng to eAng (going negative = CCW)
+  // Birth marker (star, not emoji for cross-platform)
+  if(started){
+    const bx=eCX+Math.cos(birthAng)*a,by=CY+Math.sin(birthAng)*b;
+    const p=1+Math.sin(ts*.004)*.12;
+    ctx.save();
+    const bg=rg(bx,by,0,11*p,[[0,'rgba(255,180,100,.35)'],[1,'transparent']]);
+    ctx.beginPath();ctx.arc(bx,by,11*p,0,TAU);ctx.fillStyle=bg;ctx.fill();
+    // 5-point star shape (drawn with canvas, no emoji)
+    ctx.fillStyle='#FFD166';ctx.save();ctx.translate(bx,by);
+    const sr=mob?6:8;
     ctx.beginPath();
-    ctx.ellipse(eCX_off, CY, a - 2, b - 2, 0, birthAng, eAng, eAng > birthAng);
-    ctx.strokeStyle = '#FFD166'; ctx.lineWidth = 4; ctx.stroke();
-    ctx.restore();
+    for(let i=0;i<5;i++){const a2=i*TAU/5-Math.PI/2;ctx.lineTo(Math.cos(a2)*sr,Math.sin(a2)*sr);
+      const a3=a2+TAU/10;ctx.lineTo(Math.cos(a3)*sr*.4,Math.sin(a3)*sr*.4);}
+    ctx.closePath();ctx.fill();ctx.restore();
+    ctx.font=`700 ${mob?7:9}px 'Baloo 2',cursive`;ctx.fillStyle='#FFD166';ctx.textAlign='center';
+    ctx.fillText(userName,bx,by-(mob?10:14));ctx.restore();
   }
 
-  // ── SUN ──
-  const sg = rg(sunX, sunY, 0, sunR*6, [[0,'rgba(255,240,100,.5)'],[.35,'rgba(255,150,0,.12)'],[1,'transparent']]);
-  ctx.beginPath(); ctx.arc(sunX, sunY, sunR*6, 0, TAU); ctx.fillStyle = sg; ctx.fill();
-  // Rays
-  ctx.save(); ctx.globalAlpha = .2;
-  for (let i = 0; i < 10; i++) {
-    const ra = i * TAU/10 + ts * .0003;
-    ctx.beginPath();
-    ctx.moveTo(sunX + Math.cos(ra)*sunR*1.1, sunY + Math.sin(ra)*sunR*1.1);
-    ctx.lineTo(sunX + Math.cos(ra)*sunR*2.2, sunY + Math.sin(ra)*sunR*2.2);
-    ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 2; ctx.stroke();
-  }
-  ctx.restore();
-  const sbg = rg(sunX - sunR*.3, sunY - sunR*.3, 0, sunR,
-    [[0,'#fff8dc'],[.3,'#ffe066'],[.7,'#ff9900'],[1,'#ff6600']]);
-  circ(sunX, sunY, sunR, sbg);
-  ctx.font = "800 clamp(12px,2vw,16px) 'Baloo 2',cursive"; ctx.fillStyle = '#FFD166';
-  ctx.textAlign = 'center'; ctx.fillText('☀️ Sole', sunX, sunY + sunR + 18); ctx.textAlign = 'left';
+  // Trail
+  if(started){ctx.save();ctx.globalAlpha=.1;ctx.beginPath();
+    ctx.ellipse(eCX,CY,a-1.5,b-1.5,0,birthAng,eAng,eAng>birthAng);
+    ctx.strokeStyle='#FFD166';ctx.lineWidth=3;ctx.stroke();ctx.restore();}
 
-  // ── EARTH ──
-  // Atmosphere
-  const atm = rg(eX,eY,ER*.9,ER*1.6,[[0,'rgba(90,165,255,.6)'],[.5,'rgba(40,90,230,.2)'],[1,'transparent']]);
-  ctx.beginPath(); ctx.arc(eX,eY,ER*1.6,0,TAU); ctx.fillStyle=atm; ctx.fill();
-  // Body
-  ctx.save(); ctx.beginPath(); ctx.arc(eX,eY,ER,0,TAU); ctx.clip();
-  const oc = rg(eX,eY-ER*.2, ER*.1, ER*1.3, [[0,'#2a88ff'],[.4,'#1060dd'],[.75,'#083898'],[1,'#051e6a']]);
-  ctx.fillStyle = oc; ctx.fillRect(eX-ER, eY-ER, ER*2, ER*2);
-  ctx.fillStyle = '#3a9a55';
-  ctx.beginPath(); ctx.ellipse(eX+ER*.1,eY+ER*.03,ER*.12,ER*.28,-.1,0,TAU); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(eX-ER*.28,eY+ER*.04,ER*.11,ER*.28,.15,0,TAU); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(eX+ER*.32,eY-ER*.1,ER*.2,ER*.2,-.06,0,TAU); ctx.fill();
-  ctx.restore();
-  // Limb
-  ctx.save(); ctx.globalAlpha = .5;
-  ctx.beginPath(); ctx.arc(eX,eY,ER*1.02,0,TAU);
-  ctx.strokeStyle = 'rgba(80,165,255,.9)'; ctx.lineWidth = 2; ctx.stroke();
-  ctx.restore();
-  // Axial tilt
-  ctx.save(); ctx.globalAlpha = .4;
-  const axL = ER * 1.8;
-  const axDx = Math.sin(TILT), axDy = -Math.cos(TILT);
-  ctx.beginPath(); ctx.moveTo(eX-axDx*axL,eY-axDy*axL); ctx.lineTo(eX+axDx*axL,eY+axDy*axL);
-  ctx.strokeStyle = 'rgba(160,210,255,.6)'; ctx.lineWidth = 1.2;
-  ctx.setLineDash([4,6]); ctx.stroke(); ctx.setLineDash([]);
-  circ(eX+axDx*axL, eY+axDy*axL, 2.5, 'rgba(180,230,255,.7)');
-  ctx.restore();
-  // Label
-  ctx.font = "800 clamp(11px,1.8vw,14px) 'Baloo 2',cursive"; ctx.fillStyle = '#a0c8ff';
-  ctx.textAlign = 'center'; ctx.fillText('🌍 Terra', eX, eY + ER + 16); ctx.textAlign = 'left';
+  // SUN
+  const sG=rg(sunX,sunY,0,sunR*5,[[0,'rgba(255,240,100,.4)'],[.35,'rgba(255,150,0,.08)'],[1,'transparent']]);
+  ctx.beginPath();ctx.arc(sunX,sunY,sunR*5,0,TAU);ctx.fillStyle=sG;ctx.fill();
+  ctx.save();ctx.globalAlpha=.15;
+  for(let i=0;i<10;i++){const ra=i*TAU/10+ts*.0003;ctx.beginPath();
+    ctx.moveTo(sunX+Math.cos(ra)*sunR*1.1,sunY+Math.sin(ra)*sunR*1.1);
+    ctx.lineTo(sunX+Math.cos(ra)*sunR*1.9,sunY+Math.sin(ra)*sunR*1.9);
+    ctx.strokeStyle='#ffe066';ctx.lineWidth=1.5;ctx.stroke();}ctx.restore();
+  const sB=rg(sunX-sunR*.3,sunY-sunR*.3,0,sunR,[[0,'#fff8dc'],[.3,'#ffe066'],[.7,'#ff9900'],[1,'#ff6600']]);
+  circ(sunX,sunY,sunR,sB);
+  ctx.font=`800 ${mob?9:12}px 'Baloo 2',cursive`;ctx.fillStyle='#FFD166';
+  ctx.textAlign='center';ctx.fillText('Sole',sunX,sunY+sunR+(mob?10:14));ctx.textAlign='left';
 
-  // ── DYNAMIC DISTANCE RULER Sun ↔ Earth ──
-  {
-    const dx = eX - sunX, dy = eY - sunY;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    const ang = Math.atan2(dy, dx);
-    const off = 8; // perpendicular offset
-    const offX = Math.sin(ang)*off, offY = -Math.cos(ang)*off;
-    const sx = sunX + Math.cos(ang)*sunR*1.2 + offX;
-    const sy = sunY + Math.sin(ang)*sunR*1.2 + offY;
-    const ex2 = eX - Math.cos(ang)*ER*1.5 + offX;
-    const ey2 = eY - Math.sin(ang)*ER*1.5 + offY;
-    ctx.save(); ctx.globalAlpha = .5;
-    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex2,ey2);
-    ctx.strokeStyle = 'rgba(255,200,80,.6)'; ctx.lineWidth = 1.5; ctx.stroke();
-    // Ticks
-    const pX = Math.sin(ang)*5, pY = -Math.cos(ang)*5;
-    ctx.beginPath(); ctx.moveTo(sx-pX,sy-pY); ctx.lineTo(sx+pX,sy+pY); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(ex2-pX,ey2-pY); ctx.lineTo(ex2+pX,ey2+pY); ctx.stroke();
-    // Distance text
-    const distKm = (dist / a * 149.6).toFixed(1);
-    const mx2 = (sx+ex2)/2 + offX*.5, my2 = (sy+ey2)/2 + offY*.5;
-    ctx.save(); ctx.translate(mx2, my2);
-    let tAng = ang;
-    if (tAng > Math.PI/2 || tAng < -Math.PI/2) tAng += Math.PI;
-    ctx.rotate(tAng);
-    ctx.font = "700 clamp(8px,1.2vw,10px) 'Cousine',monospace";
-    ctx.fillStyle = 'rgba(255,210,80,.85)'; ctx.textAlign = 'center';
-    ctx.fillText('~'+distKm+' milioni km', 0, -6);
-    ctx.restore();
-    ctx.restore();
-    // Update info card
-    document.getElementById('icDist').textContent = '~'+distKm+' M km';
-  }
+  // EARTH
+  const eA=rg(eX,eY,ER*.9,ER*1.5,[[0,'rgba(90,165,255,.5)'],[.5,'rgba(40,90,230,.15)'],[1,'transparent']]);
+  ctx.beginPath();ctx.arc(eX,eY,ER*1.5,0,TAU);ctx.fillStyle=eA;ctx.fill();
+  ctx.save();ctx.beginPath();ctx.arc(eX,eY,ER,0,TAU);ctx.clip();
+  ctx.fillStyle=rg(eX,eY-ER*.2,ER*.1,ER*1.3,[[0,'#2a88ff'],[.4,'#1060dd'],[.75,'#083898'],[1,'#051e6a']]);
+  ctx.fillRect(eX-ER,eY-ER,ER*2,ER*2);
+  ctx.fillStyle='#3a9a55';
+  ctx.beginPath();ctx.ellipse(eX+ER*.1,eY+ER*.03,ER*.12,ER*.28,-.1,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.ellipse(eX-ER*.25,eY+ER*.04,ER*.1,ER*.25,.15,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.ellipse(eX+ER*.3,eY-ER*.1,ER*.16,ER*.16,-.06,0,TAU);ctx.fill();
+  ctx.restore();
+  ctx.save();ctx.globalAlpha=.4;ctx.beginPath();ctx.arc(eX,eY,ER*1.02,0,TAU);
+  ctx.strokeStyle='rgba(80,165,255,.8)';ctx.lineWidth=1.2;ctx.stroke();ctx.restore();
+  // Tilt
+  ctx.save();ctx.globalAlpha=.25;const axL=ER*1.5,axDx=Math.sin(TILT),axDy=-Math.cos(TILT);
+  ctx.beginPath();ctx.moveTo(eX-axDx*axL,eY-axDy*axL);ctx.lineTo(eX+axDx*axL,eY+axDy*axL);
+  ctx.strokeStyle='rgba(160,210,255,.5)';ctx.lineWidth=.8;ctx.setLineDash([3,5]);ctx.stroke();ctx.setLineDash([]);ctx.restore();
+  ctx.font=`800 ${mob?8:11}px 'Baloo 2',cursive`;ctx.fillStyle='#a0c8ff';
+  ctx.textAlign='center';ctx.fillText('Terra',eX,eY+ER+(mob?9:13));ctx.textAlign='left';
 
-  return { eX, eY, sunX, sunY, a, b, eCX_off };
+  // Distance ruler
+  const dx=eX-sunX,dy=eY-sunY,dist=Math.sqrt(dx*dx+dy*dy),ang=Math.atan2(dy,dx);
+  const off=5,oX=Math.sin(ang)*off,oY=-Math.cos(ang)*off;
+  const sx2=sunX+Math.cos(ang)*sunR*1.15+oX,sy2=sunY+Math.sin(ang)*sunR*1.15+oY;
+  const ex2=eX-Math.cos(ang)*ER*1.4+oX,ey2=eY-Math.sin(ang)*ER*1.4+oY;
+  ctx.save();ctx.globalAlpha=.35;ctx.beginPath();ctx.moveTo(sx2,sy2);ctx.lineTo(ex2,ey2);
+  ctx.strokeStyle='rgba(255,200,80,.5)';ctx.lineWidth=1;ctx.stroke();
+  const pX=Math.sin(ang)*3.5,pY=-Math.cos(ang)*3.5;
+  ctx.beginPath();ctx.moveTo(sx2-pX,sy2-pY);ctx.lineTo(sx2+pX,sy2+pY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ex2-pX,ey2-pY);ctx.lineTo(ex2+pX,ey2+pY);ctx.stroke();
+  const distKm=(dist/a*149.6).toFixed(1);
+  const mx2=(sx2+ex2)/2+oX*.3,my2=(sy2+ey2)/2+oY*.3;
+  ctx.save();ctx.translate(mx2,my2);let tA=ang;if(tA>Math.PI/2||tA<-Math.PI/2)tA+=Math.PI;ctx.rotate(tA);
+  ctx.font=`700 ${mob?6:8}px 'Cousine',monospace`;ctx.fillStyle='rgba(255,210,80,.7)';ctx.textAlign='center';
+  ctx.fillText('~'+distKm+'M km',0,-4);ctx.restore();ctx.restore();
+  document.getElementById('isDist').textContent='~'+distKm+'M km';
+
+  // Sparkles
+  sparkles.forEach(s=>{ctx.save();ctx.globalAlpha=s.life*.6;circ(s.x,s.y,s.r,s.col);ctx.restore();});
 }
 
-// ── LOGIC ──
-function startAnimation() {
-  const name = document.getElementById('inName').value.trim();
-  const day = parseInt(document.getElementById('inDay').value);
-  const month = parseInt(document.getElementById('inMonth').value);
-  const year = parseInt(document.getElementById('inYear').value);
-  if (!name || !day || !month || !year) return;
+function startAnimation(){
+  const name=document.getElementById('inName').value.trim();
+  const day=parseInt(document.getElementById('inDay').value);
+  const month=parseInt(document.getElementById('inMonth').value);
+  const year=parseInt(document.getElementById('inYear').value);
+  if(!name||!day||!month||!year||year<1950||year>2026||day<1||day>31||month<1||month>12)return;
+  userName=name;birthDay=day;birthMonth=month;birthYear=year;
+  birthAng=dateToAng(month,day);eAng=birthAng;
 
-  userName = name;
-  birthYear = year;
-  birthAng = dateToAng(month, day);
-  eAng = birthAng;
-  prevAng = eAng;
+  const now=new Date();
+  const ageYears=now.getFullYear()-year;
+  const nowDoy=(()=>{let d=now.getDate();for(let m=0;m<now.getMonth();m++)d+=MDAYS[m];return d;})();
+  const bdDoy=(()=>{let d=day;for(let m=0;m<month-1;m++)d+=MDAYS[m];return d;})();
+  targetYears=nowDoy>=bdDoy?ageYears:ageYears-1;
+  if(targetYears<0)targetYears=0;
+  const todayFrac=((nowDoy-bdDoy+365.25)%365.25)/365.25;
+  targetAng=birthAng-targetYears*TAU-todayFrac*TAU;
 
-  // Calculate target: today's angle + full orbits for each year
-  const now = new Date();
-  const ageYears = now.getFullYear() - year;
-  // If birthday hasn't happened yet this year, subtract 1
-  const nowDoy = (() => { let d = now.getDate(); for(let m=0;m<now.getMonth();m++) d+=MONTH_DAYS[m]; return d; })();
-  const bdDoy = (() => { let d = day; for(let m=0;m<month-1;m++) d+=MONTH_DAYS[m]; return d; })();
-  targetYears = nowDoy >= bdDoy ? ageYears : ageYears - 1;
-  if (targetYears < 0) targetYears = 0;
+  orbitCount=0;totalDays=0;reachedTarget=false;confetti=[];sparkles=[];
+  paused=true;started=true;
 
-  // Target angle = birthAng - targetYears * TAU - extra fraction to today
-  const todayFrac = ((nowDoy - bdDoy + 365.25) % 365.25) / 365.25;
-  targetAng = birthAng - targetYears * TAU - todayFrac * TAU;
+  document.getElementById('formWrap').style.display='none';
+  // Birth banner
+  const bb=document.getElementById('birthBanner');
+  document.getElementById('bbName').textContent=name;
+  document.getElementById('bbDate').textContent=day+' '+MONTH_FULL[month-1]+' '+year;
+  bb.style.display='';bb.classList.add('show');
+  spawnConfetti();
+  // Sparkles at birth position
+  const a2=Math.min(W*.37,H*.30),foc2=a2*ECC,eCX2=CX+foc2*.3;
+  spawnBirthSparkles(eCX2+Math.cos(birthAng)*a2,CY+Math.sin(birthAng)*(a2*Math.sqrt(1-ECC*ECC)));
 
-  orbitCount = 0;
-  reachedTarget = false;
-  lastCelebration = -1;
-  confetti = [];
-  paused = false;
-  started = true;
-
-  document.getElementById('formWrap').style.display = 'none';
-  document.getElementById('ageDisplay').classList.add('show');
-  document.getElementById('infoCards').style.display = 'block';
-  document.getElementById('ageNum').textContent = '0';
-  document.getElementById('ageLabel').textContent = userName + ' — giri intorno al ☀️';
-  document.getElementById('btnPause').textContent = '⏸ Pausa';
+  setTimeout(()=>{
+    bb.classList.remove('show');bb.style.display='none';
+    document.getElementById('ageDisplay').classList.add('show');
+    document.getElementById('infoStrip').style.display='block';
+    document.getElementById('ageNum').textContent='0';
+    document.getElementById('ageLabel').textContent=userName+' \u2014 giri intorno al Sole';
+    document.getElementById('ageDays').textContent='0 giorni';
+    document.getElementById('isBirth').textContent='\u2605 '+userName+' \u2014 '+birthDay+' '+MONTH_FULL[birthMonth-1]+' '+birthYear;
+    document.getElementById('isTotalDays').textContent='0';
+    document.getElementById('isTotalMonths').textContent='0';
+    document.getElementById('btnPause').textContent='Pausa';
+    document.getElementById('btnNext').style.display='none';
+    paused=false;
+  },2800);
 }
 
-document.getElementById('goBtn').addEventListener('click', startAnimation);
-// Also on Enter
-document.querySelectorAll('#inName,#inDay,#inYear').forEach(el => {
-  el.addEventListener('keydown', e => { if (e.key === 'Enter') startAnimation(); });
+document.getElementById('goBtn').addEventListener('click',startAnimation);
+document.querySelectorAll('#inName,#inDay,#inYear').forEach(el=>{el.addEventListener('keydown',e=>{if(e.key==='Enter')startAnimation();});});
+
+document.getElementById('btnPause').addEventListener('click',()=>{
+  if(!started||reachedTarget)return;paused=!paused;
+  document.getElementById('btnPause').textContent=paused?'Riprendi':'Pausa';});
+
+document.getElementById('btnNext').addEventListener('click',()=>{
+  if(!started||!reachedTarget)return;
+  reachedTarget=false;paused=false;
+  targetAng=-Infinity; // disable target so it never re-triggers
+  document.getElementById('btnNext').style.display='none';
+  document.getElementById('btnPause').textContent='Pausa';
+  document.getElementById('ageLabel').textContent=userName+' \u2014 giri intorno al Sole';
 });
 
-// ── HUD BUTTONS ──
-document.getElementById('btnPause').addEventListener('click', () => {
-  if (!started) return;
-  if (reachedTarget) {
-    // Resume from target
-    reachedTarget = false;
-    paused = false;
-    document.getElementById('btnPause').textContent = '⏸ Pausa';
-    return;
-  }
-  paused = !paused;
-  document.getElementById('btnPause').textContent = paused ? '▶️ Riprendi' : '⏸ Pausa';
-});
+let speedLevel=1;
+const SVALS=[0,1,2,5,12,25],SLABELS=['','x1','x2','x5','x12','x25'];
+document.getElementById('btnSpeed').addEventListener('click',()=>{
+  speedLevel=speedLevel>=5?1:speedLevel+1;speedMult=SVALS[speedLevel];
+  document.getElementById('btnSpeed').textContent=SLABELS[speedLevel];
+  document.getElementById('btnSpeed').classList.toggle('on',speedLevel>1);});
 
-let speedLevel = 1;
-const SPEED_VALS = [0, 1, 2, 4, 8, 16];
-const SPEED_LABELS = ['','🐢 ×1','🚶 ×2','🚀 ×4','⚡ ×8','💨 ×16'];
-document.getElementById('btnSpeed').addEventListener('click', () => {
-  speedLevel = speedLevel >= 5 ? 1 : speedLevel + 1;
-  speedMult = SPEED_VALS[speedLevel];
-  document.getElementById('btnSpeed').textContent = SPEED_LABELS[speedLevel];
-  document.getElementById('btnSpeed').classList.toggle('on', speedLevel > 1);
-});
-
-document.getElementById('btnReset').addEventListener('click', () => {
-  started = false;
-  paused = false;
-  confetti = [];
-  document.getElementById('formWrap').style.display = 'flex';
+document.getElementById('btnReset').addEventListener('click',()=>{
+  started=false;paused=false;confetti=[];sparkles=[];
+  document.getElementById('formWrap').style.display='flex';
   document.getElementById('ageDisplay').classList.remove('show');
-  document.getElementById('infoCards').style.display = 'none';
-  celCv.classList.remove('show');
-  celCtx.clearRect(0,0,W,H);
-});
+  document.getElementById('infoStrip').style.display='none';
+  document.getElementById('btnNext').style.display='none';
+  const bb=document.getElementById('birthBanner');bb.classList.remove('show');bb.style.display='';
+  celCv.classList.remove('show');celCtx.clearRect(0,0,W,H);});
 
-// ── ANIMATION LOOP ──
-let lastT = 0;
-function frame(ts) {
-  const dt = Math.min((ts - lastT) / 16.67, 3); // cap delta
-  lastT = ts;
+let lastT=0;
+function frame(ts){
+  tsNow=ts;const dt=Math.min((ts-lastT)/16.67,3);lastT=ts;
+  ctx.clearRect(0,0,W,H);drawStars(ts);
 
-  ctx.clearRect(0, 0, W, H);
-  drawStars(ts);
-
-  if (started && !paused && !reachedTarget) {
-    // Move Earth CCW (angle decreasing)
-    const step = animSpeed * speedMult * dt;
-    eAng -= step;
-
-    // Detect orbit completion (crossing birthAng going negative)
-    // birthAng is the reference. Each time eAng crosses birthAng - n*TAU, it's one orbit.
-    const threshold = birthAng - (orbitCount + 1) * TAU;
-    if (eAng <= threshold) {
-      orbitCount++;
-      lastCelebration = orbitCount;
-      spawnConfetti();
-      document.getElementById('ageNum').textContent = orbitCount;
-    }
-
-    // Check if reached target
-    if (eAng <= targetAng) {
-      eAng = targetAng;
-      reachedTarget = true;
-      paused = true;
-      document.getElementById('btnPause').textContent = '▶️ Continua';
-      document.getElementById('ageLabel').textContent = userName + ' ha ' + orbitCount + ' anni! 🎉';
+  if(started&&!paused&&!reachedTarget){
+    const step=animSpeed*speedMult*dt;eAng-=step;
+    totalDays+=(step/TAU)*365.25;
+    const threshold=birthAng-(orbitCount+1)*TAU;
+    if(eAng<=threshold){orbitCount++;spawnConfetti();
+      document.getElementById('ageNum').textContent=orbitCount;}
+    document.getElementById('ageDays').textContent=Math.floor(totalDays)+' giorni';
+    document.getElementById('isTotalDays').textContent=Math.floor(totalDays);
+    document.getElementById('isTotalMonths').textContent=Math.floor(totalDays/30.44);
+    if(eAng<=targetAng){eAng=targetAng;reachedTarget=true;paused=true;
+      document.getElementById('btnPause').textContent='Pausa';
+      document.getElementById('btnNext').style.display='inline-block';
+      const yt=orbitCount===1?'anno':'anni';
+      document.getElementById('ageLabel').textContent=userName+' ha '+orbitCount+' '+yt+'!';
+      document.getElementById('ageDays').textContent=Math.floor(totalDays)+' giorni \u2014 oggi!';
     }
   }
-
-  // If resumed past target, keep counting
-  if (started && !paused && !reachedTarget && eAng < targetAng) {
-    // Free running mode
-  }
-
-  // Re-detect orbits in free-running mode (past target)
-  if (started && !paused && !reachedTarget) {
-    // Already handled above
-  }
-
-  drawScene(ts);
-
-  // Confetti
-  if (confetti.length) {
-    updateConfetti(dt);
-    drawConfetti();
-  }
-
+  drawScene(ts);updSparkles(dt);
+  if(confetti.length){updConfetti(dt);drawConfetti();}
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
