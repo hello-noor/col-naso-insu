@@ -230,6 +230,232 @@ section{padding:80px 24px;max-width:700px;margin:0 auto;}
 footer.page-footer{text-align:center;padding:40px 24px;font-family:'Cousine',monospace;font-size:.55rem;
   color:rgba(255,255,255,.18);border-top:1px solid rgba(255,255,255,.05);}
 footer.page-footer a{color:rgba(72,202,228,.4);text-decoration:none;}
+style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Cousine:wght@400;700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#06081a;
+  --gold:#FFD166;
+  --cyan:#48cae4;
+  --violet:#c08aff;
+  --pink:#ff7eb3;
+  --green:#06d6a0;
+  --red:#ff6b6b;
+  --blue:#4dabf7;
+  --orange:#fd8c3a;
+}
+html,body{background:var(--bg);color:#e0e8f8;font-family:'Baloo 2',cursive;overflow-x:hidden;scroll-behavior:smooth;}
+
+/* ── STARFIELD ── */
+#starfield{position:fixed;inset:0;z-index:0;pointer-events:none;}
+canvas#stars{position:absolute;inset:0;width:100%;height:100%;}
+
+/* ── LAYOUT ── */
+.page{position:relative;z-index:1;}
+section{padding:80px 24px;max-width:700px;margin:0 auto;}
+
+/* ── NAV ── */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:100;padding:12px 24px;display:flex;align-items:center;gap:12px;
+  background:rgba(6,8,26,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);}
+.topnav a{font-family:'Cousine',monospace;font-size:.6rem;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s;}
+.topnav a:hover{color:var(--cyan);}
+.topnav span{color:rgba(255,255,255,.15);}
+.topnav .title-nav{font-size:.7rem;font-weight:700;color:var(--gold);}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-top:60px;}
+.hero-badge{font-family:'Cousine',monospace;font-size:.6rem;color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;
+  border:1px solid rgba(72,202,228,.3);padding:4px 14px;border-radius:20px;margin-bottom:20px;opacity:0;animation:fadeUp .8s .2s forwards;}
+#hero h1{font-size:clamp(2rem,8vw,4rem);font-weight:800;line-height:1.1;margin-bottom:16px;opacity:0;animation:fadeUp .8s .4s forwards;}
+#hero h1 em{color:var(--gold);font-style:normal;display:block;}
+.hero-sub{font-size:clamp(.8rem,1.5vw,1rem);color:#8fb0d0;line-height:1.7;max-width:500px;margin:0 auto 40px;opacity:0;animation:fadeUp .8s .6s forwards;}
+.scroll-hint{font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.25);letter-spacing:.1em;
+  opacity:0;animation:fadeUp .8s 1.2s forwards, bob 2s 2s ease-in-out infinite;}
+.big-star{font-size:5rem;margin-bottom:20px;opacity:0;animation:fadeUp .8s 0s forwards, pulse-star 3s 1s ease-in-out infinite;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+@keyframes pulse-star{0%,100%{filter:drop-shadow(0 0 8px rgba(255,209,102,.4));}50%{filter:drop-shadow(0 0 24px rgba(255,209,102,.8));}}
+
+/* ── SECTION HEADERS ── */
+.sec-header{text-align:center;margin-bottom:48px;}
+.sec-num{font-family:'Cousine',monospace;font-size:.6rem;color:var(--cyan);letter-spacing:.15em;opacity:.6;margin-bottom:8px;}
+.sec-header h2{font-size:clamp(1.4rem,4vw,2.2rem);font-weight:800;color:#e0ecff;line-height:1.2;}
+.sec-header h2 em{color:var(--gold);font-style:normal;}
+.sec-header p{font-size:.85rem;color:#7a9bbd;line-height:1.7;margin-top:12px;}
+.sec-tag{display:inline-block;font-family:'Cousine',monospace;font-size:.55rem;color:var(--violet);
+  border:1px solid rgba(192,138,255,.3);padding:3px 10px;border-radius:12px;margin-top:10px;}
+
+/* ── DIVIDER ── */
+.divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 60px;opacity:.4;}
+
+/* ── QUARK GAME ── */
+#quark-game{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:24px;padding:32px 24px;}
+
+.game-instructions{font-size:.8rem;color:#8fb0d0;text-align:center;line-height:1.6;margin-bottom:28px;
+  padding:12px 16px;background:rgba(72,202,228,.05);border-radius:12px;border:1px solid rgba(72,202,228,.1);}
+.game-instructions b{color:var(--cyan);}
+
+/* Quark bank */
+.quark-bank{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px;
+  padding:20px;background:rgba(0,0,0,.2);border-radius:16px;min-height:80px;border:2px dashed rgba(255,255,255,.08);}
+.quark-bank-label{width:100%;text-align:center;font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.25);letter-spacing:.1em;margin-bottom:4px;}
+
+/* Quark token */
+.quark{width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:grab;user-select:none;transition:transform .15s,box-shadow .15s;position:relative;font-weight:800;
+  border:2px solid rgba(255,255,255,.15);}
+.quark:hover{transform:scale(1.1);}
+.quark:active{cursor:grabbing;transform:scale(1.05);}
+.quark.up{background:radial-gradient(circle at 35% 35%,#ff8c42,#e63900);box-shadow:0 4px 16px rgba(230,57,0,.4);}
+.quark.down{background:radial-gradient(circle at 35% 35%,#748ffc,#3a0ca3);box-shadow:0 4px 16px rgba(58,12,163,.4);}
+.quark .q-label{font-size:.8rem;color:#fff;line-height:1;}
+.quark .q-arrow{font-size:.65rem;line-height:1;}
+.quark.dragging{opacity:.5;transform:scale(.95);}
+
+/* Targets */
+.targets{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+.target-box{border-radius:20px;padding:20px 16px;text-align:center;position:relative;
+  transition:all .3s;border:2px dashed rgba(255,255,255,.12);}
+.target-box.proton-target{background:radial-gradient(circle at 50% 0%,rgba(255,107,107,.08),transparent);}
+.target-box.neutron-target{background:radial-gradient(circle at 50% 0%,rgba(77,171,247,.08),transparent);}
+.target-box h3{font-size:.75rem;font-weight:700;margin-bottom:4px;}
+.proton-target h3{color:var(--red);}
+.neutron-target h3{color:var(--blue);}
+.target-box .formula{font-family:'Cousine',monospace;font-size:.6rem;color:rgba(255,255,255,.3);margin-bottom:14px;}
+.target-slots{display:flex;gap:8px;justify-content:center;min-height:64px;align-items:center;}
+.slot{width:56px;height:56px;border-radius:50%;border:2px dashed rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;
+  transition:all .2s;position:relative;}
+.slot.drag-over{border-color:var(--gold);background:rgba(255,209,102,.1);transform:scale(1.05);}
+.slot.filled{border-style:solid;}
+.slot.filled.up-filled{border-color:rgba(230,57,0,.6);background:radial-gradient(circle at 35% 35%,#ff8c42,#e63900);box-shadow:0 4px 12px rgba(230,57,0,.35);}
+.slot.filled.down-filled{border-color:rgba(58,12,163,.6);background:radial-gradient(circle at 35% 35%,#748ffc,#3a0ca3);box-shadow:0 4px 12px rgba(58,12,163,.35);}
+.slot .slot-label{font-size:.65rem;color:rgba(255,255,255,.2);font-family:'Cousine',monospace;}
+.slot.filled .slot-label{color:#fff;font-weight:700;}
+.slot .remove-btn{position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:rgba(255,255,255,.15);
+  border-radius:50%;font-size:.55rem;display:none;align-items:center;justify-content:center;cursor:pointer;color:#fff;}
+.slot.filled:hover .remove-btn{display:flex;}
+
+.target-result{margin-top:12px;font-size:.7rem;height:20px;font-weight:700;transition:all .3s;}
+.target-result.success{color:var(--green);}
+.target-result.error{color:var(--red);}
+
+.target-box.success-glow.proton-target{border-color:rgba(255,107,107,.6);box-shadow:0 0 30px rgba(255,107,107,.2);background:radial-gradient(circle at 50% 0%,rgba(255,107,107,.15),transparent);}
+.target-box.success-glow.neutron-target{border-color:rgba(77,171,247,.6);box-shadow:0 0 30px rgba(77,171,247,.2);background:radial-gradient(circle at 50% 0%,rgba(77,171,247,.15),transparent);}
+
+.game-controls{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn{padding:10px 22px;border-radius:24px;border:none;cursor:pointer;font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;
+  transition:all .2s;}
+.btn-primary{background:var(--gold);color:#06081a;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,209,102,.35);}
+.btn-secondary{background:rgba(255,255,255,.08);color:#e0e8f8;border:1px solid rgba(255,255,255,.12);}
+.btn-secondary:hover{background:rgba(255,255,255,.12);}
+
+.game-score{text-align:center;margin-top:20px;font-family:'Cousine',monospace;font-size:.65rem;color:rgba(255,255,255,.35);}
+.game-score span{color:var(--gold);font-weight:700;}
+
+/* Challenge stages */
+.challenge-bar{display:flex;gap:8px;justify-content:center;margin-bottom:24px;}
+.ch-step{width:28px;height:6px;border-radius:3px;background:rgba(255,255,255,.1);transition:background .3s;}
+.ch-step.done{background:var(--green);}
+.ch-step.active{background:var(--gold);}
+.challenge-title{text-align:center;font-size:.75rem;color:var(--gold);font-weight:700;margin-bottom:20px;min-height:20px;}
+
+/* Celebration overlay */
+#celebration{position:fixed;inset:0;z-index:200;pointer-events:none;display:none;}
+.confetti-piece{position:absolute;width:8px;height:8px;border-radius:2px;animation:confetti-fall linear forwards;}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+
+/* ── FUSION SECTION ── */
+#fusion-stage{position:relative;width:100%;height:320px;background:rgba(0,0,0,.25);border-radius:24px;
+  overflow:hidden;border:1px solid rgba(255,255,255,.06);margin-bottom:24px;}
+.fusion-sun{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff4a3,#ffd166,#ff8c00);
+  box-shadow:0 0 40px rgba(255,209,102,.6),0 0 80px rgba(255,140,0,.3);
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem;z-index:5;}
+.fusion-proton{position:absolute;width:42px;height:42px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#ff8c42,#e63900);
+  display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#fff;font-weight:800;
+  box-shadow:0 4px 14px rgba(230,57,0,.5);transition:all 1s cubic-bezier(.34,1.56,.64,1);z-index:10;}
+.fusion-proton.p1{top:10%;left:10%;}
+.fusion-proton.p2{top:10%;right:10%;}
+.fusion-proton.p3{bottom:10%;left:10%;}
+.fusion-proton.p4{bottom:10%;right:10%;}
+.fusion-proton.converge{top:50%!important;left:50%!important;right:auto!important;bottom:auto!important;
+  transform:translate(-50%,-50%) scale(.6);opacity:0;}
+.fusion-helium{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#a8edea,#4cc9f0,#0077b6);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;font-weight:800;
+  box-shadow:0 0 30px rgba(76,201,240,.6);opacity:0;transition:opacity .5s .2s;z-index:8;}
+.photon{position:absolute;top:50%;left:50%;width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle,#fff,#FFD166);
+  box-shadow:0 0 16px rgba(255,255,255,.8);
+  opacity:0;z-index:15;transition:none;}
+.fusion-label{position:absolute;bottom:12px;left:0;right:0;text-align:center;
+  font-family:'Cousine',monospace;font-size:.6rem;color:rgba(255,255,255,.4);}
+.fusion-equation{text-align:center;font-family:'Cousine',monospace;font-size:.7rem;color:#8fb0d0;line-height:1.8;
+  padding:16px;background:rgba(255,255,255,.03);border-radius:12px;margin-bottom:20px;}
+.fusion-equation b{color:var(--gold);}
+.fusion-equation .photon-inline{color:var(--pink);}
+
+/* ── ATOM VIEWER ── */
+.atom-picker{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+.atom-btn{width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);
+  cursor:pointer;font-size:1.1rem;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.atom-btn:hover{transform:scale(1.1);}
+.atom-btn.active{border-color:var(--gold);background:rgba(255,209,102,.1);box-shadow:0 0 16px rgba(255,209,102,.2);}
+.atom-btn span{font-family:'Cousine',monospace;font-size:.5rem;color:rgba(255,255,255,.4);margin-top:2px;}
+#atom-canvas{display:block;margin:0 auto 20px;border-radius:16px;}
+.atom-info{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
+.atom-stat{background:rgba(255,255,255,.04);border-radius:12px;padding:12px;text-align:center;border:1px solid rgba(255,255,255,.06);}
+.atom-stat .val{font-size:1.4rem;font-weight:800;color:var(--gold);}
+.atom-stat .lbl{font-family:'Cousine',monospace;font-size:.5rem;color:rgba(255,255,255,.3);margin-top:2px;}
+.atom-cosmic{font-size:.78rem;color:#7a9bbd;line-height:1.6;text-align:center;font-style:italic;
+  padding:12px;border-left:2px solid rgba(255,209,102,.3);}
+
+/* ── MOLECULES ── */
+.molecules-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(min-width:500px){.molecules-grid{grid-template-columns:repeat(3,1fr);}}
+.mol-card{background:rgba(255,255,255,.03);border:1.5px solid rgba(255,255,255,.07);border-radius:18px;
+  padding:16px 12px;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.mol-card::before{content:'';position:absolute;inset:0;background:var(--mol-color);opacity:0;transition:opacity .25s;border-radius:16px;}
+.mol-card:hover::before{opacity:.06;}
+.mol-card:hover{transform:translateY(-4px);border-color:var(--mol-color);box-shadow:0 8px 24px rgba(0,0,0,.3);}
+.mol-card.active{border-color:var(--mol-color);box-shadow:0 0 0 2px var(--mol-color);}
+.mol-svg{margin:0 auto 8px;}
+.mol-name{font-size:.8rem;font-weight:700;color:#e0ecff;margin-bottom:2px;}
+.mol-formula{font-family:'Cousine',monospace;font-size:.65rem;color:rgba(255,255,255,.35);}
+.mol-detail{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;
+  padding:20px;margin-top:20px;transition:all .3s;}
+.mol-detail h3{font-size:1rem;font-weight:800;color:var(--gold);margin-bottom:8px;}
+.mol-detail .mol-desc{font-size:.8rem;color:#8fb0d0;line-height:1.7;margin-bottom:12px;}
+.mol-cosmic-fact{font-size:.78rem;color:var(--cyan);font-style:italic;padding:10px 14px;
+  background:rgba(72,202,228,.05);border-radius:10px;border-left:2px solid rgba(72,202,228,.3);}
+
+/* ── FINALE ── */
+#finale{text-align:center;}
+.finale-quote{font-size:clamp(1rem,2.5vw,1.4rem);font-weight:800;color:#e0ecff;line-height:1.5;
+  margin:24px 0;max-width:480px;margin-left:auto;margin-right:auto;}
+.finale-quote em{color:var(--gold);font-style:normal;}
+.stardust-anim{width:200px;height:200px;margin:0 auto 24px;position:relative;}
+.star-explode{font-size:4rem;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:star-pulse 2s ease-in-out infinite;}
+.dust-dot{position:absolute;width:4px;height:4px;border-radius:50%;animation:dust-orbit linear infinite;}
+@keyframes dust-orbit{0%{transform:rotate(0deg) translateX(var(--r)) rotate(0deg);}100%{transform:rotate(360deg) translateX(var(--r)) rotate(-360deg);}}
+@keyframes star-pulse{0%,100%{filter:drop-shadow(0 0 8px var(--gold));}50%{filter:drop-shadow(0 0 30px var(--gold));}}
+.back-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--gold);color:#06081a;
+  border-radius:28px;text-decoration:none;font-weight:800;font-size:.9rem;transition:all .2s;margin-top:32px;}
+.back-btn:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(255,209,102,.35);}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s;}
+.reveal.visible{opacity:1;transform:none;}
+
+footer.page-footer{text-align:center;padding:40px 24px;font-family:'Cousine',monospace;font-size:.55rem;
+  color:rgba(255,255,255,.18);border-top:1px solid rgba(255,255,255,.05);}
+footer.page-footer a{color:rgba(72,202,228,.4);text-decoration:none;}
 
 /* ── MOLECULE BUILDER ── */
 .mol-pick-btn{padding:7px 14px;border-radius:20px;border:1.5px solid rgba(255,255,255,.12);
@@ -249,6 +475,73 @@ footer.page-footer a{color:rgba(72,202,228,.4);text-decoration:none;}
   box-shadow:0 4px 14px rgba(255,32,32,.4);}
 .b-atom-btn[data-el="H"]{width:38px;height:38px;font-size:.85rem;background:#e8e8e8;color:#222;
   box-shadow:0 4px 10px rgba(255,255,255,.15);}
+/* ── ACCELERATORE ── */
+#acc-ring{position:relative;width:100%;max-width:560px;height:160px;margin:0 auto;
+  background:rgba(0,0,0,.4);border-radius:20px;border:1.5px solid rgba(255,255,255,.08);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.acc-track{position:absolute;left:5%;right:5%;height:4px;background:rgba(72,202,228,.15);
+  border-radius:2px;top:50%;transform:translateY(-50%);}
+.acc-proton{position:absolute;top:50%;transform:translateY(-50%);
+  width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8c42,#e63900);
+  display:flex;align-items:center;justify-content:center;font-family:'Cousine',monospace;
+  font-weight:800;font-size:.85rem;color:#fff;box-shadow:0 0 16px rgba(255,100,0,.5);
+  transition:left .05s linear;}
+#acc-p1{left:8%;}
+#acc-p2{right:8%;}
+.acc-proton.moving-right{animation:accMoveRight .6s ease-in forwards;}
+.acc-proton.moving-left{animation:accMoveLeft .6s ease-in forwards;}
+@keyframes accMoveRight{to{left:46%;}}
+@keyframes accMoveLeft{to{right:46%;}}
+.acc-bang{font-size:3.5rem;animation:bangPop .4s ease-out forwards;}
+@keyframes bangPop{0%{transform:scale(0);}60%{transform:scale(1.4);}100%{transform:scale(1);}}
+#acc-collision{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;}
+.acc-hidden{display:none;}
+.acc-fragment{display:inline-block;padding:3px 8px;border-radius:10px;font-family:'Cousine',monospace;
+  font-size:.6rem;font-weight:700;animation:fragFly .6s ease-out forwards;}
+.acc-label{position:absolute;bottom:12px;left:0;right:0;text-align:center;
+  font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.25);}
+#acc-particles{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:300px;}
+@keyframes fragFly{0%{opacity:0;transform:scale(0) translateY(0);}
+  50%{opacity:1;transform:scale(1.2) translateY(-10px);}
+  100%{opacity:1;transform:scale(1) translateY(0);}}
+
+/* ── SCALA MATERIA ── */
+.scala-item{display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border-radius:14px;border:1.5px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.03);margin-bottom:10px;cursor:pointer;
+  transition:all .25s;position:relative;overflow:hidden;}
+.scala-item:hover,.scala-item.open{border-color:var(--item-color);
+  background:rgba(255,255,255,.06);box-shadow:0 4px 20px rgba(0,0,0,.3);}
+.scala-dot{width:18px;height:18px;border-radius:50%;background:var(--item-color);flex-shrink:0;}
+.scala-size{font-family:'Cousine',monospace;font-size:.55rem;color:rgba(255,255,255,.3);
+  margin-left:auto;flex-shrink:0;}
+.scala-name{font-weight:700;font-size:.9rem;color:#e0ecff;}
+.scala-detail{font-size:.78rem;color:#8fb0d0;line-height:1.6;
+  max-height:0;overflow:hidden;transition:max-height .35s ease,padding .25s;padding:0 0 0 32px;}
+.scala-item.open .scala-detail{max-height:120px;padding:8px 0 0 32px;}
+.scala-arrow{font-size:.7rem;color:rgba(255,255,255,.2);transition:transform .25s;flex-shrink:0;}
+.scala-item.open .scala-arrow{transform:rotate(90deg);}
+
+/* ── QUIZ ── */
+.quiz-card{background:rgba(0,0,0,.3);border:1.5px solid rgba(255,255,255,.07);
+  border-radius:18px;padding:24px;margin-bottom:16px;display:none;}
+.quiz-card.active{display:block;}
+.quiz-q{font-size:.95rem;font-weight:700;color:#e0ecff;margin-bottom:18px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:10px;}
+.quiz-opt{padding:11px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);color:#c8d8f0;font-family:'Baloo 2',cursive;
+  font-size:.82rem;cursor:pointer;transition:all .2s;text-align:left;}
+.quiz-opt:hover:not(:disabled){border-color:var(--cyan);background:rgba(72,202,228,.08);color:#e0ecff;}
+.quiz-opt.correct{border-color:#06d6a0;background:rgba(6,214,160,.12);color:#06d6a0;}
+.quiz-opt.wrong{border-color:#ff6b6b;background:rgba(255,107,107,.1);color:#ff6b6b;}
+.quiz-opt:disabled{cursor:default;}
+.quiz-explain{margin-top:12px;font-size:.78rem;color:#8fb0d0;line-height:1.6;
+  padding:10px 14px;background:rgba(255,255,255,.04);border-radius:10px;
+  border-left:3px solid rgba(255,209,102,.4);}
+.quiz-next{margin-top:14px;display:none;}
+.quiz-score{text-align:center;padding:24px;font-size:1.1rem;font-weight:700;display:none;}
+
 </style>
 </head>
 <body>
@@ -263,7 +556,8 @@ footer.page-footer a{color:rgba(72,202,228,.4);text-decoration:none;}
   <a href="#fusione">Fusione</a>
   <a href="#atomo">Atomo</a>
   <a href="#molecole">Molecole</a>
-  <a href="#builder">Costruttore</a>
+  <a href="#acceleratore">Acceleratore</a>
+  <a href="#quiz">Quiz</a>
 </nav>
 
 <!-- CELEBRATION -->
@@ -415,68 +709,56 @@ footer.page-footer a{color:rgba(72,202,228,.4);text-decoration:none;}
 
 <div class="divider"></div>
 
-<!-- ── SEZIONE 5: BUILDER ── -->
-<section id="builder">
+<!-- ── SEZIONE 5: ACCELERATORE ── -->
+<section id="acceleratore">
   <div class="sec-header reveal">
-    <div class="sec-num">05 — COSTRUTTORE MOLECOLARE</div>
-    <h2>Costruisci la<em>molecola</em></h2>
-    <p>Clicca gli atomi colorati per aggiungerli, spostali con il dito, poi collegali — come avete fatto con i blocchi in classe!</p>
-    <div class="sec-tag">🎮 Laboratorio interattivo</div>
+    <div class="sec-num">05 — ROMPI IL PROTONE!</div>
+    <h2>L'<em>Acceleratore</em> di Particelle</h2>
+    <p>Al CERN fanno scontrare protoni velocissimi per vedere cosa c'è dentro — come bambini che rompono un giocattolo per capire come funziona. Premi FUOCO!</p>
+    <div class="sec-tag">💥 Gioco interattivo</div>
   </div>
-
   <div class="reveal">
-
-    <!-- Molecule selector -->
-    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;">
-      <button class="mol-pick-btn active" id="mpH2O"  onclick="bSelectMol('H2O')">💧 H₂O — Acqua</button>
-      <button class="mol-pick-btn"        id="mpCH4"  onclick="bSelectMol('CH4')">💨 CH₄ — Metano</button>
-      <button class="mol-pick-btn"        id="mpCO2"  onclick="bSelectMol('CO2')">🌫 CO₂ — Anidride</button>
-      <button class="mol-pick-btn"        id="mpNH3"  onclick="bSelectMol('NH3')">🔵 NH₃ — Ammoniaca</button>
-    </div>
-
-    <!-- Goal hint -->
-    <div id="bGoal" style="text-align:center;font-size:.75rem;color:#8fb0d0;margin-bottom:10px;min-height:18px;"></div>
-    <!-- Atom counter -->
-    <div id="bCounter" style="text-align:center;font-family:'Cousine',monospace;font-size:.65rem;
-      color:rgba(255,255,255,.4);margin-bottom:12px;min-height:18px;"></div>
-
-    <!-- Canvas area -->
-    <div id="bCanvasWrap" style="border-radius:16px;overflow:hidden;background:rgba(0,0,0,.4);
-      border:1.5px solid rgba(255,255,255,.1);margin-bottom:16px;position:relative;">
-      <canvas id="bCanvas" style="display:block;touch-action:none;"></canvas>
-      <div id="bHint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-        pointer-events:none;font-size:.75rem;color:rgba(255,255,255,.2);font-family:'Cousine',monospace;">
-        ← aggiungi atomi qui sotto
+    <div id="acc-ring">
+      <div class="acc-track"></div>
+      <div class="acc-proton" id="acc-p1">p</div>
+      <div class="acc-proton" id="acc-p2">p</div>
+      <div id="acc-collision" class="acc-hidden">
+        <div class="acc-bang">💥</div>
+        <div id="acc-particles"></div>
       </div>
+      <div class="acc-label" id="acc-label">Premi FUOCO per accelerare i protoni →</div>
     </div>
-
-    <!-- Atom palette -->
-    <div style="display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;
-      padding:16px;background:rgba(255,255,255,.03);border-radius:14px;
-      border:1px solid rgba(255,255,255,.07);margin-bottom:14px;">
-      <div class="b-atom-btn" data-el="C" onclick="bAddAtom('C')">C</div>
-      <div class="b-atom-btn" data-el="N" onclick="bAddAtom('N')">N</div>
-      <div class="b-atom-btn" data-el="O" onclick="bAddAtom('O')">O</div>
-      <div class="b-atom-btn" data-el="H" onclick="bAddAtom('H')">H</div>
+    <div style="text-align:center;margin-top:20px;">
+      <button class="btn btn-primary" id="accBtn" onclick="accFire()">⚡ FUOCO!</button>
     </div>
-
-    <!-- Instructions -->
-    <div style="font-size:.72rem;color:#7a9bbd;line-height:1.7;text-align:center;margin-bottom:14px;">
-      <b style="color:#e0ecff">Aggiungi</b> atomi con i pulsanti ·
-      <b style="color:#e0ecff">Sposta</b> trascinando ·
-      <b style="color:#e0ecff">Collega</b> cliccando due atomi in sequenza ·
-      <b style="color:#e0ecff">Rimuovi</b> doppio-click su un atomo
-    </div>
-
-    <!-- Controls -->
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn btn-secondary" onclick="bUndo()">↩ Annulla</button>
-      <button class="btn btn-secondary" onclick="bClear()">🗑 Ricomincia</button>
-      <button class="btn btn-primary"   onclick="bCheck()">✓ Verifica!</button>
-    </div>
-    <div id="bFeedback" style="text-align:center;margin-top:14px;font-size:.85rem;
-      font-weight:700;min-height:24px;transition:all .3s;"></div>
+    <div id="acc-result" style="text-align:center;margin-top:16px;min-height:48px;font-size:.85rem;line-height:1.7;color:#8fb0d0;"></div>
   </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── SEZIONE 6: SCALA DELLA MATERIA ── -->
+<section id="scala">
+  <div class="sec-header reveal">
+    <div class="sec-num">06 — DAL PIÙ PICCOLO AL PIÙ GRANDE</div>
+    <h2>La <em>Scala della Materia</em></h2>
+    <p>Clicca ogni livello per scoprire cosa c'è dentro. Si va dai quark fino alla dopamina!</p>
+    <div class="sec-tag">🔍 Esplora</div>
+  </div>
+  <div class="reveal" id="scala-container"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── SEZIONE 7: QUIZ ── -->
+<section id="quiz">
+  <div class="sec-header reveal">
+    <div class="sec-num">07 — METTI ALLA PROVA</div>
+    <h2>Quiz <em>Particelle</em></h2>
+    <p>Tre domande. Sei pronto?</p>
+    <div class="sec-tag">🧠 Quiz</div>
+  </div>
+  <div class="reveal" id="quiz-container"></div>
 </section>
 
 <div class="divider"></div>
@@ -485,7 +767,7 @@ footer.page-footer a{color:rgba(72,202,228,.4);text-decoration:none;}
 <section id="finale">
   <div class="stardust-anim" id="stardustAnim"></div>
   <div class="sec-header reveal">
-    <div class="sec-num">05 — IL CERCHIO SI CHIUDE</div>
+    <div class="sec-num">08 — IL CERCHIO SI CHIUDE</div>
     <h2>Sei <em>polvere di stelle</em></h2>
   </div>
   <p class="finale-quote reveal">"Il carbonio nel tuo corpo, il ferro nel tuo sangue, il calcio nelle tue ossa — tutto è stato forgiato in una stella esplosa <em>miliardi di anni fa.</em>"</p>
@@ -502,7 +784,9 @@ footer.page-footer a{color:rgba(72,202,228,.4);text-decoration:none;}
 
 </div><!-- /page -->
 
+
 <script>
+
 // ══════════════════════════════════════════════
 //  STARFIELD
 // ══════════════════════════════════════════════
@@ -1113,326 +1397,6 @@ function showMolDetail(m,card){
 renderMolecules();
 
 // ══════════════════════════════════════════════
-//  MOLECULE BUILDER — v3 clean
-// ══════════════════════════════════════════════
-(function(){
-  const canvas = document.getElementById('bCanvas');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  // ── Sizing ──
-  function resize(){
-    const w = Math.min(680, window.innerWidth - 48);
-    canvas.width  = w;
-    canvas.height = Math.round(w * 0.6);
-    draw();
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  // ── CPK atom styles ──
-  const STYLE = {
-    C: {r:20, fill:'#1a1a1a', stroke:'#555', text:'#fff'},
-    N: {r:17, fill:'#00e5ff', stroke:'#00aabb', text:'#002'},
-    O: {r:17, fill:'#ff2020', stroke:'#cc0000', text:'#fff'},
-    H: {r:12, fill:'#e8e8e8', stroke:'#999',    text:'#222'},
-  };
-
-  // ── Molecule targets: just atom counts needed ──
-  const MOLS = {
-    H2O: {label:'H₂O — Acqua',       hint:'2 idrogeni + 1 ossigeno, collegati',   need:{H:2,O:1}},
-    CH4: {label:'CH₄ — Metano',      hint:'1 carbonio al centro + 4 idrogeni',    need:{C:1,H:4}},
-    CO2: {label:'CO₂ — Anidride carbonica', hint:'1 carbonio al centro + 2 ossigeni', need:{C:1,O:2}},
-    NH3: {label:'NH₃ — Ammoniaca',   hint:'1 azoto al centro + 3 idrogeni',       need:{N:1,H:3}},
-  };
-
-  // ── State ──
-  let atoms   = [];   // [{el,x,y}]
-  let bonds   = [];   // [{a,b}]
-  let history = [];   // for undo
-  let molKey  = 'H2O';
-  let linkSrc = -1;   // index of first atom selected for bonding, -1 = none
-  let dragIdx = -1;
-  let dragOX  = 0, dragOY = 0;
-  let isDragging = false;
-
-  // ── Helpers ──
-  function save(){
-    history.push({
-      atoms: atoms.map(a=>({...a})),
-      bonds: bonds.map(b=>({...b}))
-    });
-    if(history.length > 40) history.shift();
-  }
-
-  function atomAt(x,y){
-    for(let i=atoms.length-1;i>=0;i--){
-      const a=atoms[i], s=STYLE[a.el];
-      const dx=x-a.x, dy=y-a.y;
-      if(dx*dx+dy*dy <= (s.r+6)*(s.r+6)) return i;
-    }
-    return -1;
-  }
-
-  function pos(e){
-    const r = canvas.getBoundingClientRect();
-    const t = e.touches ? e.touches[0] : (e.changedTouches ? e.changedTouches[0] : e);
-    return { x: t.clientX - r.left, y: t.clientY - r.top };
-  }
-
-  // ── Spiral placement (no overlaps) ──
-  function findSpot(el){
-    const r = STYLE[el].r;
-    const cx = canvas.width/2, cy = canvas.height/2;
-    for(let i=0;i<150;i++){
-      const ring  = Math.floor(i/10)+1;
-      const angle = (i%10)*(Math.PI*2/10) + ring*0.5;
-      const dist  = ring * (r*2+10);
-      let x = cx + Math.cos(angle)*dist;
-      let y = cy + Math.sin(angle)*dist;
-      x = Math.max(r+6, Math.min(canvas.width -r-6, x));
-      y = Math.max(r+6, Math.min(canvas.height-r-6, y));
-      const ok = atoms.every(a=>{
-        const dx=a.x-x, dy=a.y-y;
-        return Math.sqrt(dx*dx+dy*dy) >= STYLE[a.el].r + r + 8;
-      });
-      if(ok) return {x,y};
-    }
-    // fallback
-    return {
-      x: r+6 + Math.random()*(canvas.width -2*r-12),
-      y: r+6 + Math.random()*(canvas.height-2*r-12)
-    };
-  }
-
-  // ── Draw ──
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    // grid dots
-    ctx.fillStyle='rgba(255,255,255,.04)';
-    for(let x=24;x<canvas.width;x+=32)
-      for(let y=24;y<canvas.height;y+=32){
-        ctx.beginPath(); ctx.arc(x,y,1,0,Math.PI*2); ctx.fill();
-      }
-
-    // hint overlay if empty
-    const hint = document.getElementById('bHint');
-    if(hint) hint.style.display = atoms.length===0 ? 'flex' : 'none';
-
-    // bonds
-    bonds.forEach(b=>{
-      const a1=atoms[b.a], a2=atoms[b.b];
-      if(!a1||!a2) return;
-      ctx.beginPath();
-      ctx.moveTo(a1.x,a1.y); ctx.lineTo(a2.x,a2.y);
-      ctx.strokeStyle='rgba(255,255,255,.55)';
-      ctx.lineWidth=4; ctx.lineCap='round'; ctx.stroke();
-      // store midpoint for click detection
-      b.mx=(a1.x+a2.x)/2; b.my=(a1.y+a2.y)/2;
-    });
-
-    // atoms
-    atoms.forEach((a,i)=>{
-      const s = STYLE[a.el];
-      const selected = (i === linkSrc);
-
-      // glow if selected for bonding
-      if(selected){
-        ctx.beginPath(); ctx.arc(a.x,a.y,s.r+8,0,Math.PI*2);
-        ctx.fillStyle='rgba(255,209,102,.2)'; ctx.fill();
-        ctx.beginPath(); ctx.arc(a.x,a.y,s.r+8,0,Math.PI*2);
-        ctx.strokeStyle='rgba(255,209,102,.7)';
-        ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke();
-        ctx.setLineDash([]);
-      }
-
-      // body
-      ctx.beginPath(); ctx.arc(a.x,a.y,s.r,0,Math.PI*2);
-      ctx.fillStyle=s.fill; ctx.fill();
-      ctx.strokeStyle=s.stroke; ctx.lineWidth=1.5; ctx.stroke();
-
-      // label
-      ctx.font=`bold ${Math.round(s.r*0.75)}px Cousine,monospace`;
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillStyle=s.text; ctx.fillText(a.el,a.x,a.y);
-    });
-
-    updateCounter();
-  }
-
-  function updateCounter(){
-    const mol = MOLS[molKey];
-    const have = {};
-    atoms.forEach(a=>{ have[a.el]=(have[a.el]||0)+1; });
-    const parts = Object.entries(mol.need).map(([el,n])=>{
-      const h = have[el]||0;
-      const ok = h===n;
-      const excess = h>n;
-      const col = ok?'#06d6a0': excess?'#ff6b6b':'rgba(255,255,255,.4)';
-      return `<span style="color:${col}">${el}: ${h}/${n}</span>`;
-    });
-    const el = document.getElementById('bCounter');
-    if(el) el.innerHTML = parts.join(' &nbsp;·&nbsp; ');
-  }
-
-  // ── Public API ──
-  window.bSelectMol = function(key){
-    molKey = key;
-    // update buttons
-    Object.keys(MOLS).forEach(k=>{
-      const btn = document.getElementById('mp'+k);
-      if(btn) btn.classList.toggle('active', k===key);
-    });
-    const hint = document.getElementById('bGoal');
-    if(hint) hint.textContent = MOLS[key].hint;
-    const fb = document.getElementById('bFeedback');
-    if(fb){ fb.textContent=''; }
-    draw();
-  };
-
-  window.bAddAtom = function(el){
-    save();
-    const {x,y} = findSpot(el);
-    atoms.push({el,x,y});
-    linkSrc = -1;
-    draw();
-    // flash the button
-    const btn = document.querySelector(`.b-atom-btn[data-el="${el}"]`);
-    if(btn){ btn.style.transform='scale(1.4)'; setTimeout(()=>btn.style.transform='',200); }
-  };
-
-  window.bClear = function(){
-    save();
-    atoms=[]; bonds=[]; linkSrc=-1;
-    document.getElementById('bFeedback').textContent='';
-    draw();
-  };
-
-  window.bUndo = function(){
-    if(!history.length) return;
-    const s = history.pop();
-    atoms = s.atoms; bonds = s.bonds; linkSrc=-1;
-    draw();
-  };
-
-  window.bCheck = function(){
-    const mol = MOLS[molKey];
-    const have = {};
-    atoms.forEach(a=>{ have[a.el]=(have[a.el]||0)+1; });
-    const fb = document.getElementById('bFeedback');
-
-    // check counts
-    for(const [el,n] of Object.entries(mol.need)){
-      if((have[el]||0) < n){
-        fb.style.color='#ff6b6b';
-        fb.textContent=`Mancano ${n-(have[el]||0)} atomi di ${el}!`; return;
-      }
-      if((have[el]||0) > n){
-        fb.style.color='#ff6b6b';
-        fb.textContent=`Troppi ${el}! Ne servono solo ${n}.`; return;
-      }
-    }
-    for(const [el,n] of Object.entries(have)){
-      if(n>0 && !mol.need[el]){
-        fb.style.color='#ff6b6b';
-        fb.textContent=`${el} non fa parte di questa molecola!`; return;
-      }
-    }
-    if(bonds.length === 0){
-      fb.style.color='#FFD166';
-      fb.textContent='Atomi giusti! Ora collegali cliccando due atomi in sequenza.'; return;
-    }
-    fb.style.color='#06d6a0';
-    fb.textContent='🎉 Bravissimo! Molecola costruita!';
-    celebrate();
-  };
-
-  // ── Pointer events — single unified handler ──
-  let lastTap = 0;
-
-  function onDown(e){
-    e.preventDefault();
-    const {x,y} = pos(e);
-    const ai = atomAt(x,y);
-
-    if(ai >= 0){
-      // double-tap/dblclick = remove atom
-      const now = Date.now();
-      if(now - lastTap < 300){
-        save();
-        bonds = bonds.filter(b=>b.a!==ai && b.b!==ai)
-          .map(b=>({a:b.a>ai?b.a-1:b.a, b:b.b>ai?b.b-1:b.b, mx:b.mx, my:b.my}));
-        atoms.splice(ai,1);
-        linkSrc=-1; draw(); lastTap=0; return;
-      }
-      lastTap = now;
-
-      // If we have a linkSrc, create bond
-      if(linkSrc >= 0 && linkSrc !== ai){
-        const dup = bonds.some(b=>(b.a===linkSrc&&b.b===ai)||(b.a===ai&&b.b===linkSrc));
-        if(!dup){ save(); bonds.push({a:linkSrc, b:ai}); }
-        linkSrc=-1; draw(); return;
-      }
-
-      // Start drag (and potentially bond source)
-      linkSrc = ai;
-      dragIdx = ai;
-      dragOX = x - atoms[ai].x;
-      dragOY = y - atoms[ai].y;
-      isDragging = false;
-    } else {
-      // Click on bond midpoint = delete bond
-      for(let i=bonds.length-1;i>=0;i--){
-        const b=bonds[i];
-        if(b.mx===undefined) continue;
-        const dx=x-b.mx, dy=y-b.my;
-        if(dx*dx+dy*dy < 200){
-          save(); bonds.splice(i,1); draw(); return;
-        }
-      }
-      linkSrc=-1; draw();
-    }
-  }
-
-  function onMove(e){
-    if(dragIdx<0) return;
-    e.preventDefault();
-    const {x,y} = pos(e);
-    const dx = x - (atoms[dragIdx].x + dragOX);
-    const dy = y - (atoms[dragIdx].y + dragOY);
-    if(Math.abs(dx)>3 || Math.abs(dy)>3) isDragging=true;
-    if(isDragging){
-      atoms[dragIdx].x = Math.max(STYLE[atoms[dragIdx].el].r+4, Math.min(canvas.width -STYLE[atoms[dragIdx].el].r-4, x-dragOX));
-      atoms[dragIdx].y = Math.max(STYLE[atoms[dragIdx].el].r+4, Math.min(canvas.height-STYLE[atoms[dragIdx].el].r-4, y-dragOY));
-      draw();
-    }
-  }
-
-  function onUp(e){
-    if(isDragging){
-      // was a drag, not a tap — clear linkSrc
-      linkSrc=-1; draw();
-    }
-    dragIdx=-1; isDragging=false;
-  }
-
-  canvas.addEventListener('mousedown',  onDown, {passive:false});
-  canvas.addEventListener('mousemove',  onMove, {passive:false});
-  canvas.addEventListener('mouseup',    onUp);
-  canvas.addEventListener('mouseleave', onUp);
-  canvas.addEventListener('touchstart', onDown, {passive:false});
-  canvas.addEventListener('touchmove',  onMove, {passive:false});
-  canvas.addEventListener('touchend',   onUp,   {passive:false});
-  canvas.addEventListener('dblclick',   onDown);
-  canvas.addEventListener('contextmenu',e=>e.preventDefault());
-
-  // init
-  bSelectMol('H2O');
-  draw();
-})();
-
-// ══════════════════════════════════════════════
 //  FINALE STARDUST ANIMATION
 // ══════════════════════════════════════════════
 (function(){
@@ -1457,6 +1421,229 @@ renderMolecules();
     container.querySelector('.star-explode').textContent='⭐';
   },1000);
 })();
+
+</script>
+
+<script>
+// ══════════════════════════════════════════════
+//  ACCELERATORE DI PARTICELLE
+// ══════════════════════════════════════════════
+var accState = 'ready'; // ready | running | exploded
+
+var COLLISIONS = [
+  { frags: ['⬆ Up','⬆ Up','⬇ Down','⬆ Up','⬆ Up','⬇ Down'],
+    colors: ['#ff8c42','#ff8c42','#748ffc','#ff8c42','#ff8c42','#748ffc'],
+    text: '🎉 Hai trovato 6 quark! 3+3 quark formano 2 protoni — poi si riassemblano!',
+    sub: 'Gli acceleratori vedono quark per pochi istanti prima che si riassemblino.' },
+  { frags: ['⬆ Up','⬇ Down','⬇ Down','γ','γ','π⁺'],
+    colors: ['#ff8c42','#748ffc','#748ffc','#FFD166','#FFD166','#06d6a0'],
+    text: '💥 Scontro potente! Escono quark, fotoni (γ) e un pione (π⁺) — una particella rarissima!',
+    sub: 'Al CERN i protoni vengono accelerati quasi alla velocità della luce prima di scontrarsi.' },
+  { frags: ['⬆ Up','⬆ Up','⬇ Down','e⁺','νe','gluone'],
+    colors: ['#ff8c42','#ff8c42','#748ffc','#ff7eb3','#48cae4','#c08aff'],
+    text: '🌟 Incredibile! Quark, un positrone (e⁺), un neutrino (νe) e persino un gluone — la colla tra i quark!',
+    sub: 'I gluoni tengono insieme i quark dentro i protoni — senza di loro la materia si dissolverebbe!' },
+];
+var accRound = 0;
+
+function accFire() {
+  if (accState === 'running') return;
+  accState = 'running';
+  document.getElementById('accBtn').disabled = true;
+  document.getElementById('acc-result').textContent = '';
+  document.getElementById('acc-collision').classList.add('acc-hidden');
+  document.getElementById('acc-label').textContent = '⚡ Accelerando...';
+
+  // Reset proton positions
+  var p1 = document.getElementById('acc-p1');
+  var p2 = document.getElementById('acc-p2');
+  p1.style.cssText = 'left:8%;top:50%;transform:translateY(-50%)';
+  p2.style.cssText = 'right:8%;top:50%;transform:translateY(-50%)';
+  p1.className = 'acc-proton';
+  p2.className = 'acc-proton';
+
+  // Animate track glow
+  document.querySelector('.acc-track').style.background = 'rgba(72,202,228,.4)';
+  document.querySelector('.acc-track').style.boxShadow = '0 0 12px rgba(72,202,228,.6)';
+
+  // Move protons toward center
+  setTimeout(function() {
+    p1.style.transition = 'left .7s ease-in';
+    p2.style.transition = 'right .7s ease-in';
+    p1.style.left = '44%';
+    p2.style.right = '44%';
+  }, 200);
+
+  // Collision!
+  setTimeout(function() {
+    p1.style.display = 'none';
+    p2.style.display = 'none';
+
+    var col = COLLISIONS[accRound % COLLISIONS.length];
+    var collision = document.getElementById('acc-collision');
+    var particles = document.getElementById('acc-particles');
+
+    particles.innerHTML = col.frags.map(function(f, i) {
+      return '<span class="acc-fragment" style="background:' + col.colors[i] + '22;color:' +
+        col.colors[i] + ';border:1px solid ' + col.colors[i] + '66;animation-delay:' +
+        (i * 0.08) + 's">' + f + '</span>';
+    }).join('');
+
+    collision.classList.remove('acc-hidden');
+    document.getElementById('acc-label').textContent = '💥 SCONTRO!';
+
+    document.getElementById('acc-result').innerHTML =
+      '<b style="color:#FFD166">' + col.text + '</b><br>' +
+      '<span style="font-size:.75rem;color:rgba(255,255,255,.4)">' + col.sub + '</span>';
+
+    accRound++;
+    accState = 'exploded';
+    document.querySelector('.acc-track').style.background = 'rgba(255,100,0,.3)';
+
+    setTimeout(function() {
+      document.getElementById('accBtn').disabled = false;
+      document.getElementById('accBtn').textContent = '⚡ Ancora!';
+      p1.style.display = '';
+      p2.style.display = '';
+      p1.style.transition = '';
+      p2.style.transition = '';
+      p1.style.left = '8%';
+      p2.style.right = '8%';
+      document.querySelector('.acc-track').style.background = 'rgba(72,202,228,.15)';
+      document.querySelector('.acc-track').style.boxShadow = '';
+      document.getElementById('acc-label').textContent = 'Premi ancora per un nuovo scontro →';
+      accState = 'ready';
+    }, 2500);
+  }, 950);
+}
+
+// ══════════════════════════════════════════════
+//  SCALA DELLA MATERIA
+// ══════════════════════════════════════════════
+var SCALA = [
+  { name:'Quark', size:'~10⁻¹⁸ m', emoji:'✦', color:'#c08aff',
+    detail:'I quark sono i mattoncini più piccoli che conosciamo. Non esistono da soli: si tengono stretti con la "colla" dei gluoni. Ci sono 6 tipi: Up, Down, Strange, Charm, Bottom, Top.' },
+  { name:'Protone & Neutrone', size:'~10⁻¹⁵ m', emoji:'⚡', color:'#ff8c42',
+    detail:'3 quark legati insieme formano un protone (UUD) o un neutrone (UDD). Il protone ha carica +1, il neutrone è neutro. Abitano nel nucleo dell\'atomo.' },
+  { name:'Nucleo atomico', size:'~10⁻¹⁴ m', emoji:'🎯', color:'#FFD166',
+    detail:'Protoni e neutroni si stringono insieme nel nucleo. Il numero di protoni decide che elemento sei: 1 protone = idrogeno, 6 protoni = carbonio, 8 protoni = ossigeno.' },
+  { name:'Atomo', size:'~10⁻¹⁰ m', emoji:'⭕', color:'#48cae4',
+    detail:'Il nucleo sta al centro, gli elettroni orbitano intorno velocissimi. L\'atomo è per lo più vuoto — se il nucleo fosse una mela al centro di uno stadio, gli elettroni sarebbero sugli spalti!' },
+  { name:'Molecola', size:'~10⁻⁹ m', emoji:'🔗', color:'#06d6a0',
+    detail:'Più atomi si uniscono con i legami chimici formando molecole. H₂O è acqua (2H+1O), CO₂ è anidride carbonica, O₂ è l\'ossigeno che respiri.' },
+  { name:'Dopamina', size:'~1 nm', emoji:'😊', color:'#ff7eb3',
+    detail:'La dopamina (C₈H₁₁NO₂) è la molecola della felicità! 8 carboni, 11 idrogeni, 1 azoto, 2 ossigeni. Il tuo cervello la produce quando sei felice, curioso o scopri qualcosa di nuovo — come adesso!' },
+];
+
+var scalaContainer = document.getElementById('scala-container');
+SCALA.forEach(function(item, idx) {
+  var div = document.createElement('div');
+  div.className = 'scala-item';
+  div.style.setProperty('--item-color', item.color);
+  div.innerHTML = '<div class="scala-dot"></div>' +
+    '<div style="flex:1"><div class="scala-name">' + item.emoji + ' ' + item.name + '</div>' +
+    '<div class="scala-detail">' + item.detail + '</div></div>' +
+    '<div class="scala-size">' + item.size + '</div>' +
+    '<div class="scala-arrow">▶</div>';
+  div.addEventListener('click', function() {
+    var isOpen = div.classList.contains('open');
+    document.querySelectorAll('.scala-item').forEach(function(el) { el.classList.remove('open'); });
+    if (!isOpen) div.classList.add('open');
+  });
+  scalaContainer.appendChild(div);
+});
+
+// ══════════════════════════════════════════════
+//  QUIZ PARTICELLE
+// ══════════════════════════════════════════════
+var QUESTIONS = [
+  { q: '🔬 Quanti quark ci sono in un protone?',
+    opts: ['2 quark', '3 quark', '4 quark'],
+    correct: 1,
+    explain: 'Giusto! 3 quark: due Up (⬆) e un Down (⬇). La combinazione UUD dà carica +1 al protone.' },
+  { q: '💥 Al CERN fanno scontrare i protoni per…',
+    opts: ['Scaldarli', 'Vedere i quark dentro', 'Creare oro'],
+    correct: 1,
+    explain: 'Esatto! Come rompere un giocattolo per vedere come funziona — solo che il "giocattolo" è grande come un protone (0,000000000000001 mm)!' },
+  { q: '😊 La dopamina è una…',
+    opts: ['Stella', 'Molecola', 'Quark'],
+    correct: 1,
+    explain: 'Sì! La dopamina è una molecola fatta di 8 carboni, 11 idrogeni, 1 azoto e 2 ossigeni. È la molecola che il cervello produce quando sei felice e curioso!' },
+];
+
+var qCurrent = 0;
+var qScore = 0;
+
+function buildQuiz() {
+  var container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+
+  QUESTIONS.forEach(function(q, qi) {
+    var card = document.createElement('div');
+    card.className = 'quiz-card' + (qi === 0 ? ' active' : '');
+    card.id = 'qcard-' + qi;
+    card.innerHTML = '<div class="quiz-q">Domanda ' + (qi+1) + ' / ' + QUESTIONS.length + '<br>' + q.q + '</div>' +
+      '<div class="quiz-opts">' +
+      q.opts.map(function(opt, oi) {
+        return '<button class="quiz-opt" onclick="quizAnswer(' + qi + ',' + oi + ')">' + opt + '</button>';
+      }).join('') + '</div>' +
+      '<div class="quiz-explain" id="qexp-' + qi + '" style="display:none">' + q.explain + '</div>' +
+      '<div class="quiz-next" id="qnext-' + qi + '">' +
+      (qi < QUESTIONS.length - 1
+        ? '<button class="btn btn-secondary" onclick="quizNext(' + (qi+1) + ')">Prossima →</button>'
+        : '<button class="btn btn-primary" onclick="quizFinish()">Vedi il risultato 🎉</button>') +
+      '</div>';
+    container.appendChild(card);
+  });
+
+  var scoreDiv = document.createElement('div');
+  scoreDiv.className = 'quiz-score';
+  scoreDiv.id = 'quiz-score';
+  container.appendChild(scoreDiv);
+}
+
+function quizAnswer(qi, oi) {
+  var q = QUESTIONS[qi];
+  var opts = document.querySelectorAll('#qcard-' + qi + ' .quiz-opt');
+  opts.forEach(function(btn) { btn.disabled = true; });
+  if (oi === q.correct) {
+    opts[oi].classList.add('correct');
+    qScore++;
+  } else {
+    opts[oi].classList.add('wrong');
+    opts[q.correct].classList.add('correct');
+  }
+  document.getElementById('qexp-' + qi).style.display = 'block';
+  document.getElementById('qnext-' + qi).style.display = 'block';
+}
+
+function quizNext(qi) {
+  document.querySelectorAll('.quiz-card').forEach(function(c) { c.classList.remove('active'); });
+  document.getElementById('qcard-' + qi).classList.add('active');
+}
+
+function quizFinish() {
+  document.querySelectorAll('.quiz-card').forEach(function(c) { c.classList.remove('active'); });
+  var scoreDiv = document.getElementById('quiz-score');
+  scoreDiv.style.display = 'block';
+  var msgs = [
+    { min: 3, icon: '🏆', msg: 'Perfetto! Sei un vero fisico delle particelle!', col: '#FFD166' },
+    { min: 2, icon: '⭐', msg: 'Bravissimo! Quasi un ricercatore del CERN!', col: '#48cae4' },
+    { min: 0, icon: '💫', msg: 'Continua a esplorare — le stelle ti aspettano!', col: '#c08aff' },
+  ];
+  var result = msgs.find(function(m) { return qScore >= m.min; });
+  scoreDiv.innerHTML = '<div style="font-size:3rem">' + result.icon + '</div>' +
+    '<div style="color:' + result.col + ';font-size:1.4rem;margin:8px 0">' + qScore + ' / ' + QUESTIONS.length + '</div>' +
+    '<div style="color:#8fb0d0;font-size:.85rem">' + result.msg + '</div>' +
+    '<button class="btn btn-secondary" style="margin-top:16px" onclick="quizReset()">🔄 Riprova</button>';
+}
+
+function quizReset() {
+  qScore = 0;
+  buildQuiz();
+}
+
+buildQuiz();
 </script>
 </body>
 </html>
