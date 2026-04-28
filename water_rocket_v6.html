@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 Razzo ad Acqua — Simulatore di Lancio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Nunito:wght@700;800;900&family=Orbitron:wght@700;900&display=swap');
+
+:root {
+  --bg:     #07111f;
+  --grid:   rgba(60,130,220,0.09);
+  --blue:   #3d8fe0;
+  --cyan:   #00d9ff;
+  --yellow: #ffe44d;
+  --red:    #ff4d4d;
+  --green:  #4dffaa;
+  --purple: #c97fff;
+  --orange: #ff9a3c;
+  --white:  #dceeff;
+  --panel:  rgba(8,25,55,0.88);
+  --border: rgba(61,143,224,0.30);
+  --mono:   'Share Tech Mono', monospace;
+  --kid:    'Nunito', sans-serif;
+  --orb:    'Orbitron', sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--white);
+  min-height:100vh;
+  padding: 18px 14px;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* ── HEADER ─────────────────────────────── */
+.hdr { text-align:center; margin-bottom:22px; }
+.hdr-title { font-family:var(--orb); font-size:clamp(1.2rem,4vw,2rem); color:var(--cyan); letter-spacing:4px; text-shadow:0 0 24px rgba(0,217,255,.45); }
+.hdr-sub   { font-family:var(--kid); font-size:.88rem; color:var(--blue); margin-top:4px; letter-spacing:1px; }
+.hdr-badge { display:inline-block; margin-top:8px; border:1px solid var(--cyan); color:var(--cyan); padding:2px 14px; border-radius:20px; font-size:.65rem; letter-spacing:2px; background:rgba(0,217,255,.07); }
+
+/* ── LAYOUT ──────────────────────────────── */
+.wrap { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:320px 1fr; gap:16px; }
+@media(max-width:880px){ .wrap{grid-template-columns:1fr;} }
+
+/* ── PANEL ───────────────────────────────── */
+.panel { background:var(--panel); border:1px solid var(--border); border-radius:5px; padding:18px; position:relative; }
+.panel[data-lbl]::before { content:attr(data-lbl); position:absolute; top:-9px; left:14px; background:var(--bg); padding:0 8px; color:var(--blue); font-size:.6rem; letter-spacing:3px; text-transform:uppercase; }
+.ptitle { font-family:var(--kid); font-size:.95rem; font-weight:900; color:var(--cyan); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+
+/* ── INPUTS ──────────────────────────────── */
+.ig { margin-bottom:12px; }
+.ilbl { display:block; font-size:.6rem; color:var(--blue); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:3px; }
+.ilbl .kl { font-family:var(--kid); color:var(--yellow); font-size:.78rem; font-weight:800; letter-spacing:0; text-transform:none; }
+.irow { display:flex; align-items:center; gap:8px; }
+input[type=range] { flex:1; -webkit-appearance:none; height:3px; background:var(--border); border-radius:2px; outline:none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; background:var(--cyan); border-radius:50%; cursor:pointer; box-shadow:0 0 7px rgba(0,217,255,.7); }
+input[type=number] { width:66px; background:rgba(0,0,0,.45); border:1px solid var(--border); color:var(--cyan); font-family:var(--mono); font-size:.88rem; padding:4px 7px; border-radius:3px; text-align:center; }
+input[type=number]:focus{border-color:var(--cyan);outline:none;}
+.utag{font-size:.65rem;color:var(--blue);min-width:24px;}
+
+/* ── KID METER ───────────────────────────── */
+/* piccola barra colorata con emoji che si sposta */
+.kid-meter { margin-top:5px; }
+.kid-meter-bar { height:6px; background:rgba(255,255,255,.07); border-radius:3px; overflow:hidden; margin-bottom:3px; }
+.kid-meter-fill { height:100%; border-radius:3px; transition:width .3s; }
+.kid-meter-text { font-family:var(--kid); font-size:.72rem; color:var(--yellow); font-weight:800; }
+.kid-meter-comp { font-family:var(--kid); font-size:.68rem; color:rgba(220,238,255,.5); margin-top:1px; }
+
+/* ── DUAL UNIT BOX (per i risultati) ─────── */
+.dunit { display:flex; flex-direction:column; align-items:center; gap:1px; }
+.dunit-main { font-family:var(--orb); font-size:1.35rem; font-weight:900; color:var(--white); line-height:1; }
+.dunit-alt  { font-size:.68rem; color:var(--cyan); opacity:.8; }
+.dunit-unit { font-size:.6rem; color:var(--blue); }
+
+/* ── RESULT CARDS ────────────────────────── */
+.rcards { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+@media(max-width:600px){ .rcards{grid-template-columns:repeat(2,1fr);} }
+.rcard { background:rgba(0,0,0,.38); border:1px solid var(--border); border-radius:4px; padding:12px 8px; text-align:center; position:relative; overflow:hidden; }
+.rcard::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.rcard.v-rocket::before { background:var(--cyan); }
+.rcard.h-max::before    { background:var(--green); }
+.rcard.f-max::before    { background:var(--red); }
+.rcard.f-land::before   { background:var(--purple); }
+.rlbl { font-size:.58rem; color:var(--blue); letter-spacing:2px; text-transform:uppercase; margin-bottom:5px; }
+.rkid { font-family:var(--kid); font-size:.68rem; color:var(--yellow); margin-top:6px; font-weight:800; line-height:1.3; }
+
+/* ── MASS BOX ────────────────────────────── */
+.mbox { background:rgba(0,0,0,.28); border:1px solid var(--border); border-radius:4px; padding:10px 12px; margin:8px 0; }
+.mrow { display:flex; justify-content:space-between; font-size:.78rem; color:var(--blue); margin-bottom:4px; }
+.mrow.tot { color:var(--yellow); border-top:1px solid var(--border); padding-top:5px; margin-top:3px; }
+.mrow strong { color:var(--white); }
+
+/* ── CD REFERENCE ────────────────────────── */
+.cd-ref { background:rgba(0,0,0,.3); border:1px solid var(--border); border-radius:4px; padding:10px; margin-top:6px; }
+.cd-ref-title { font-family:var(--kid); font-size:.7rem; font-weight:900; color:var(--blue); margin-bottom:7px; letter-spacing:1px; }
+.cd-ref-item  { display:flex; align-items:center; gap:7px; margin-bottom:5px; cursor:pointer; border-radius:3px; padding:3px 5px; transition:background .15s; }
+.cd-ref-item:hover { background:rgba(61,143,224,.1); }
+.cd-ref-item.active { background:rgba(0,217,255,.1); }
+.cd-ref-icon  { font-size:1rem; width:22px; text-align:center; }
+.cd-ref-info  { flex:1; }
+.cd-ref-name  { font-family:var(--kid); font-size:.7rem; font-weight:800; color:var(--white); }
+.cd-ref-val   { font-size:.62rem; color:var(--cyan); }
+.cd-ref-dot   { width:8px; height:8px; border-radius:50%; border:1.5px solid var(--border); flex-shrink:0; }
+.cd-ref-item.active .cd-ref-dot { background:var(--cyan); border-color:var(--cyan); }
+
+/* ── BUTTONS ─────────────────────────────── */
+.btn-calc { width:100%; margin-top:12px; padding:13px; background:transparent; border:1.5px solid var(--cyan); color:var(--cyan); font-family:var(--orb); font-size:.85rem; letter-spacing:3px; text-transform:uppercase; border-radius:4px; cursor:pointer; transition:all .2s; }
+.btn-calc:hover { background:rgba(0,217,255,.1); box-shadow:0 0 18px rgba(0,217,255,.25); }
+.btn-pre  { width:100%; padding:8px; background:rgba(255,228,77,.07); border:1px solid rgba(255,228,77,.35); color:var(--yellow); font-family:var(--mono); font-size:.68rem; letter-spacing:2px; border-radius:3px; cursor:pointer; margin-top:7px; transition:all .15s; }
+.btn-pre:hover { background:rgba(255,228,77,.14); }
+.btn-opt  { width:100%; padding:11px; background:rgba(77,255,170,.07); border:1.5px solid rgba(77,255,170,.5); color:var(--green); font-family:var(--orb); font-size:.75rem; letter-spacing:2px; text-transform:uppercase; border-radius:4px; cursor:pointer; margin-top:8px; transition:all .2s; }
+.btn-opt:hover  { background:rgba(77,255,170,.14); box-shadow:0 0 14px rgba(77,255,170,.2); }
+.btn-opt:disabled { opacity:.5; cursor:wait; }
+
+/* ── RIGHT COLUMN ────────────────────────── */
+.rcol { display:flex; flex-direction:column; gap:14px; }
+.cpanel canvas { display:block; width:100%; }
+
+/* ── SPACE FACTS ─────────────────────────── */
+.facts-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:600px){ .facts-grid{grid-template-columns:1fr;} }
+.fact-card { background:rgba(0,0,0,.32); border:1px solid var(--border); border-radius:4px; padding:13px; }
+.fact-icon  { font-size:1.6rem; margin-bottom:6px; }
+.fact-title { font-family:var(--kid); font-size:.8rem; font-weight:900; margin-bottom:5px; }
+.fact-text  { font-family:var(--kid); font-size:.7rem; color:rgba(220,238,255,.6); line-height:1.6; }
+.fact-text strong { color:var(--cyan); }
+.fact-text .highlight { color:var(--yellow); font-weight:800; }
+
+/* ── OPT RESULT ──────────────────────────── */
+.opt-result { display:none; background:rgba(0,217,255,.07); border:1px solid rgba(0,217,255,.35); border-radius:4px; padding:14px; margin-top:12px; }
+.opt-result-title { font-family:var(--kid); font-size:.78rem; font-weight:900; color:var(--cyan); margin-bottom:8px; }
+.opt-result-body  { font-family:var(--kid); font-size:.72rem; color:rgba(220,238,255,.7); line-height:1.9; }
+.opt-result-hint  { font-family:var(--kid); font-size:.65rem; color:rgba(220,238,255,.35); margin-top:6px; }
+
+/* ── PHASE CARDS ─────────────────────────── */
+.pnote { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:600px){ .pnote{grid-template-columns:1fr;} }
+.pcard { background:rgba(0,0,0,.28); border:1px solid var(--border); border-radius:4px; padding:12px; }
+.pcard-title { font-family:var(--kid); font-size:.78rem; font-weight:900; margin-bottom:6px; }
+.pcard-text  { font-family:var(--kid); font-size:.7rem; color:rgba(220,238,255,.6); line-height:1.55; }
+.pcard-text strong { color:var(--cyan); }
+
+
+/* ── EMPIRICAL SECTION ───────────────────────────────── */
+.emp-panel { background:rgba(255,228,77,.04); border:1px solid rgba(255,228,77,.28); }
+.emp-panel[data-lbl]::before { color:var(--yellow); }
+.emp-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:600px){ .emp-grid{grid-template-columns:1fr;} }
+.emp-input-group { display:flex; flex-direction:column; gap:6px; }
+.emp-label { font-family:var(--kid); font-size:.75rem; font-weight:900; color:var(--yellow); }
+.emp-sublabel { font-family:var(--kid); font-size:.65rem; color:rgba(220,238,255,.45); margin-top:-4px; }
+.emp-irow { display:flex; align-items:center; gap:8px; }
+.emp-irow input[type=number] { width:90px; border-color:rgba(255,228,77,.4); color:var(--yellow); }
+.emp-irow input[type=number]:focus { border-color:var(--yellow); }
+.emp-utag { font-size:.68rem; color:var(--yellow); opacity:.6; }
+.btn-emp { width:100%; padding:12px; background:rgba(255,228,77,.08); border:1.5px solid rgba(255,228,77,.5); color:var(--yellow); font-family:var(--orb); font-size:.8rem; letter-spacing:2px; text-transform:uppercase; border-radius:4px; cursor:pointer; margin-top:14px; transition:all .2s; }
+.btn-emp:hover { background:rgba(255,228,77,.15); box-shadow:0 0 16px rgba(255,228,77,.2); }
+.cmp-table { width:100%; border-collapse:collapse; margin-top:14px; font-size:.75rem; }
+.cmp-table th { font-family:var(--kid); font-weight:900; font-size:.65rem; letter-spacing:2px; text-transform:uppercase; padding:8px 10px; border-bottom:1px solid var(--border); color:var(--blue); text-align:left; }
+.cmp-table td { padding:9px 10px; border-bottom:1px solid rgba(61,143,224,.12); font-family:var(--mono); }
+.cmp-table tr:last-child td { border-bottom:none; }
+.val-teorico { color:var(--cyan); }
+.val-reale   { color:var(--yellow); }
+.val-err     { font-family:var(--kid); font-weight:900; }
+.err-good    { color:var(--green); }
+.err-mid     { color:var(--orange); }
+.err-bad     { color:var(--red); }
+.verdict-box { margin-top:14px; background:rgba(0,0,0,.3); border-radius:4px; padding:14px; border-left:3px solid var(--green); }
+.verdict-title { font-family:var(--kid); font-size:.85rem; font-weight:900; color:var(--green); margin-bottom:6px; }
+.verdict-text  { font-family:var(--kid); font-size:.75rem; color:rgba(220,238,255,.7); line-height:1.6; }
+.verdict-text strong { color:var(--white); }
+.popper-quote { font-family:var(--kid); font-style:italic; font-size:.72rem; color:rgba(220,238,255,.4); margin-top:8px; border-top:1px solid var(--border); padding-top:8px; }
+.cmp-canvas-wrap { margin-top:14px; }
+
+.footer { text-align:center; margin-top:22px; font-size:.62rem; color:rgba(61,143,224,.4); letter-spacing:2px; text-transform:uppercase; }
+
+/* ── ROCKET SVG ──────────────────────────── */
+.rsvg-wrap { text-align:center; margin:10px 0 6px; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-title">🚀 RAZZO AD ACQUA</div>
+  <div class="hdr-sub">Simulatore di Lancio — Le stesse equazioni dei veri razzi spaziali!</div>
+  <span class="hdr-badge">COL NASO ALL'INSÙ · RIVOTORTO DI ASSISI</span>
+</div>
+
+<div class="wrap">
+
+<!-- ═══ PANNELLO CONTROLLI ══════════════════ -->
+<div class="panel" data-lbl="PARAMETRI DI LANCIO">
+  <div class="ptitle">⚙️ Imposta il tuo razzo</div>
+
+  <!-- SVG razzo animato -->
+  <div class="rsvg-wrap">
+    <svg id="rsvg" width="110" height="190" viewBox="0 0 110 190" xmlns="http://www.w3.org/2000/svg">
+      <rect x="30" y="55" width="50" height="105" rx="5" fill="rgba(7,17,31,.95)" stroke="rgba(61,143,224,.6)" stroke-width="1.4"/>
+      <rect id="svgWater" x="31" y="105" width="48" height="54" fill="rgba(0,150,255,.25)"/>
+      <rect id="svgAir"   x="31" y="56"  width="48" height="49" fill="rgba(0,217,255,.07)"/>
+      <line id="svgWline" x1="31" y1="105" x2="79" y2="105" stroke="rgba(0,150,255,.5)" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <polygon points="55,8 30,55 80,55" fill="rgba(7,17,31,.95)" stroke="rgba(61,143,224,.55)" stroke-width="1.4"/>
+      <rect x="45" y="160" width="20" height="10" rx="2" fill="rgba(7,17,31,.95)" stroke="rgba(61,143,224,.45)" stroke-width="1.3"/>
+      <polygon points="30,140 7,165 30,162"   fill="rgba(7,17,31,.9)" stroke="rgba(61,143,224,.45)" stroke-width="1.3"/>
+      <polygon points="80,140 103,165 80,162" fill="rgba(7,17,31,.9)" stroke="rgba(61,143,224,.45)" stroke-width="1.3"/>
+      <text id="svgPressLbl" x="55" y="85"  text-anchor="middle" font-family="Share Tech Mono" font-size="7.5" fill="rgba(0,217,255,.7)">-- bar</text>
+      <text id="svgWaterLbl" x="55" y="136" text-anchor="middle" font-family="Share Tech Mono" font-size="7.5" fill="rgba(0,150,255,.8)">-- mL</text>
+      <line x1="55" y1="172" x2="55" y2="186" stroke="rgba(255,77,77,.8)" stroke-width="2"/>
+      <polygon points="55,188 51,179 59,179" fill="rgba(255,77,77,.8)"/>
+    </svg>
+  </div>
+
+  <!-- ── PRESSIONE ─────────────────────── -->
+  <div class="ig">
+    <label class="ilbl">Pressione 🌬️ <span class="kl">Quanta aria comprimi?</span></label>
+    <div class="irow">
+      <input type="range" id="sPress" min="1" max="10" value="4" step="0.5">
+      <input type="number" id="nPress" value="4" min="1" max="10" step="0.5">
+      <span class="utag">bar</span>
+    </div>
+    <div class="kid-meter">
+      <div class="kid-meter-bar"><div class="kid-meter-fill" id="pressBar" style="width:60%;background:linear-gradient(90deg,#3d8fe0,#00d9ff)"></div></div>
+      <div class="kid-meter-text" id="pressKid">⛽ 7 bar = 101 psi</div>
+      <div class="kid-meter-comp" id="pressComp">Come 7 gomme di bici gonfiate insieme!</div>
+    </div>
+  </div>
+
+  <!-- ── ACQUA ──────────────────────────── -->
+  <div class="ig">
+    <label class="ilbl">Acqua 💧 <span class="kl">Quanta ne metti?</span></label>
+    <div class="irow">
+      <input type="range" id="sWater" min="0" max="1400" value="500" step="10">
+      <input type="number" id="nWater" value="500" min="0" max="1400">
+      <span class="utag">mL</span>
+    </div>
+    <!-- Barra a zone: poca / ottimale / troppa -->
+    <div style="margin-top:6px;">
+      <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;position:relative;gap:1px;">
+        <div style="flex:0 0 25%;background:rgba(255,77,77,.35);border-radius:5px 0 0 5px;" title="Poca acqua"></div>
+        <div style="flex:0 0 30%;background:rgba(77,255,170,.45);" title="Zona ottimale"></div>
+        <div style="flex:1;background:rgba(255,150,60,.35);border-radius:0 5px 5px 0;" title="Troppa acqua"></div>
+        <!-- Indicatore posizione corrente -->
+        <div id="waterMarker" style="position:absolute;top:-2px;width:4px;height:14px;background:#fff;border-radius:2px;transform:translateX(-2px);transition:left .2s;left:34%;box-shadow:0 0 5px rgba(255,255,255,.8);"></div>
+        <!-- Stella ottimale -->
+        <div style="position:absolute;top:-8px;left:37%;font-size:10px;color:#4dffaa;opacity:.8;" id="waterOptStar">★</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:3px;">
+        <span style="font-family:var(--kid);font-size:.6rem;color:rgba(255,77,77,.7);">⚠️ poca</span>
+        <span style="font-family:var(--kid);font-size:.6rem;color:#4dffaa;" id="waterOptLabel">✨ ottimale ~500mL</span>
+        <span style="font-family:var(--kid);font-size:.6rem;color:rgba(255,150,60,.7);">⚠️ troppa</span>
+      </div>
+    </div>
+    <div class="kid-meter" style="margin-top:4px;">
+      <div class="kid-meter-text" id="waterKid">💧 500 mL = 1/3 della bottiglia</div>
+      <div class="kid-meter-comp" id="waterComp" style="margin-top:2px;font-size:.72rem;"></div>
+    </div>
+  </div>
+
+  <!-- ── MASSA RAZZO ────────────────────── -->
+  <div class="ig">
+    <label class="ilbl">Razzo vuoto ⚖️ <span class="kl">Quanto pesa la bottiglia?</span></label>
+    <div class="irow">
+      <input type="range" id="sMass" min="40" max="250" value="110" step="5">
+      <input type="number" id="nMass" value="110" min="40" max="250">
+      <span class="utag">g</span>
+    </div>
+    <div class="kid-meter">
+      <div class="kid-meter-bar"><div class="kid-meter-fill" id="massBar" style="width:45%;background:linear-gradient(90deg,#c97fff,#3d8fe0)"></div></div>
+      <div class="kid-meter-comp" id="massComp">Come una mela grande!</div>
+    </div>
+  </div>
+
+  <!-- ── DRAG COEFFICIENT ───────────────── -->
+  <div class="ig">
+    <label class="ilbl">Resistenza aria (Cd) <span class="kl">Quanto il razzo "taglia" l'aria?</span></label>
+    <div class="irow">
+      <input type="range" id="sCd" min="0.05" max="1.5" value="0.50" step="0.01">
+      <input type="number" id="nCd" value="0.50" min="0.05" max="1.5" step="0.01">
+    </div>
+    <!-- Riferimenti Cd -->
+    <div class="cd-ref">
+      <div class="cd-ref-title">👇 Clicca la forma più simile al tuo razzo:</div>
+      <div class="cd-ref-item active" onclick="setCd(0.50)" id="cdItem0">
+        <span class="cd-ref-icon">🍾</span>
+        <div class="cd-ref-info">
+          <div class="cd-ref-name">Bottiglia liscia</div>
+          <div class="cd-ref-val">Cd 0.50 · il nostro razzo a scuola ✅</div>
+        </div>
+        <div class="cd-ref-dot"></div>
+      </div>
+      <div class="cd-ref-item" onclick="setCd(0.30)" id="cdItem1">
+        <span class="cd-ref-icon">🚀</span>
+        <div class="cd-ref-info">
+          <div class="cd-ref-name">Bottiglia + cono a punta</div>
+          <div class="cd-ref-val">Cd 0.30 · razzo costruito bene</div>
+        </div>
+        <div class="cd-ref-dot"></div>
+      </div>
+      <div class="cd-ref-item" onclick="setCd(0.15)" id="cdItem2">
+        <span class="cd-ref-icon">🏆</span>
+        <div class="cd-ref-info">
+          <div class="cd-ref-name">Razzo da competizione</div>
+          <div class="cd-ref-val">Cd 0.15 · cono + alette perfette</div>
+        </div>
+        <div class="cd-ref-dot"></div>
+      </div>
+      <div class="cd-ref-item" onclick="setCd(0.47)" id="cdItem3">
+        <span class="cd-ref-icon">⚽</span>
+        <div class="cd-ref-info">
+          <div class="cd-ref-name">Pallone da calcio</div>
+          <div class="cd-ref-val">Cd 0.47 · forma rotonda</div>
+        </div>
+        <div class="cd-ref-dot"></div>
+      </div>
+      <div class="cd-ref-item" onclick="setCd(1.05)" id="cdItem4">
+        <span class="cd-ref-icon">🧱</span>
+        <div class="cd-ref-info">
+          <div class="cd-ref-name">Mattone</div>
+          <div class="cd-ref-val">Cd 1.05 · forma peggiore possibile!</div>
+        </div>
+        <div class="cd-ref-dot"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── EFFICIENZA LANCIO ─────────────────── -->
+  <div class="ig">
+    <label class="ilbl">Efficienza lancio 🎯 <span class="kl">Quanto è dritto il volo?</span></label>
+    <div class="irow">
+      <input type="range" id="sEff" min="0.2" max="1.0" value="0.75" step="0.05">
+      <input type="number" id="nEff" value="75" min="20" max="100">
+      <span class="utag">%</span>
+    </div>
+    <div class="kid-meter">
+      <div class="kid-meter-bar"><div class="kid-meter-fill" id="effBar" style="width:75%;background:linear-gradient(90deg,#ff9a3c,#ffe44d)"></div></div>
+      <div class="kid-meter-text" id="effKid">🎯 75% — lancio tipico a scuola</div>
+      <div class="kid-meter-comp" id="effComp">Perdite per angolo, meccanismo, attrito</div>
+    </div>
+  </div>
+
+  <!-- Riepilogo masse -->
+  <div class="mbox">
+    <div class="mrow"><span>🚀 Razzo vuoto</span><strong id="dEmpty">110 g</strong></div>
+    <div class="mrow"><span>💧 Acqua</span><strong id="dWater">500 g</strong></div>
+    <div class="mrow tot"><span>⚖️ TOTALE AL LANCIO</span><strong id="dTotal">610 g</strong></div>
+  </div>
+
+  <button class="btn-pre"  onclick="preset()">📦 PRESET SCUOLA — 4 bar · 500 mL · 110 g</button>
+  <button class="btn-calc" onclick="simulate()">▶ SIMULA LANCIO</button>
+  <button class="btn-opt"  id="btnOpt" onclick="optimize()">🎯 TROVA ACQUA OTTIMALE</button>
+
+  <!-- Risultato ottimizzazione -->
+  <div class="opt-result" id="optResult">
+    <div class="opt-result-title">🏆 ACQUA OTTIMALE TROVATA!</div>
+    <div class="opt-result-body">
+      💧 Quantità ideale: <strong style="color:var(--yellow);font-size:1rem" id="optWater">—</strong> mL<br>
+      📏 Altezza massima: <strong style="color:var(--green);font-size:1rem" id="optHeight">—</strong> m<br>
+      📊 Percentuale bottiglia: <strong style="color:var(--yellow)" id="optFrac">—</strong>%
+    </div>
+    <div class="opt-result-hint">👆 Lo slider è impostato al valore ottimale!</div>
+  </div>
+</div><!-- fine pannello sx -->
+
+<!-- ═══ COLONNA RISULTATI ═══════════════════ -->
+<div class="rcol">
+
+  <!-- 4 risultati principali con doppia unità -->
+  <div class="panel" data-lbl="DATI DI VOLO">
+    <div class="rcards">
+
+      <div class="rcard v-rocket">
+        <div class="rlbl">Velocità razzo</div>
+        <div class="dunit">
+          <div class="dunit-main" id="rVr">—</div>
+          <div class="dunit-unit">m/s</div>
+          <div class="dunit-alt" id="rVrKmh">— km/h</div>
+        </div>
+        <div class="rkid" id="rVrKid">🚀 —</div>
+      </div>
+
+      <div class="rcard h-max">
+        <div class="rlbl">Altezza max</div>
+        <div class="dunit">
+          <div class="dunit-main" id="rH">—</div>
+          <div class="dunit-unit">metri</div>
+          <div class="dunit-alt" id="rHFt">— piani</div>
+        </div>
+        <div class="rkid" id="rHKid">📏 —</div>
+      </div>
+
+      <div class="rcard f-max">
+        <div class="rlbl">Forza massima</div>
+        <div class="dunit">
+          <div class="dunit-main" id="rFmax">—</div>
+          <div class="dunit-unit">Newton</div>
+          <div class="dunit-alt" id="rFmaxKg">— kg·forza</div>
+        </div>
+        <div class="rkid" id="rFmaxKid">🔥 —</div>
+      </div>
+
+      <div class="rcard f-land">
+        <div class="rlbl">Atterraggio</div>
+        <div class="dunit">
+          <div class="dunit-main" id="rVland">—</div>
+          <div class="dunit-unit">m/s</div>
+          <div class="dunit-alt" id="rVlandKmh">— km/h</div>
+        </div>
+        <div class="rkid" id="rFlandKid">🪂 —</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GRAFICO TRAIETTORIA -->
+  <div class="panel cpanel" data-lbl="TRAIETTORIA — ALTEZZA NEL TEMPO">
+    <canvas id="cTraj" height="220"></canvas>
+  </div>
+
+  <!-- GRAFICO VELOCITÀ + SPINTA -->
+  <div class="panel cpanel" data-lbl="VELOCITÀ E SPINTA NEL TEMPO">
+    <canvas id="cVel" height="180"></canvas>
+  </div>
+
+  <!-- GRAFICO OTTIMIZZAZIONE -->
+  <div class="panel cpanel" id="optPanel" data-lbl="OTTIMIZZAZIONE — ACQUA vs ALTEZZA MASSIMA" style="display:none;">
+    <canvas id="cOpt" height="200"></canvas>
+  </div>
+
+  <!-- FATTI SPAZIALI PER BAMBINI -->
+  <div class="panel" data-lbl="LO SAPEVI? — LE STESSE EQUAZIONI DEI VERI RAZZI!">
+    <div class="facts-grid">
+
+      <div class="fact-card">
+        <div class="fact-icon">🛸</div>
+        <div class="fact-title" style="color:var(--cyan)">La 3ª legge di Newton</div>
+        <div class="fact-text">
+          La stessa legge che fa volare il tuo razzo ad acqua manda nello spazio
+          <strong>Artemis, Falcon 9 e la ISS</strong>! Newton la scrisse nel 1687.
+          <span class="highlight">Azione = Reazione:</span> l'acqua va giù → il razzo va su. Sempre!
+        </div>
+      </div>
+
+      <div class="fact-card">
+        <div class="fact-icon">📐</div>
+        <div class="fact-title" style="color:var(--yellow)">L'equazione di Bernoulli</div>
+        <div class="fact-text">
+          Calcoliamo la velocità dell'acqua con la formula di Bernoulli (1738).
+          <strong>Gli ingegneri NASA</strong> la usano per calcolare
+          i motori dello Space Shuttle e del razzo Saturn V che portò l'uomo sulla Luna!
+        </div>
+      </div>
+
+      <div class="fact-card">
+        <div class="fact-icon">🌡️</div>
+        <div class="fact-title" style="color:var(--red)">Espansione adiabatica</div>
+        <div class="fact-text">
+          L'aria nel razzo si espande così velocemente che si
+          <strong>raffredda da sola</strong> — come quando apri una lattina!
+          Questo fenomeno fisico si chiama <span class="highlight">adiabatico</span>
+          e accade anche nei motori dei jet.
+        </div>
+      </div>
+
+      <div class="fact-card">
+        <div class="fact-icon">🏆</div>
+        <div class="fact-title" style="color:var(--green)">Il record mondiale</div>
+        <div class="fact-text">
+          Il record mondiale per un razzo ad acqua è <strong>623 metri</strong>!
+          Con la forma perfetta e tanta pressione. Il tuo razzo scolastico
+          a 4 bar arriva a <span class="highlight">~10-15 metri — alto quanto 4 giraffe</span>!
+          Già fantastico per una bottiglia di plastica 🦒🦒🦒🦒
+        </div>
+      </div>
+
+      <div class="fact-card">
+        <div class="fact-icon">💨</div>
+        <div class="fact-title" style="color:var(--purple)">Il coefficiente di drag (Cd)</div>
+        <div class="fact-text">
+          Gli ingegneri passano anni a ridurre il Cd.
+          Una <strong>Ferrari stradale</strong> ha Cd ≈ 0.30.
+          I razzi spaziali arrivano a <span class="highlight">Cd ≈ 0.05</span>
+          grazie alle forme a ogiva perfette. Il nostro razzo (0.50) perde
+          più energia per l'aria — ecco perché il cono aiuta tantissimo!
+        </div>
+      </div>
+
+      <div class="fact-card">
+        <div class="fact-icon">🔢</div>
+        <div class="fact-title" style="color:var(--orange)">Pressione = energia compressa</div>
+        <div class="fact-text">
+          1 bar è la pressione dell'atmosfera terrestre.
+          <strong>7 bar</strong> = come avere 7 atmosfere dentro una bottiglia!
+          Il motore Vulcain di Ariane 5 lavora a <span class="highlight">~115 bar</span>
+          nella camera di combustione — 16 volte la nostra bottiglia!
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FASI DI VOLO -->
+  <div class="panel" data-lbl="COME FUNZIONA — 3 FASI DEL VOLO">
+    <div class="pnote">
+      <div class="pcard">
+        <div class="pcard-title" style="color:var(--red)">🔥 FASE 1 — Propulsione acqua (~0.06s)</div>
+        <div class="pcard-text">
+          L'aria compressa spinge l'acqua fuori a <strong>~36 m/s</strong>.
+          Per la <strong>3ª legge di Newton</strong>: acqua va GIÙ → razzo va SU.
+          Come quando butti fuori aria da un palloncino: il palloncino schizza via!
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-title" style="color:var(--cyan)">💨 FASE 2 — Propulsione aria (~0.05s)</div>
+        <div class="pcard-text">
+          Acqua finita! Ma c'è ancora aria compressa che spinge.
+          Piccola spinta extra prima dello spegnimento del motore.
+          Tutto questo avviene in meno di <strong>1/10 di secondo!</strong>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-title" style="color:var(--green)">🌿 FASE 3 — Volo balistico</div>
+        <div class="pcard-text">
+          Motore spento! Il razzo sale per <strong>inerzia</strong>,
+          rallenta per la gravità, raggiunge l'apogeo e ricade.
+          Come una palla lanciata in aria. Newton la chiamava <strong>"moto proiettile"</strong>.
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-title" style="color:var(--yellow)">⚖️ IL SEGRETO DELL'ACQUA OTTIMALE</div>
+        <div class="pcard-text">
+          Troppa acqua = razzo pesante → bassa quota.<br>
+          Poca acqua = poca spinta → bassa quota.<br>
+          <strong>Il punto magico</strong> è ~1/3 del volume della bottiglia —
+          il simulatore lo trova per te! 🎯
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- fine rcol -->
+
+</div><!-- fine wrap -->
+
+<!-- ═══ SEZIONE EMPIRICA (larghezza piena) ═══════════════════════════════ -->
+<div style="max-width:1200px;margin:14px auto;">
+<div class="panel emp-panel" data-lbl="📋 DATI EMPIRICI — VERIFICA DOPO IL LANCIO">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:start;">
+
+    <!-- Colonna 1: metodo scientifico intro -->
+    <div>
+      <div class="ptitle" style="color:var(--yellow)">🔬 Il Metodo Scientifico</div>
+      <div style="font-family:var(--kid);font-size:.78rem;color:rgba(220,238,255,.65);line-height:1.7;margin-bottom:12px;">
+        Prima del lancio il simulatore fa una <strong style="color:var(--cyan)">previsione teorica</strong>.<br>
+        Dopo il lancio misurate i dati reali.<br>
+        Poi confrontate: <strong style="color:var(--yellow)">la teoria corrisponde alla realtà?</strong><br><br>
+        È esattamente così che lavorano gli scienziati della NASA quando progettano un razzo! 🚀
+      </div>
+      <div style="background:rgba(0,217,255,.07);border:1px solid rgba(0,217,255,.2);border-radius:4px;padding:10px 12px;">
+        <div style="font-family:var(--kid);font-size:.7rem;font-weight:900;color:var(--cyan);margin-bottom:5px;">📌 COME MISURARE L'ALTEZZA</div>
+        <div style="font-family:var(--kid);font-size:.68rem;color:rgba(220,238,255,.55);line-height:1.6;">
+          <strong style="color:var(--white)">Metodo del triangolo:</strong><br>
+          1. Un bambino tende il braccio verso il razzo al momento del picco<br>
+          2. Un adulto misura l'angolo con un goniometro di cartone<br>
+          3. Conosci la distanza → calcoli l'altezza con la tangente!<br>
+          <strong style="color:var(--white)">Metodo cronometro:</strong><br>
+          Misura il tempo di volo totale → usa il simulatore per confrontarlo!
+        </div>
+      </div>
+    </div>
+
+    <!-- Colonna 2: input dati reali -->
+    <div>
+      <div class="ptitle" style="color:var(--yellow)">📐 Inserisci i dati misurati</div>
+      <div class="emp-grid" style="grid-template-columns:1fr 1fr;">
+
+        <div class="emp-input-group">
+          <div class="emp-label">📏 Altezza raggiunta</div>
+          <div class="emp-sublabel">Misurata visivamente o con angolo</div>
+          <div class="emp-irow">
+            <input type="number" id="empH" placeholder="—" min="0" max="200" step="0.1">
+            <span class="emp-utag">m</span>
+          </div>
+        </div>
+
+        <div class="emp-input-group">
+          <div class="emp-label">⏱️ Tempo di volo</div>
+          <div class="emp-sublabel">Dal lancio all'atterraggio</div>
+          <div class="emp-irow">
+            <input type="number" id="empT" placeholder="—" min="0" max="60" step="0.1">
+            <span class="emp-utag">s</span>
+          </div>
+        </div>
+
+        <div class="emp-input-group">
+          <div class="emp-label">🌡️ Pressione reale</div>
+          <div class="emp-sublabel">Dal manometro al lancio</div>
+          <div class="emp-irow">
+            <input type="number" id="empP" placeholder="—" min="0" max="12" step="0.5">
+            <span class="emp-utag">bar</span>
+          </div>
+        </div>
+
+        <div class="emp-input-group">
+          <div class="emp-label">💧 Acqua usata</div>
+          <div class="emp-sublabel">Misurata con bicchiere</div>
+          <div class="emp-irow">
+            <input type="number" id="empW" placeholder="—" min="0" max="1500" step="10">
+            <span class="emp-utag">mL</span>
+          </div>
+        </div>
+
+        <div class="emp-input-group" style="grid-column:1/-1;">
+          <div class="emp-label">📝 Note / osservazioni</div>
+          <div class="emp-sublabel">Vento? Angolo storto? Perdite d'acqua?</div>
+          <input type="text" id="empNote" placeholder="es: vento da sinistra, razzo inclinato..." style="width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(255,228,77,.3);color:var(--yellow);font-family:var(--kid);font-size:.75rem;padding:6px 9px;border-radius:3px;">
+        </div>
+
+      </div>
+      <button class="btn-emp" onclick="confronta()">⚖️ CONFRONTA TEORIA VS REALTÀ</button>
+    </div>
+
+    <!-- Colonna 3: risultati confronto -->
+    <div id="cmpResult" style="display:none;">
+      <div class="ptitle" style="color:var(--green)">📊 Risultato del confronto</div>
+      <table class="cmp-table">
+        <thead>
+          <tr><th>Parametro</th><th class="val-teorico">Teorico</th><th class="val-reale">Reale</th><th>Errore</th></tr>
+        </thead>
+        <tbody id="cmpBody"></tbody>
+      </table>
+      <div class="cmp-canvas-wrap">
+        <canvas id="cCmp" height="160"></canvas>
+      </div>
+      <div class="verdict-box" id="verdictBox">
+        <div class="verdict-title" id="verdictTitle">—</div>
+        <div class="verdict-text" id="verdictText">—</div>
+        <div class="popper-quote" id="popperQuote"></div>
+      </div>
+    </div>
+
+  </div><!-- fine 3-col grid -->
+
+  <!-- Storico lanci -->
+  <div id="histSection" style="display:none;margin-top:18px;border-top:1px solid var(--border);padding-top:14px;">
+    <div class="ptitle" style="color:var(--blue);margin-bottom:10px;">📚 Storico lanci — tutti i voli di oggi</div>
+    <div id="histTable"></div>
+  </div>
+
+</div><!-- fine emp-panel -->
+</div><!-- fine max-width wrapper -->
+
+<div class="footer">
+  🔭 Col Naso all'Insù · Scuola dell'Infanzia Fratello Sole · Rivotorto di Assisi · IC Assisi 1
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  COSTANTI FISICHE (calibrate su AirCommand/Wheeler)
+// ═══════════════════════════════════════════════════════
+var G       = 9.81;
+var RHO_W   = 1000;
+var RHO_AIR = 1.225;
+var P_ATM   = 101325;
+var GAMMA   = 1.4;
+var V_BOT   = 1.48e-3;
+var D_BOT   = 0.094;  // diametro reale bottiglia 1.5L
+var A_FRONT = Math.PI * Math.pow(D_BOT/2, 2);
+var CD_NOZ  = 0.97;  // collo bottiglia PET industriale (raccordato, Wheeler)
+var D_NOZ   = 0.022;
+var A_NOZ   = Math.PI * Math.pow(D_NOZ/2, 2);
+
+// CD dinamico (modificabile dall'utente)
+var CD = 0.50;  // bottiglia semplice senza cono (tipico scuola)
+var LAUNCH_EFF = 0.75; // efficienza lancio 0-1 (angolo, perdite, meccanismo)
+
+// ═══════════════════════════════════════════════════════
+//  SYNC SLIDER ↔ NUMBER
+// ═══════════════════════════════════════════════════════
+function sync(sid, nid, cb) {
+  var sl = document.getElementById(sid);
+  var nm = document.getElementById(nid);
+  sl.addEventListener('input', function(){ nm.value = sl.value; if(cb) cb(); updateViz(); simulate(); });
+  nm.addEventListener('input', function(){ sl.value = nm.value; if(cb) cb(); updateViz(); simulate(); });
+}
+sync('sPress','nPress');
+sync('sWater','nWater');
+sync('sMass', 'nMass');
+
+// Efficiency slider: input is 0.2-1.0, display as %
+(function(){
+  var sl = document.getElementById('sEff');
+  var nm = document.getElementById('nEff');
+  function upd(val){
+    val = parseFloat(val);
+    if(isNaN(val)||val<=0) val=0.75;
+    LAUNCH_EFF = val;
+    sl.value = val;
+    nm.value = Math.round(val * 100);
+    var pct = Math.round(val * 100);
+    document.getElementById('effBar').style.width = pct + '%';
+    var kid='', comp='';
+    if(pct <= 30){ kid='😬 '+pct+'% — volo molto storto!'; comp='Razzo quasi orizzontale, poca quota'; }
+    else if(pct <= 50){ kid='😐 '+pct+'% — volo non ottimale'; comp='Angolo e perdite meccaniche significative'; }
+    else if(pct <= 70){ kid='🙂 '+pct+'% — abbastanza dritto'; comp='Tipico con launcher semplice'; }
+    else if(pct <= 85){ kid='😊 '+pct+'% — lancio buono'; comp='Lanciatore fisso, quasi verticale'; }
+    else if(pct <= 95){ kid='🏆 '+pct+'% — lancio ottimo!'; comp='Perfettamente verticale, nessuna perdita'; }
+    else { kid='🚀 100% — lancio da competizione!'; comp='Condizioni ideali perfette'; }
+    document.getElementById('effKid').textContent = kid;
+    document.getElementById('effComp').textContent = comp;
+    updateViz(); simulate();
+  }
+  sl.addEventListener('input', function(){ upd(sl.value); });
+  nm.addEventListener('input', function(){ var v=parseFloat(nm.value)||75; upd(v/100); });
+})();
+
+sync('sCd', 'nCd', function(){
+  CD = parseFloat(document.getElementById('nCd').value) || 0.50;
+  var cdVals=[0.50,0.30,0.15,0.47,1.05];
+  for(var i=0;i<5;i++){
+    var el=document.getElementById('cdItem'+i);
+    if(!el) continue;
+    if(Math.abs(cdVals[i]-CD)<0.001) el.classList.add('active');
+    else el.classList.remove('active');
+  }
+});
+
+// ═══════════════════════════════════════════════════════
+//  SET CD DA PRESET
+// ═══════════════════════════════════════════════════════
+function setCd(val) {
+  CD = parseFloat(val);
+  document.getElementById('sCd').value = val;
+  document.getElementById('nCd').value = val;
+  var cdVals = [0.50, 0.30, 0.15, 0.47, 1.05];
+  for(var i=0;i<5;i++){
+    var el = document.getElementById('cdItem'+i);
+    if(!el) continue;
+    if(Math.abs(cdVals[i]-CD)<0.001) el.classList.add('active');
+    else el.classList.remove('active');
+  }
+  updateViz(); simulate();
+}
+
+// ═══════════════════════════════════════════════════════
+//  COMPARATORI KID-FRIENDLY
+// ═══════════════════════════════════════════════════════
+function pressureKid(bar) {
+  var psi = (bar * 14.504).toFixed(0);
+  var text = bar + ' bar = ' + psi + ' PSI';
+  var comp = '';
+  if      (bar <= 1.5) comp = 'Come gonfiare un materassino gonfiabile 🏊';
+  else if (bar <= 3)   comp = 'Come la gomma di una mountain bike 🚵';
+  else if (bar <= 5)   comp = 'Come la gomma di una bici da corsa 🚴';
+  else if (bar <= 7)   comp = 'Come la gomma di un furgone 🚐';
+  else if (bar <= 8)   comp = 'Come la gomma di un camion pesante 🚛';
+  else                 comp = '⚠️ Pressione molto alta — sii prudente!';
+  return { text: text, comp: comp, pct: Math.min(100, bar/10*100) };
+}
+
+function waterKid(ml) {
+  var bottleML = V_BOT * 1000;  // ~1500 mL
+  var pct  = Math.round(ml / bottleML * 100);
+  var glass = (ml / 250).toFixed(1);
+  var text = ml + ' mL — ' + pct + '% della bottiglia';
+  var comp = '';
+  var zone = ''; // 'low','ok','high'
+
+  if (ml <= 100) {
+    comp = '❌ Troppo poca! L\'aria non ha acqua da spingere → poca spinta.';
+    zone = 'low';
+  } else if (ml <= 300) {
+    comp = '⚠️ Poca acqua: il razzo è leggero ma la spinta dura poco. Sale meno.';
+    zone = 'low';
+  } else if (ml <= 420) {
+    comp = '↗️ Quasi ottimale! Prova ad aumentare ancora un po\'.';
+    zone = 'ok';
+  } else if (ml <= 650) {
+    comp = '✨ ZONA OTTIMALE! Il miglior equilibrio tra spinta e peso. Vola più in alto!';
+    zone = 'ok';
+  } else if (ml <= 850) {
+    comp = '↘️ Inizia ad essere troppa: il razzo diventa pesante. Perde quota.';
+    zone = 'high';
+  } else if (ml <= 1100) {
+    comp = '⚠️ Troppa acqua! Il razzo è troppo pesante per salire bene.';
+    zone = 'high';
+  } else {
+    comp = '❌ Quasi piena! Quasi tutta la bottiglia è occupata dall\'acqua → pochissima aria compressa → quasi nessuna spinta.';
+    zone = 'high';
+  }
+  return { text: text, comp: comp, pct: Math.min(100, ml/1400*100), zone: zone };
+}
+
+function massKid(g) {
+  var comp = '';
+  if      (g <= 60)  comp = 'Come una palla da tennis (56g) 🎾';
+  else if (g <= 100) comp = 'Come una mela piccola (~100g) 🍎';
+  else if (g <= 140) comp = 'Come una mela grande (~130g) 🍎';
+  else if (g <= 200) comp = 'Come un vasetto di yogurt (150g) 🥛';
+  else               comp = 'Come mezzo pacco di pasta (250g) 🍝';
+  return { comp: comp, pct: Math.min(100, (g-40)/210*100) };
+}
+
+function velocityKid(ms) {
+  var kmh = ms * 3.6;
+  var comp = '';
+  if      (ms <= 5)  comp = 'Come una bici in discesa (18 km/h) 🚲';
+  else if (ms <= 14) comp = 'Come uno scooter in città (50 km/h) 🛵';
+  else if (ms <= 30) comp = 'Come una macchina in autostrada (108 km/h) 🚗';
+  else if (ms <= 55) comp = 'Come una moto in autostrada (200 km/h) 🏍️';
+  else if (ms <= 80) comp = 'Come un aereo al decollo (288 km/h) ✈️';
+  else               comp = 'Velocità da razzo vero! 🚀';
+  return { kmh: kmh.toFixed(0), comp: comp };
+}
+
+function heightKid(m) {
+  var floors = Math.round(m / 3.2);
+  var comp   = '';
+  if      (m < 3)   comp = '🌳 come un albero piccolo';
+  else if (m < 6)   comp = '🏠 come la nostra scuola (1 piano)';
+  else if (m < 12)  comp = '🏘️ come una casa di 2-3 piani';
+  else if (m < 25)  comp = '🏢 come un palazzo di ' + floors + ' piani';
+  else if (m < 50)  comp = '⛪ come il campanile di Rivotorto!';
+  else if (m < 60)  comp = '🗼 alto come la Torre di Pisa (56m)!';
+  else              comp = '🚀 altezza da razzo da competizione!';
+  return { floors: floors, comp: comp };
+}
+
+function forceKid(N, mTot) {
+  var kgf = (N / 9.81).toFixed(0);
+  var g_s = (N / (mTot * 9.81)).toFixed(1);
+  var comp = '';
+  if      (N < 50)  comp = 'Come spingere forte una porta 💪';
+  else if (N < 120) comp = 'Come sollevare un bambino di ' + Math.round(N/9.81) + ' kg 👦';
+  else if (N < 300) comp = 'Come sollevare ' + Math.round(N/9.81) + ' kg (un adulto!) 🏋️';
+  else if (N < 600) comp = 'Come sollevare ' + Math.round(N/9.81) + ' kg — forza enorme! 💥';
+  else              comp = 'Come sollevare ' + Math.round(N/9.81) + ' kg — forza da gru! 🏗️';
+  return { kgf: kgf, g_s: g_s, comp: comp };
+}
+
+// ═══════════════════════════════════════════════════════
+//  AGGIORNA VISUALIZZAZIONI INPUT
+// ═══════════════════════════════════════════════════════
+function updateViz() {
+  var press  = parseFloat(document.getElementById('nPress').value) || 7;
+  var waterML= parseFloat(document.getElementById('nWater').value) || 0;
+  var emptyG = parseFloat(document.getElementById('nMass').value)  || 110;
+
+  // SVG razzo
+  var frac  = Math.min(1, waterML / 1400);
+  var bodyH = 103;
+  var wH    = Math.round(frac * bodyH);
+  var wTop  = 56 + (bodyH - wH);
+  document.getElementById('svgWater').setAttribute('y',      wTop);
+  document.getElementById('svgWater').setAttribute('height', wH);
+  document.getElementById('svgAir').setAttribute('height',   bodyH - wH);
+  document.getElementById('svgWline').setAttribute('y1', wTop);
+  document.getElementById('svgWline').setAttribute('y2', wTop);
+  document.getElementById('svgPressLbl').textContent = press + ' bar';
+  document.getElementById('svgWaterLbl').textContent = waterML + ' mL';
+
+  // Massa summary
+  document.getElementById('dEmpty').textContent = emptyG + ' g';
+  document.getElementById('dWater').textContent = waterML + ' g';
+  document.getElementById('dTotal').textContent = (emptyG + waterML) + ' g';
+
+  // Kid meters
+  var pk = pressureKid(press);
+  document.getElementById('pressBar').style.width = pk.pct + '%';
+  document.getElementById('pressKid').textContent  = '⛽ ' + pk.text;
+  document.getElementById('pressComp').textContent = pk.comp;
+
+  var wk = waterKid(waterML);
+  // Move position marker on zone bar (0-1400mL maps to 0-100%)
+  var markerPct = Math.min(98, Math.max(1, waterML / 1400 * 100));
+  var markerEl  = document.getElementById('waterMarker');
+  if (markerEl) markerEl.style.left = markerPct + '%';
+  var zoneColors = { low:'rgba(255,77,77,.9)', ok:'#4dffaa', high:'rgba(255,150,60,.9)' };
+  var compEl = document.getElementById('waterComp');
+  if (compEl) { compEl.style.color = zoneColors[wk.zone] || 'rgba(220,238,255,.55)'; compEl.textContent = wk.comp; }
+  document.getElementById('waterKid').textContent  = '💧 ' + wk.text;
+
+  var mk = massKid(emptyG);
+  document.getElementById('massBar').style.width = mk.pct + '%';
+  document.getElementById('massComp').textContent = mk.comp;
+}
+
+// ═══════════════════════════════════════════════════════
+//  MOTORE FISICO — INTEGRAZIONE NUMERICA (EULERO)
+// ═══════════════════════════════════════════════════════
+function runSim(P0_gauge, V_water0, m_empty, recordFull) {
+  var V_air0 = V_BOT - V_water0;
+  if (V_air0 <= 1e-9) V_air0 = 1e-9;
+  var P0_abs = P0_gauge + P_ATM;
+  var dt = 0.0005, maxSteps = 40000;
+  var t=0, h=0, v=0;
+  var V_air=V_air0, V_water=V_water0;
+  var m = m_empty + V_water * RHO_W;
+  var tArr=[], hArr=[], vArr=[], fArr=[];
+  var F_peak=0, phase=1, v_land=0, h_max=0, v_max=0;
+
+  for (var i=0; i<maxSteps; i++) {
+    var F_drag    = 0.5 * RHO_AIR * CD * A_FRONT * v * v;
+    var drag_sign = (v >= 0) ? -1 : 1;
+    var F_thrust  = 0;
+
+    if (phase === 1) {
+      var P_abs = P0_abs * Math.pow(V_air0 / V_air, GAMMA);
+      var dP    = P_abs - P_ATM;
+      if (dP <= 0 || V_water <= 1e-9) {
+        phase = 2;
+      } else {
+        var v_e      = CD_NOZ * Math.sqrt(2.0 * dP / RHO_W);
+        var dV_water = A_NOZ * v_e * dt;
+        if (dV_water > V_water) dV_water = V_water;
+        F_thrust = CD_NOZ * CD_NOZ * 2.0 * dP * A_NOZ;
+        if (F_thrust > F_peak) F_peak = F_thrust;
+        V_water -= dV_water;
+        V_air    = V_BOT - V_water;
+        m        = m_empty + V_water * RHO_W;
+      }
+    }
+
+    var F_net = F_thrust + drag_sign * F_drag - m * G;
+    v += (F_net / m) * dt;
+    h += v * dt;
+    t += dt;
+
+    if (recordFull && i % 50 === 0) {
+      tArr.push(t); hArr.push(h); vArr.push(v); fArr.push(F_thrust);
+    }
+    // Traccia sempre il massimo (serve per ottimizzatore fast mode)
+    if (h > h_max) h_max = h;
+    if (v > v_max) v_max = v;
+
+    if (phase === 2 && h <= 0 && v < 0) {
+      v_land = Math.abs(v);
+      if (recordFull) { tArr.push(t); hArr.push(0); vArr.push(v); fArr.push(0); }
+      break;
+    }
+  }
+  // Applica efficienza lancio a h_max (perdite reali: angolo, meccanismo, attrito)
+  // v_max e F_peak NON scalati (sono valori fisici reali al motore)
+  var h_eff = h_max * LAUNCH_EFF;
+  // Riscala anche l'array hArr per il grafico
+  if (recordFull) {
+    var scale = (h_max > 0) ? LAUNCH_EFF : 1;
+    for (var kk=0; kk<hArr.length; kk++) hArr[kk] *= scale;
+  }
+  return { h_max:h_eff, v_max:v_max, v_land:v_land * Math.sqrt(LAUNCH_EFF), F_peak:F_peak,
+           tArr:tArr, hArr:hArr, vArr:vArr, fArr:fArr };
+}
+
+// ═══════════════════════════════════════════════════════
+//  SIMULATE — legge UI, chiama runSim, aggiorna display
+// ═══════════════════════════════════════════════════════
+function simulate() {
+  var P0_gauge = (parseFloat(document.getElementById('nPress').value) || 4) * 1e5;
+  var V_water0 = (parseFloat(document.getElementById('nWater').value) || 500) / 1e6;
+  var m_empty  = (parseFloat(document.getElementById('nMass').value)  || 110) / 1000;
+
+  var r = runSim(P0_gauge, V_water0, m_empty, true);
+  var m_tot = m_empty + V_water0 * RHO_W;
+
+  // Comparatori
+  var vk  = velocityKid(r.v_max);
+  var hk  = heightKid(r.h_max);
+  var fk  = forceKid(r.F_peak, m_tot);
+  var vlk = velocityKid(r.v_land);
+
+  // Velocità razzo
+  document.getElementById('rVr').textContent     = r.v_max.toFixed(1);
+  document.getElementById('rVrKmh').textContent  = vk.kmh + ' km/h';
+  document.getElementById('rVrKid').textContent  = '🚀 ' + vk.comp;
+
+  // Altezza
+  document.getElementById('rH').textContent      = r.h_max.toFixed(1);
+  document.getElementById('rHFt').textContent    = hk.floors + ' piani';
+  document.getElementById('rHKid').textContent   = hk.comp;
+
+  // Forza massima
+  document.getElementById('rFmax').textContent   = r.F_peak.toFixed(0);
+  document.getElementById('rFmaxKg').textContent = fk.kgf + ' kg·f  (' + fk.g_s + '×g)';
+  document.getElementById('rFmaxKid').textContent= '🔥 ' + fk.comp;
+
+  // Atterraggio
+  document.getElementById('rVland').textContent  = r.v_land.toFixed(1);
+  document.getElementById('rVlandKmh').textContent = vlk.kmh + ' km/h';
+  document.getElementById('rFlandKid').textContent = '🪂 ' + vlk.comp;
+
+  drawTraj(r.tArr, r.hArr, r.h_max);
+  drawVel(r.tArr, r.vArr, r.fArr);
+  // Aggiorna snapshot teorico per il confronto empirico
+  var tFlight = r.tArr.length > 0 ? r.tArr[r.tArr.length-1] : 0;
+  updateTheorySnapshot(r.h_max, tFlight);
+}
+
+// ═══════════════════════════════════════════════════════
+//  OTTIMIZZATORE
+// ═══════════════════════════════════════════════════════
+function optimize() {
+  var P0_gauge = (parseFloat(document.getElementById('nPress').value) || 4) * 1e5;
+  var m_empty  = (parseFloat(document.getElementById('nMass').value)  || 110) / 1000;
+  var btn = document.getElementById('btnOpt');
+  btn.textContent = '⏳ calcolo…';
+  btn.disabled = true;
+
+  setTimeout(function() {
+    var wArr=[], hOptArr=[], bestH=0, bestW=0;
+    var maxML = Math.floor(V_BOT*1e6 - 20);
+
+    for (var wML=10; wML<=maxML; wML+=10) {
+      var r = runSim(P0_gauge, wML/1e6, m_empty, false);
+      // Per scan veloce usiamo stima h_max = v_max²/(2g) dal burnout
+      // Usiamo invece runSim completo ma più leggero
+      wArr.push(wML);
+      hOptArr.push(r.h_max);
+      if (r.h_max > bestH) { bestH = r.h_max; bestW = wML; }
+    }
+
+    // bestH già calcolato correttamente nel loop
+
+    document.getElementById('optResult').style.display = 'block';
+    document.getElementById('optWater').textContent  = bestW;
+    document.getElementById('optHeight').textContent = bestH.toFixed(1);
+    document.getElementById('optFrac').textContent   = Math.round(bestW/(V_BOT*1000)*100);
+    // Update zone bar optimal star position
+    var optPct = Math.min(97, Math.max(2, bestW/1400*100));
+    var starEl = document.getElementById('waterOptStar');
+    if(starEl) starEl.style.left = optPct + '%';
+    var lblEl = document.getElementById('waterOptLabel');
+    if(lblEl) lblEl.textContent = '✨ ottimale ~' + bestW + 'mL';
+
+    document.getElementById('sWater').value = bestW;
+    document.getElementById('nWater').value = bestW;
+    updateViz(); simulate();
+
+    drawOptCurve(wArr, hOptArr, bestW, bestH);
+    btn.textContent = '🎯 TROVA ACQUA OTTIMALE';
+    btn.disabled = false;
+  }, 20);
+}
+
+// ═══════════════════════════════════════════════════════
+//  GRAFICI
+// ═══════════════════════════════════════════════════════
+
+// ── Helper: get canvas width safely ──────────
+function canvasW(canvas) {
+  var w = canvas.offsetWidth || canvas.parentElement && canvas.parentElement.offsetWidth || 600;
+  return Math.max(w, 200);
+}
+
+function drawGrid(ctx, padL, padT, pw, ph, W, H, xMax, yMax, xUnit, yUnit, nx, ny) {
+  ctx.strokeStyle = 'rgba(61,143,224,.09)';
+  ctx.lineWidth = 1;
+  for (var i=0;i<=nx;i++) {
+    var x = padL+(i/nx)*pw;
+    ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+ph); ctx.stroke();
+    ctx.fillStyle='rgba(61,143,224,.5)'; ctx.font='9px Share Tech Mono';
+    ctx.textAlign='center';
+    ctx.fillText((xMax*i/nx).toFixed(xMax<5?1:0)+xUnit, x, padT+ph+14);
+  }
+  for (var i=0;i<=ny;i++) {
+    var y = padT+(i/ny)*ph;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+pw,y); ctx.stroke();
+    ctx.fillStyle='rgba(61,143,224,.5)'; ctx.font='9px Share Tech Mono';
+    ctx.textAlign='right';
+    ctx.fillText((yMax*(1-i/ny)).toFixed(0), padL-5, y+3);
+  }
+  ctx.strokeStyle='rgba(61,143,224,.25)'; ctx.lineWidth=1;
+  ctx.strokeRect(padL,padT,pw,ph);
+  ctx.save();
+  ctx.translate(12, padT+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center'; ctx.fillStyle='rgba(0,217,255,.4)';
+  ctx.font='9px Share Tech Mono';
+  ctx.fillText(yUnit.toUpperCase(), 0, 0);
+  ctx.restore();
+}
+
+function drawTraj(tArr, hArr, hMax) {
+  var canvas = document.getElementById('cTraj');
+  var W=canvasW(canvas), H=canvas.height||220;
+  canvas.width=W;
+  var ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  if (!tArr.length || hMax<=0) return;
+
+  var padL=42,padR=14,padT=22,padB=34;
+  var pw=W-padL-padR, ph=H-padT-padB;
+  var tMax=tArr[tArr.length-1];
+  var yMax=hMax*1.12;
+
+  drawGrid(ctx,padL,padT,pw,ph,W,H,tMax,yMax,'s','m',5,5);
+
+  // Fill
+  ctx.beginPath();
+  ctx.moveTo(padL, padT+ph);
+  for (var i=0;i<tArr.length;i++) {
+    var px=padL+(tArr[i]/tMax)*pw;
+    var py=padT+ph-(Math.max(0,hArr[i])/yMax)*ph;
+    ctx.lineTo(px,py);
+  }
+  ctx.lineTo(padL+pw,padT+ph); ctx.closePath();
+  ctx.fillStyle='rgba(0,217,255,.05)'; ctx.fill();
+
+  // Linea
+  var gr=ctx.createLinearGradient(padL,0,padL+pw,0);
+  gr.addColorStop(0,'#ff4d4d'); gr.addColorStop(0.35,'#00d9ff'); gr.addColorStop(1,'#4dffaa');
+  ctx.strokeStyle=gr; ctx.lineWidth=2.3;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT+ph);
+  for (var i=0;i<tArr.length;i++) {
+    var px=padL+(tArr[i]/tMax)*pw;
+    var py=padT+ph-(Math.max(0,hArr[i])/yMax)*ph;
+    ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // Apogeo
+  var peakIdx=0;
+  for (var i=1;i<hArr.length;i++) if(hArr[i]>hArr[peakIdx]) peakIdx=i;
+  var apx=padL+(tArr[peakIdx]/tMax)*pw;
+  var apy=padT+ph-(hArr[peakIdx]/yMax)*ph;
+  ctx.fillStyle='#4dffaa';
+  ctx.beginPath(); ctx.arc(apx,apy,5,0,Math.PI*2); ctx.fill();
+  ctx.font='bold 11px Share Tech Mono'; ctx.fillStyle='#4dffaa';
+  ctx.textAlign='center';
+  ctx.fillText('▲ '+hMax.toFixed(1)+'m — '+(hMax/3.2).toFixed(0)+' piani', apx, apy-11);
+
+  // Velocità al lancio
+  var vmax_ms = 0;
+  for(var i=0;i<tArr.length;i++) if(tArr[i]<0.3 && hArr[i]>0) { break; }
+  ctx.font='10px Share Tech Mono'; ctx.fillStyle='rgba(255,77,77,.8)';
+  ctx.textAlign='left';
+  // emoji razzo
+  ctx.font='18px serif'; ctx.textAlign='center';
+  var ri=Math.round(tArr.length*0.2);
+  if(ri<tArr.length) ctx.fillText('🚀', padL+(tArr[ri]/tMax)*pw, padT+ph-(Math.max(0,hArr[ri])/yMax)*ph-8);
+}
+
+function drawVel(tArr, vArr, fArr) {
+  var canvas=document.getElementById('cVel');
+  var W=canvasW(canvas), H=canvas.height||220;
+  canvas.width=W;
+  var ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  if (!tArr.length) return;
+
+  var padL=42,padR=50,padT=22,padB=34;
+  var pw=W-padL-padR, ph=H-padT-padB;
+  var tMax=tArr[tArr.length-1];
+  var vMin=Infinity, vMaxA=-Infinity, fMaxA=0;
+  for(var i=0;i<vArr.length;i++){ if(vArr[i]<vMin) vMin=vArr[i]; if(vArr[i]>vMaxA) vMaxA=vArr[i]; }
+  for(var i=0;i<fArr.length;i++) if(fArr[i]>fMaxA) fMaxA=fArr[i];
+  var vRange=Math.max(vMaxA-vMin,1);
+  var yMax=Math.max(Math.abs(vMaxA),Math.abs(vMin))*1.15;
+
+  drawGrid(ctx,padL,padT,pw,ph,W,H,tMax,yMax,'s','m/s',5,4);
+
+  // Spinta (area rossa)
+  if(fMaxA>1){
+    ctx.fillStyle='rgba(255,77,77,.13)';
+    ctx.beginPath(); ctx.moveTo(padL,padT+ph);
+    for(var i=0;i<tArr.length;i++){
+      var px=padL+(tArr[i]/tMax)*pw;
+      var py=padT+ph-(fArr[i]/fMaxA)*ph*0.9;
+      if(i===0) ctx.moveTo(px,padT+ph);
+      ctx.lineTo(px,py);
+    }
+    ctx.lineTo(padL+pw,padT+ph); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(255,77,77,.6)';
+    ctx.font='9px Share Tech Mono'; ctx.textAlign='right';
+    ctx.fillText(fMaxA.toFixed(0)+'N', W-4, padT+10);
+    ctx.fillText('0N', W-4, padT+ph);
+    ctx.save();
+    ctx.translate(W-10,padT+ph/2); ctx.rotate(-Math.PI/2);
+    ctx.textAlign='center'; ctx.fillStyle='rgba(255,77,77,.5)';
+    ctx.font='9px Share Tech Mono'; ctx.fillText('SPINTA (N)',0,0);
+    ctx.restore();
+  }
+
+  // Linea zero
+  var zeroY=padT+ph-((0-vMin)/vRange)*ph;
+  if(vMin<0 && vMaxA>0){
+    ctx.strokeStyle='rgba(255,255,255,.1)'; ctx.lineWidth=1; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(padL,zeroY); ctx.lineTo(padL+pw,zeroY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='8px Share Tech Mono';
+    ctx.textAlign='left'; ctx.fillText('0', padL+3, zeroY-3);
+  }
+
+  // Curva velocità
+  ctx.strokeStyle='#00d9ff'; ctx.lineWidth=2;
+  ctx.beginPath();
+  for(var i=0;i<tArr.length;i++){
+    var px=padL+(tArr[i]/tMax)*pw;
+    var py=padT+ph-((vArr[i]-vMin)/vRange)*ph;
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // Legenda
+  ctx.font='10px Share Tech Mono';
+  ctx.fillStyle='#00d9ff'; ctx.textAlign='left';
+  ctx.fillText('— velocità (m/s)', padL+6, padT+12);
+  ctx.fillStyle='rgba(255,77,77,.8)';
+  ctx.fillText('■ spinta (N)', padL+6, padT+24);
+}
+
+function drawOptCurve(wArr, hOptArr, bestW, bestH) {
+  document.getElementById('optPanel').style.display='block';
+  var canvas=document.getElementById('cOpt');
+  var W=canvasW(canvas), H=canvas.height||220;
+  canvas.width=W;
+  var ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  var padL=48,padR=20,padT=28,padB=38;
+  var pw=W-padL-padR, ph=H-padT-padB;
+  var wMax=wArr[wArr.length-1];
+  var hMaxAll=0;
+  for(var i=0;i<hOptArr.length;i++) if(hOptArr[i]>hMaxAll) hMaxAll=hOptArr[i];
+  hMaxAll*=1.12;
+
+  drawGrid(ctx,padL,padT,pw,ph,W,H,wMax,hMaxAll,'mL','m',6,4);
+
+  // Area
+  ctx.fillStyle='rgba(77,255,170,.06)';
+  ctx.beginPath(); ctx.moveTo(padL,padT+ph);
+  for(var i=0;i<wArr.length;i++){
+    ctx.lineTo(padL+(wArr[i]/wMax)*pw, padT+ph-(hOptArr[i]/hMaxAll)*ph);
+  }
+  ctx.lineTo(padL+pw,padT+ph); ctx.closePath(); ctx.fill();
+
+  // Curva
+  var gr=ctx.createLinearGradient(padL,0,padL+pw,0);
+  gr.addColorStop(0,'#3d8fe0'); gr.addColorStop(0.5,'#00d9ff'); gr.addColorStop(1,'#4dffaa');
+  ctx.strokeStyle=gr; ctx.lineWidth=2.2;
+  ctx.beginPath();
+  for(var i=0;i<wArr.length;i++){
+    var px=padL+(wArr[i]/wMax)*pw;
+    var py=padT+ph-(hOptArr[i]/hMaxAll)*ph;
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // Linea ottimale
+  var bx=padL+(bestW/wMax)*pw;
+  ctx.strokeStyle='#4dffaa'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(bx,padT); ctx.lineTo(bx,padT+ph); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Punto picco
+  var by=padT+ph-(bestH/hMaxAll)*ph;
+  ctx.fillStyle='#4dffaa'; ctx.beginPath(); ctx.arc(bx,by,6,0,Math.PI*2); ctx.fill();
+  ctx.font='bold 11px Share Tech Mono'; ctx.fillStyle='#4dffaa'; ctx.textAlign='center';
+  var ly = by > padT+20 ? by-13 : by+18;
+  ctx.fillText('★ '+bestW+'mL → '+bestH.toFixed(1)+'m', bx, ly);
+
+  // Nota kid-friendly
+  ctx.font='10px Nunito, sans-serif'; ctx.fillStyle='rgba(255,228,77,.7)';
+  ctx.textAlign='center';
+  ctx.fillText('💡 Troppa acqua = razzo pesante  ·  Poca acqua = poca spinta  ·  Nel mezzo il punto magico! ✨', padL+pw/2, padT+ph+30);
+
+  // Asse X label
+  ctx.font='9px Share Tech Mono'; ctx.fillStyle='rgba(0,217,255,.45)';
+  ctx.fillText('QUANTITÀ ACQUA (mL)', padL+pw/2, H-4);
+}
+
+// ═══════════════════════════════════════════════════════
+//  PRESET + INIT
+// ═══════════════════════════════════════════════════════
+function preset() {
+  document.getElementById('sPress').value=4; document.getElementById('sPress').max=10; document.getElementById('nPress').value=4;
+  document.getElementById('sEff').value=0.75; document.getElementById('nEff').value=75; LAUNCH_EFF=0.75;
+  document.getElementById('sWater').value=500; document.getElementById('nWater').value=500;
+  document.getElementById('sMass').value=110; document.getElementById('nMass').value=110;
+  setCd(0.50);
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  STORICO LANCI
+// ═══════════════════════════════════════════════════════
+var launchHistory = [];
+
+// Snapshot dei valori teorici correnti (aggiornato ad ogni simulate())
+var currentTheory = { h: 0, t: 0, press: 0, water: 0 };
+
+function updateTheorySnapshot(hMax, tFlight) {
+  currentTheory.h     = hMax;
+  currentTheory.t     = tFlight;
+  currentTheory.press = parseFloat(document.getElementById('nPress').value) || 0;
+  currentTheory.water = parseFloat(document.getElementById('nWater').value) || 0;
+}
+
+// ═══════════════════════════════════════════════════════
+//  CONFRONTA TEORIA VS REALTÀ
+// ═══════════════════════════════════════════════════════
+function confronta() {
+  var empH    = parseFloat(document.getElementById('empH').value);
+  var empT    = parseFloat(document.getElementById('empT').value);
+  var empP    = parseFloat(document.getElementById('empP').value);
+  var empW    = parseFloat(document.getElementById('empW').value);
+  var empNote = document.getElementById('empNote').value || '';
+
+  // Almeno un campo obbligatorio
+  if (isNaN(empH) && isNaN(empT)) {
+    alert('Inserisci almeno l\'altezza o il tempo di volo misurati! 📏⏱️');
+    return;
+  }
+
+  var rows = '';
+  var errs = [];
+
+  function errClass(e) {
+    if (e <= 15) return 'err-good';
+    if (e <= 35) return 'err-mid';
+    return 'err-bad';
+  }
+  function errIcon(e) {
+    if (e <= 15) return '✅';
+    if (e <= 35) return '🟡';
+    return '❌';
+  }
+
+  if (!isNaN(empH) && currentTheory.h > 0) {
+    var err = Math.abs((empH - currentTheory.h) / currentTheory.h * 100);
+    errs.push(err);
+    rows += '<tr><td>📏 Altezza</td>'
+      + '<td class="val-teorico">' + currentTheory.h.toFixed(1) + ' m</td>'
+      + '<td class="val-reale">'   + empH.toFixed(1) + ' m</td>'
+      + '<td class="val-err ' + errClass(err) + '">' + errIcon(err) + ' ' + err.toFixed(0) + '%</td></tr>';
+  }
+  if (!isNaN(empT) && currentTheory.t > 0) {
+    var err2 = Math.abs((empT - currentTheory.t) / currentTheory.t * 100);
+    errs.push(err2);
+    rows += '<tr><td>⏱️ Tempo volo</td>'
+      + '<td class="val-teorico">' + currentTheory.t.toFixed(1) + ' s</td>'
+      + '<td class="val-reale">'   + empT.toFixed(1) + ' s</td>'
+      + '<td class="val-err ' + errClass(err2) + '">' + errIcon(err2) + ' ' + err2.toFixed(0) + '%</td></tr>';
+  }
+  if (!isNaN(empP)) {
+    rows += '<tr><td>🌬️ Pressione</td>'
+      + '<td class="val-teorico">' + currentTheory.press.toFixed(1) + ' bar</td>'
+      + '<td class="val-reale">'   + empP.toFixed(1) + ' bar</td>'
+      + '<td>—</td></tr>';
+  }
+  if (!isNaN(empW)) {
+    rows += '<tr><td>💧 Acqua</td>'
+      + '<td class="val-teorico">' + currentTheory.water.toFixed(0) + ' mL</td>'
+      + '<td class="val-reale">'   + empW.toFixed(0) + ' mL</td>'
+      + '<td>—</td></tr>';
+  }
+
+  document.getElementById('cmpBody').innerHTML = rows;
+  document.getElementById('cmpResult').style.display = 'block';
+
+  // Verdict
+  var avgErr = errs.length > 0 ? errs.reduce(function(a,b){return a+b;},0)/errs.length : 0;
+  var vTitle, vText, vColor, vQuote;
+
+  if (avgErr <= 10) {
+    vTitle = '🏆 Modello eccellente!';
+    vText  = 'La teoria corrisponde quasi perfettamente alla realtà. '
+           + 'Il vostro simulatore è preciso come quelli usati dagli ingegneri della NASA! '
+           + 'Errore medio: <strong>' + avgErr.toFixed(1) + '%</strong> — straordinario per un esperimento scolastico.';
+    vColor = 'var(--green)';
+    vQuote = '📖 Popper direbbe: "La teoria ha superato il test sperimentale!" — ora è una teoria più forte!';
+  } else if (avgErr <= 25) {
+    vTitle = '✅ Buona corrispondenza!';
+    vText  = 'La teoria si avvicina bene alla realtà, con un errore medio del <strong>' + avgErr.toFixed(1) + '%</strong>. '
+           + 'Le differenze possono dipendere da: angolo di lancio, vento, piccole perdite d\'acqua. '
+           + 'Prova a regolare il cursore "Efficienza lancio" per avvicinarti ancora di più!';
+    vColor = 'var(--cyan)';
+    vQuote = '📖 Gli scienziati NASA accettano errori del 5-15% nei test iniziali — siete in ottima compagnia!';
+  } else if (avgErr <= 50) {
+    vTitle = '🤔 Differenza significativa — interessante!';
+    vText  = 'Errore medio: <strong>' + avgErr.toFixed(1) + '%</strong>. '
+           + 'Questo non \u00e8 un fallimento \u2014 \u00e8 una scoperta! Qualcosa influenzava il volo che il modello non sapeva. '
+           + 'Prova a cercare il motivo: vento? razzo inclinato? pressione diversa da quella indicata?';
+    vColor = 'var(--orange)';
+    vQuote = '📖 Popper: "Una teoria falsificata è preziosa quanto una confermata — ci dice dove migliorare!"';
+  } else {
+    vTitle = '🔍 Grande differenza — serve investigare!';
+    vText  = 'Errore medio: <strong>' + avgErr.toFixed(1) + '%</strong>. '
+           + 'Una grande differenza - una scoperta scientifica! '
+           + 'Ipotesi da verificare: la pressione era davvero quella impostata? '
+           + 'Il razzo era verticale? C\'era vento? L\'acqua era misurata bene?';
+    vColor = 'var(--red)';
+    vQuote = '📖 Galileo sbagliò molti esperimenti prima di trovare la risposta giusta. È così che funziona la scienza!';
+  }
+
+  document.getElementById('verdictBox').style.borderLeftColor = vColor;
+  document.getElementById('verdictTitle').textContent  = vTitle;
+  document.getElementById('verdictTitle').style.color  = vColor;
+  document.getElementById('verdictText').innerHTML     = vText;
+  document.getElementById('popperQuote').textContent   = vQuote;
+
+  // Bar chart comparativo
+  drawComparison(empH, empT);
+
+  // Aggiungi allo storico
+  var entry = {
+    n:        launchHistory.length + 1,
+    press:    !isNaN(empP) ? empP : currentTheory.press,
+    water:    !isNaN(empW) ? empW : currentTheory.water,
+    hTeo:     currentTheory.h,
+    hReal:    !isNaN(empH) ? empH : null,
+    tTeo:     currentTheory.t,
+    tReal:    !isNaN(empT) ? empT : null,
+    err:      avgErr,
+    note:     empNote
+  };
+  launchHistory.push(entry);
+  renderHistory();
+}
+
+// ═══════════════════════════════════════════════════════
+//  GRAFICO COMPARATIVO
+// ═══════════════════════════════════════════════════════
+function drawComparison(empH, empT) {
+  var canvas = document.getElementById('cCmp');
+  var W = canvas.clientWidth; var H = canvas.height;
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  var items = [];
+  if (!isNaN(empH) && currentTheory.h > 0)
+    items.push({ label:'Altezza (m)', teo: currentTheory.h, real: empH, unit:'m' });
+  if (!isNaN(empT) && currentTheory.t > 0)
+    items.push({ label:'Tempo (s)',   teo: currentTheory.t, real: empT, unit:'s' });
+  if (items.length === 0) return;
+
+  var barW   = Math.floor(pw_for_cmp(W, items.length));
+  var gap    = 12;
+  var padL   = 40, padR = 16, padT = 20, padB = 30;
+  var pw2    = W - padL - padR;
+  var ph2    = H - padT - padB;
+  var nGroups = items.length;
+  var groupW  = pw2 / nGroups;
+
+  items.forEach(function(item, gi) {
+    var maxVal = Math.max(item.teo, item.real) * 1.2;
+    var cx     = padL + gi * groupW + groupW / 2;
+
+    // Barra teorica (ciano)
+    var hTeo = (item.teo / maxVal) * ph2;
+    ctx.fillStyle = 'rgba(0,217,255,.25)';
+    ctx.strokeStyle = 'rgba(0,217,255,.7)';
+    ctx.lineWidth = 1.5;
+    var bw = groupW * 0.3;
+    ctx.fillRect(cx - bw - 3, padT + ph2 - hTeo, bw, hTeo);
+    ctx.strokeRect(cx - bw - 3, padT + ph2 - hTeo, bw, hTeo);
+    ctx.fillStyle = '#00d9ff';
+    ctx.font = 'bold 10px Share Tech Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(item.teo.toFixed(1)+item.unit, cx - bw/2 - 3, padT + ph2 - hTeo - 4);
+
+    // Barra reale (giallo)
+    var hReal = (item.real / maxVal) * ph2;
+    ctx.fillStyle = 'rgba(255,228,77,.25)';
+    ctx.strokeStyle = 'rgba(255,228,77,.7)';
+    ctx.fillRect(cx + 3, padT + ph2 - hReal, bw, hReal);
+    ctx.strokeRect(cx + 3, padT + ph2 - hReal, bw, hReal);
+    ctx.fillStyle = '#ffe44d';
+    ctx.fillText(item.real.toFixed(1)+item.unit, cx + bw/2 + 3, padT + ph2 - hReal - 4);
+
+    // Label
+    ctx.fillStyle = 'rgba(220,238,255,.5)';
+    ctx.font = '9px Nunito, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(item.label, cx, padT + ph2 + 16);
+  });
+
+  // Legenda
+  ctx.font = '9px Share Tech Mono';
+  ctx.fillStyle = 'rgba(0,217,255,.8)';  ctx.textAlign='left'; ctx.fillText('■ teorico', padL, padT-4);
+  ctx.fillStyle = 'rgba(255,228,77,.8)'; ctx.fillText('■ reale', padL+60, padT-4);
+}
+
+function pw_for_cmp(W, n) { return (W - 40 - 16) / n * 0.3; }
+
+// ═══════════════════════════════════════════════════════
+//  STORICO LANCI
+// ═══════════════════════════════════════════════════════
+function renderHistory() {
+  if (launchHistory.length === 0) return;
+  document.getElementById('histSection').style.display = 'block';
+  var rows = launchHistory.map(function(e) {
+    var errStr = e.err > 0 ? e.err.toFixed(0)+'%' : '—';
+    var errCls = e.err <= 15 ? 'err-good' : e.err <= 35 ? 'err-mid' : 'err-bad';
+    return '<tr>'
+      + '<td style="color:var(--blue)">🚀 #'+e.n+'</td>'
+      + '<td>'+e.press.toFixed(1)+' bar</td>'
+      + '<td>'+e.water+' mL</td>'
+      + '<td class="val-teorico">'+e.hTeo.toFixed(1)+'m</td>'
+      + '<td class="val-reale">'+(e.hReal !== null ? e.hReal.toFixed(1)+'m' : '—')+'</td>'
+      + '<td class="val-teorico">'+e.tTeo.toFixed(1)+'s</td>'
+      + '<td class="val-reale">'+(e.tReal !== null ? e.tReal.toFixed(1)+'s' : '—')+'</td>'
+      + '<td class="val-err '+errCls+'">'+errStr+'</td>'
+      + '<td style="color:rgba(220,238,255,.4);font-family:var(--kid);font-size:.65rem;">'+e.note+'</td>'
+      + '</tr>';
+  }).join('');
+
+  document.getElementById('histTable').innerHTML =
+    '<table class="cmp-table" style="font-size:.7rem;">'
+    + '<thead><tr>'
+    + '<th>Lancio</th><th>Pressione</th><th>Acqua</th>'
+    + '<th class="val-teorico">H teorica</th><th class="val-reale">H reale</th>'
+    + '<th class="val-teorico">T teorico</th><th class="val-reale">T reale</th>'
+    + '<th>Errore</th><th>Note</th>'
+    + '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+
+window.addEventListener('load', function() {
+  preset();
+  // Redraw after layout is complete (ensures offsetWidth != 0)
+  setTimeout(function(){ simulate(); }, 100);
+  window.addEventListener('resize', function(){ simulate(); });
+});
+</script>
+</body>
+</html>
