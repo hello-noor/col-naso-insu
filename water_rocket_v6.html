@@ -178,6 +178,20 @@ input[type=number]:focus{border-color:var(--cyan);outline:none;}
 .popper-quote { font-family:var(--kid); font-style:italic; font-size:.72rem; color:rgba(220,238,255,.4); margin-top:8px; border-top:1px solid var(--border); padding-top:8px; }
 .cmp-canvas-wrap { margin-top:14px; }
 
+
+/* ── DOWNLOAD BTN ────────────────────────── */
+.btn-dl {
+  width:100%; padding:10px; margin-top:7px;
+  background:rgba(255,154,60,.08);
+  border:1px solid rgba(255,154,60,.4);
+  color:#ff9a3c;
+  font-family:var(--kid); font-size:.75rem; font-weight:800;
+  border-radius:4px; cursor:pointer; text-decoration:none;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  transition:all .15s;
+}
+.btn-dl:hover { background:rgba(255,154,60,.16); }
+
 .footer { text-align:center; margin-top:22px; font-size:.62rem; color:rgba(61,143,224,.4); letter-spacing:2px; text-transform:uppercase; }
 
 /* ── ROCKET SVG ──────────────────────────── */
@@ -352,6 +366,9 @@ input[type=number]:focus{border-color:var(--cyan);outline:none;}
     <div class="mrow tot"><span>⚖️ TOTALE AL LANCIO</span><strong id="dTotal">610 g</strong></div>
   </div>
 
+  <a class="btn-dl" href="water_rocket_istruzioni.jpg" download="Water_Rocket_Istruzioni_Mario_Mele.jpg">
+    📄 Scarica istruzioni per costruire il razzo
+  </a>
   <button class="btn-pre"  onclick="preset()">📦 PRESET SCUOLA — 4 bar · 500 mL · 110 g</button>
   <button class="btn-calc" onclick="simulate()">▶ SIMULA LANCIO</button>
   <button class="btn-opt"  id="btnOpt" onclick="optimize()">🎯 TROVA ACQUA OTTIMALE</button>
