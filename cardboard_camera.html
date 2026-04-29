@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📷 Cardboard Camera — Simulatore di Ottica</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Nunito:wght@700;800;900&family=Orbitron:wght@700;900&display=swap');
+
+:root {
+  --bg:     #07111f;
+  --grid:   rgba(60,130,220,0.09);
+  --blue:   #3d8fe0;
+  --cyan:   #00d9ff;
+  --yellow: #ffe44d;
+  --red:    #ff4d4d;
+  --green:  #4dffaa;
+  --purple: #c97fff;
+  --orange: #ff9a3c;
+  --amber:  #ffc947;
+  --white:  #dceeff;
+  --panel:  rgba(8,25,55,0.88);
+  --border: rgba(61,143,224,0.30);
+  --mono:   'Share Tech Mono', monospace;
+  --kid:    'Nunito', sans-serif;
+  --orb:    'Orbitron', sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  padding: 18px 14px;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+.hdr { text-align:center; margin-bottom:22px; }
+.hdr-title { font-family:var(--orb); font-size:clamp(1.2rem,4vw,2rem); color:var(--cyan); letter-spacing:4px; text-shadow:0 0 24px rgba(0,217,255,.45); }
+.hdr-sub   { font-family:var(--kid); font-size:.88rem; color:var(--blue); margin-top:4px; letter-spacing:1px; }
+.hdr-badge { display:inline-block; margin-top:8px; border:1px solid var(--cyan); color:var(--cyan); padding:2px 14px; border-radius:20px; font-size:.65rem; letter-spacing:2px; background:rgba(0,217,255,.07); }
+
+/* ── LAYOUT ──────────────────────────────────────────────── */
+.wrap { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:340px 1fr; gap:16px; }
+@media(max-width:900px){ .wrap{grid-template-columns:1fr;} }
+
+/* ── PANEL ────────────────────────────────────────────────── */
+.panel { background:var(--panel); border:1px solid var(--border); border-radius:5px; padding:18px; position:relative; }
+.panel[data-lbl]::before { content:attr(data-lbl); position:absolute; top:-9px; left:14px; background:var(--bg); padding:0 8px; color:var(--blue); font-size:.6rem; letter-spacing:3px; text-transform:uppercase; }
+.ptitle { font-family:var(--kid); font-size:.95rem; font-weight:900; color:var(--cyan); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+
+/* ── INPUTS ──────────────────────────────────────────────── */
+.ig { margin-bottom:14px; }
+.ilbl { display:block; font-size:.6rem; color:var(--blue); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:3px; }
+.ilbl .kl { font-family:var(--kid); color:var(--yellow); font-size:.78rem; font-weight:800; letter-spacing:0; text-transform:none; }
+.irow { display:flex; align-items:center; gap:8px; }
+input[type=range] { flex:1; -webkit-appearance:none; height:3px; background:var(--border); border-radius:2px; outline:none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; background:var(--cyan); border-radius:50%; cursor:pointer; box-shadow:0 0 7px rgba(0,217,255,.7); }
+input[type=number] { width:70px; background:rgba(0,0,0,.45); border:1px solid var(--border); color:var(--cyan); font-family:var(--mono); font-size:.88rem; padding:4px 7px; border-radius:3px; text-align:center; }
+input[type=number]:focus{border-color:var(--cyan);outline:none;}
+.utag{font-size:.65rem;color:var(--blue);min-width:30px;}
+
+/* ── TABS ────────────────────────────────────────────────── */
+.tabs { display:flex; gap:4px; margin-bottom:14px; flex-wrap:wrap; }
+.tab { font-family:var(--kid); font-size:.72rem; font-weight:900; padding:5px 12px; border-radius:3px; border:1px solid var(--border); color:var(--blue); background:transparent; cursor:pointer; transition:all .2s; }
+.tab.active { background:var(--cyan); color:#07111f; border-color:var(--cyan); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; }
+
+/* ── RISULTATI ────────────────────────────────────────────── */
+.rbox { background:rgba(0,0,0,.35); border:1px solid var(--border); border-radius:4px; padding:10px 14px; margin-bottom:10px; }
+.rbox-title { font-size:.58rem; color:var(--blue); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
+.rbox-val { font-family:var(--orb); font-size:1.4rem; color:var(--white); line-height:1; }
+.rbox-alt  { font-size:.68rem; color:var(--cyan); margin-top:2px; }
+.rbox-kid  { font-family:var(--kid); font-size:.75rem; color:var(--yellow); margin-top:3px; font-weight:800; }
+
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+/* ── CANVAS ──────────────────────────────────────────────── */
+canvas { width:100%; border-radius:4px; display:block; }
+
+/* ── INFO CARD ────────────────────────────────────────────── */
+.icard { background:rgba(0,217,255,.06); border:1px solid rgba(0,217,255,.18); border-radius:4px; padding:10px 13px; margin-bottom:8px; }
+.icard-title { font-family:var(--kid); font-size:.75rem; font-weight:900; color:var(--cyan); margin-bottom:5px; }
+.icard-body { font-family:var(--kid); font-size:.72rem; color:rgba(220,238,255,.65); line-height:1.6; }
+
+/* ── STORIA TIMELINE ─────────────────────────────────────── */
+.timeline { position:relative; padding-left:20px; }
+.timeline::before { content:''; position:absolute; left:6px; top:0; bottom:0; width:2px; background:rgba(0,217,255,.25); }
+.titem { position:relative; margin-bottom:12px; }
+.titem::before { content:''; position:absolute; left:-17px; top:4px; width:8px; height:8px; border-radius:50%; background:var(--cyan); box-shadow:0 0 7px var(--cyan); }
+.tdate { font-family:var(--orb); font-size:.62rem; color:var(--cyan); }
+.ttext { font-family:var(--kid); font-size:.72rem; color:rgba(220,238,255,.7); line-height:1.5; margin-top:2px; }
+
+/* ── BUTTONS ─────────────────────────────────────────────── */
+.btn { font-family:var(--kid); font-size:.78rem; font-weight:900; padding:8px 16px; border-radius:3px; border:none; cursor:pointer; transition:all .15s; }
+.btn-cyan { background:var(--cyan); color:#07111f; }
+.btn-cyan:hover { background:#00ffff; }
+.btn-outline { background:transparent; border:1px solid var(--cyan); color:var(--cyan); }
+.btn-outline:hover { background:rgba(0,217,255,.12); }
+
+/* ── LENTE SVG DEMO ──────────────────────────────────────── */
+.lens-demo { text-align:center; margin:10px 0; }
+
+/* ── BADGE FOCUS ─────────────────────────────────────────── */
+.focus-badge { display:inline-block; font-family:var(--kid); font-size:.72rem; font-weight:900; padding:3px 10px; border-radius:20px; }
+.focus-ok   { background:rgba(77,255,170,.15); color:var(--green); border:1px solid var(--green); }
+.focus-warn { background:rgba(255,228,77,.15); color:var(--yellow); border:1px solid var(--yellow); }
+.focus-bad  { background:rgba(255,77,77,.15); color:var(--red); border:1px solid var(--red); }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.footer { text-align:center; margin-top:22px; font-size:.62rem; color:rgba(61,143,224,.4); letter-spacing:2px; text-transform:uppercase; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-title">📷 CARDBOARD CAMERA</div>
+  <div class="hdr-sub">Simulatore di Ottica — Come funziona una macchina fotografica di cartone</div>
+  <a href="index.html" class="hdr-badge" style="text-decoration:none;">COL NASO ALL'INSÙ · RIVOTORTO DI ASSISI</a>
+</div>
+
+<div class="wrap">
+
+<!-- ═══ COLONNA SINISTRA: CONTROLLI ═══════════════════════════════════ -->
+<div>
+
+  <div class="panel" data-lbl="PARAMETRI DELLA CAMERA">
+    <div class="ptitle">⚙️ Costruisci la tua camera</div>
+
+    <!-- Lente SVG animata -->
+    <div class="lens-demo">
+      <svg id="lensSvg" width="120" height="100" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- scatola esterna -->
+        <rect x="5" y="30" width="55" height="40" rx="2" fill="rgba(7,17,31,.9)" stroke="rgba(61,143,224,.5)" stroke-width="1.2"/>
+        <!-- lente -->
+        <ellipse cx="60" cy="50" rx="4" ry="14" fill="rgba(0,217,255,.35)" stroke="rgba(0,217,255,.9)" stroke-width="1.2"/>
+        <!-- scatola interna (scorrevole) -->
+        <rect id="svgInner" x="64" y="35" width="45" height="30" rx="2" fill="rgba(7,17,31,.9)" stroke="rgba(61,143,224,.4)" stroke-width="1"/>
+        <!-- tracing paper -->
+        <rect id="svgScreen" x="109" y="36" width="4" height="28" rx="1" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.5)" stroke-width=".8"/>
+        <!-- raggi -->
+        <line id="ray1" x1="5" y1="35" x2="60" y2="50" stroke="rgba(255,220,50,.5)" stroke-width=".8" stroke-dasharray="3,2"/>
+        <line id="ray2" x1="5" y1="65" x2="60" y2="50" stroke="rgba(255,220,50,.5)" stroke-width=".8" stroke-dasharray="3,2"/>
+        <line id="ray3" x1="60" y1="50" x2="110" y2="38" stroke="rgba(255,220,50,.5)" stroke-width=".8"/>
+        <line id="ray4" x1="60" y1="50" x2="110" y2="62" stroke="rgba(255,220,50,.5)" stroke-width=".8"/>
+        <!-- punto fuoco -->
+        <circle id="focusDot" cx="110" cy="50" r="3" fill="var(--yellow)" style="filter:drop-shadow(0 0 4px #ffe44d)"/>
+        <!-- label -->
+        <text x="60" y="95" text-anchor="middle" font-family="Share Tech Mono" font-size="7" fill="rgba(0,217,255,.6)">ø <tspan id="svgDiam">40</tspan> mm</text>
+      </svg>
+    </div>
+
+    <!-- Diametro lente -->
+    <div class="ig">
+      <label class="ilbl">Diametro lente · <span class="kl" id="nDiam">40</span> mm</label>
+      <div class="irow">
+        <input type="range" id="sDiam" min="20" max="80" value="40" oninput="sync('Diam',this.value); simulate()">
+        <span class="utag">mm</span>
+      </div>
+    </div>
+
+    <!-- Lunghezza focale -->
+    <div class="ig">
+      <label class="ilbl">Lunghezza focale · <span class="kl" id="nFocal">100</span> mm</label>
+      <div class="irow">
+        <input type="range" id="sFocal" min="50" max="300" value="100" oninput="sync('Focal',this.value); simulate()">
+        <span class="utag">mm</span>
+      </div>
+    </div>
+
+    <!-- Distanza oggetto -->
+    <div class="ig">
+      <label class="ilbl">Distanza oggetto · <span class="kl" id="nObj">200</span> cm</label>
+      <div class="irow">
+        <input type="range" id="sObj" min="20" max="1000" value="200" oninput="sync('Obj',this.value); simulate()">
+        <span class="utag">cm</span>
+      </div>
+    </div>
+
+    <!-- Apertura diaframma -->
+    <div class="ig">
+      <label class="ilbl">Apertura diaframma · <span class="kl" id="nAperture">100</span>%</label>
+      <div class="irow">
+        <input type="range" id="sAperture" min="10" max="100" value="100" oninput="sync('Aperture',this.value); simulate()">
+        <span class="utag">%</span>
+      </div>
+    </div>
+
+    <!-- Preset soggetti -->
+    <div style="margin-top:14px;">
+      <div class="ilbl">Preset soggetto</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+        <button class="btn btn-outline" onclick="setPreset('bambino')">🧒 Bambino/a</button>
+        <button class="btn btn-outline" onclick="setPreset('finestra')">🪟 Finestra</button>
+        <button class="btn btn-outline" onclick="setPreset('albero')">🌳 Albero</button>
+        <button class="btn btn-outline" onclick="setPreset('sole')">☀️ Sole</button>
+        <button class="btn btn-outline" onclick="setPreset('stelle')">⭐ Stelle</button>
+      </div>
+    </div>
+
+  </div><!-- fine panel controlli -->
+
+  <!-- ── STATO MESSA A FUOCO ── -->
+  <div class="panel" style="margin-top:12px;" data-lbl="STATO MESSA A FUOCO">
+    <div class="ptitle">🎯 Messa a fuoco</div>
+    <div id="focusStatus" class="focus-badge focus-ok">✓ A fuoco</div>
+    <div style="margin-top:8px; font-family:var(--kid); font-size:.75rem; color:rgba(220,238,255,.6);">
+      Sposta il <strong style="color:var(--cyan)">piano focale</strong> a <strong id="focusDist" style="color:var(--yellow)">-- mm</strong> dalla lente
+    </div>
+    <div style="margin-top:8px;">
+      <div class="ilbl">Posizione piano focale · <span class="kl" id="nScreen">100</span> mm</div>
+      <div class="irow">
+        <input type="range" id="sScreen" min="30" max="400" value="100" oninput="sync('Screen',this.value); simulate()">
+        <span class="utag">mm</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- fine colonna sinistra -->
+
+<!-- ═══ COLONNA DESTRA: VISUALIZZAZIONI ═══════════════════════════════ -->
+<div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('sim')">🔭 Simulatore ottico</button>
+    <button class="tab" onclick="showTab('ingrandimento')">🔍 Immagine & ingrandimento</button>
+    <button class="tab" onclick="showTab('costruzione')">🔨 Come costruirla</button>
+    <button class="tab" onclick="showTab('storia')">📜 Storia</button>
+    <button class="tab" onclick="showTab('scienza')">⚗️ La scienza</button>
+  </div>
+
+  <!-- ── TAB: SIMULATORE OTTICO ──────────────────────────────────── -->
+  <div id="tab-sim" class="tab-pane active">
+    <div class="panel" data-lbl="DIAGRAMMA OTTICO — FORMAZIONE DELL'IMMAGINE">
+      <canvas id="cvDiagram" height="320"></canvas>
+    </div>
+
+    <div style="margin-top:12px;" class="grid3">
+      <div class="rbox">
+        <div class="rbox-title">Distanza immagine</div>
+        <div class="rbox-val"><span id="rImgDist">--</span></div>
+        <div class="rbox-alt">mm dalla lente</div>
+        <div class="rbox-kid" id="rImgKid">—</div>
+      </div>
+      <div class="rbox">
+        <div class="rbox-title">Ingrandimento</div>
+        <div class="rbox-val"><span id="rMag">--</span>×</div>
+        <div class="rbox-alt">dimensione immagine/oggetto</div>
+        <div class="rbox-kid" id="rMagKid">—</div>
+      </div>
+      <div class="rbox">
+        <div class="rbox-title">Nitidezza</div>
+        <div class="rbox-val"><span id="rSharp">--</span>%</div>
+        <div class="rbox-alt">cerchio di confusione</div>
+        <div class="rbox-kid" id="rSharpKid">—</div>
+      </div>
+    </div>
+
+    <div style="margin-top:8px;" class="grid2">
+      <div class="rbox">
+        <div class="rbox-title">Luminosità immagine</div>
+        <div class="rbox-val"><span id="rBright">--</span>%</div>
+        <div class="rbox-alt">relativa (diaframma)</div>
+        <div class="rbox-kid" id="rBrightKid">—</div>
+      </div>
+      <div class="rbox">
+        <div class="rbox-title">Profondità di campo</div>
+        <div class="rbox-val"><span id="rDof">--</span></div>
+        <div class="rbox-alt">cm attorno al soggetto</div>
+        <div class="rbox-kid" id="rDofKid">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: IMMAGINE ──────────────────────────────────────────── -->
+  <div id="tab-ingrandimento" class="tab-pane">
+    <div class="panel" data-lbl="SIMULAZIONE IMMAGINE SUL TRACING PAPER">
+      <canvas id="cvImage" height="300"></canvas>
+      <div style="margin-top:10px; font-family:var(--kid); font-size:.72rem; color:rgba(220,238,255,.5);">
+        👆 L'immagine che vedresti sul tracing paper — capovolta, con la texture della carta traslucida. Muovi gli slider a sinistra per cambiarla.
+      </div>
+    </div>
+    <div style="margin-top:12px;" class="grid2">
+      <div class="icard">
+        <div class="icard-title">🔄 Perché è capovolta?</div>
+        <div class="icard-body">La lente fa convergere i raggi di luce in un unico punto (il fuoco), poi li fa divergere di nuovo dall'altra parte. I raggi che vengono dall'alto arrivano in basso, e viceversa. È come se la luce facesse una X!</div>
+      </div>
+      <div class="icard">
+        <div class="icard-title">📱 Fotografare con lo smartphone</div>
+        <div class="icard-body">Appoggiando la fotocamera dello smartphone al foro posteriore, si fotografa l'immagine proiettata sul tracing paper. Il risultato è granuloso, con colori morbidi — come una fotografia analogica antica. Questo non è un errore: è l'estetica della carta!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: COSTRUZIONE ──────────────────────────────────────── -->
+  <div id="tab-costruzione" class="tab-pane">
+    <div class="panel" data-lbl="GUIDA ALLA COSTRUZIONE">
+      <canvas id="cvBuild" height="360"></canvas>
+    </div>
+    <div style="margin-top:12px;">
+      <div class="tabs" id="buildTabs">
+        <button class="tab active" onclick="showBuildStep(0)">1. Pezzo esterno</button>
+        <button class="tab" onclick="showBuildStep(1)">2. La lente</button>
+        <button class="tab" onclick="showBuildStep(2)">3. Pezzo interno</button>
+        <button class="tab" onclick="showBuildStep(3)">4. Tracing paper</button>
+        <button class="tab" onclick="showBuildStep(4)">5. Unire tutto</button>
+        <button class="tab" onclick="showBuildStep(5)">6. Diaframma</button>
+      </div>
+      <div class="icard" id="buildDesc">
+        <div class="icard-title" id="buildTitle">1. Pezzo Esterno — la scatola della lente</div>
+        <div class="icard-body" id="buildBody">Prendi un foglio A3 di cartone spesso. Segna e taglia: sezione superiore 10×20 cm, fascia centrale (dove va la lente) 11×20 cm, sezione inferiore 10×20 cm. Incidi le linee tratteggiate senza tagliare, poi piega e unisci con gaffer tape per formare un parallelepipedo aperto a entrambe le estremità.<br><br><strong>💡 Trucco:</strong> Il gaffer tape nero è il migliore — blocca la luce nelle giunture!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: STORIA ────────────────────────────────────────────── -->
+  <div id="tab-storia" class="tab-pane">
+    <div class="panel" data-lbl="STORIA DELLA MACCHINA FOTOGRAFICA">
+      <div class="ptitle">📜 Da Ibn al-Haytham a Hubble</div>
+      <div class="timeline">
+        <div class="titem">
+          <div class="tdate">XI secolo d.C.</div>
+          <div class="ttext"><strong>Ibn al-Haytham</strong> — il matematico arabo che per primo descrive come funziona la visione e la Camera Obscura nel "Libro dell'Ottica". Il foro, il buio, la luce che disegna.</div>
+        </div>
+        <div class="titem">
+          <div class="tdate">~1490</div>
+          <div class="ttext"><strong>Leonardo da Vinci</strong> usa la Camera Obscura come strumento di disegno. Nei suoi quaderni scrive: "la Camera Obscura si comporta come l'occhio". Aveva ragione.</div>
+        </div>
+        <div class="titem">
+          <div class="tdate">1609</div>
+          <div class="ttext"><strong>Galileo Galilei</strong> punta un cannocchiale (due lenti!) verso il cielo e vede per la prima volta le lune di Giove. La lente diventa il nostro occhio sull'universo.</div>
+        </div>
+        <div class="titem">
+          <div class="tdate">1727</div>
+          <div class="ttext"><strong>Johann Schulze</strong> scopre che i sali d'argento anneriscono alla luce. È il primo passo verso la fotografia — ma l'immagine scompare dopo pochi minuti.</div>
+        </div>
+        <div class="titem">
+          <div class="tdate">1839</div>
+          <div class="ttext"><strong>Louis Daguerre</strong> presenta il Dagherrotipo — la prima fotografia stabile. La Camera Obscura finalmente "ricorda" quello che vede. Nasce la fotografia.</div>
+        </div>
+        <div class="titem">
+          <div class="tdate">1895</div>
+          <div class="ttext"><strong>Fratelli Lumière</strong> — la cinepresa. Una Camera Obscura con 24 fotogrammi al secondo. Lo stesso foro, la stessa lente, ma ora il mondo si muove.</div>
+        </div>
+        <div class="titem">
+          <div class="tdate">1990</div>
+          <div class="ttext"><strong>Hubble Space Telescope</strong> — una Camera Obscura grande come un autobus, con uno specchio da 2,4 metri, che orbita a 560 km sopra le nostre teste e guarda le stelle di 13 miliardi di anni fa.</div>
+        </div>
+        <div class="titem">
+          <div class="tdate">Oggi</div>
+          <div class="ttext"><strong>La Cardboard Camera</strong> che costruiamo in questa lezione obbedisce alle stesse leggi di tutte queste invenzioni. La lente è diversa, il cartone è diverso — ma il principio è identico.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: SCIENZA ───────────────────────────────────────────── -->
+  <div id="tab-scienza" class="tab-pane">
+    <div class="panel" data-lbl="LA FISICA DELLA LENTE">
+      <div class="ptitle">⚗️ La Formula Magica delle Lenti</div>
+      <div style="text-align:center; padding:16px; background:rgba(0,217,255,.06); border-radius:4px; margin-bottom:14px;">
+        <div style="font-family:var(--orb); font-size:1.4rem; color:var(--yellow); letter-spacing:2px;">1/f = 1/d₀ + 1/dᵢ</div>
+        <div style="font-family:var(--kid); font-size:.75rem; color:rgba(220,238,255,.55); margin-top:6px;">
+          f = lunghezza focale · d₀ = distanza oggetto · dᵢ = distanza immagine
+        </div>
+      </div>
+      <div class="grid2" style="gap:10px;">
+        <div class="icard">
+          <div class="icard-title">📐 Cosa significa?</div>
+          <div class="icard-body">Conoscendo la distanza focale della lente (f) e la distanza del soggetto (d₀), puoi calcolare esattamente dove si formerà l'immagine (dᵢ) — e quindi dove mettere il tracing paper!</div>
+        </div>
+        <div class="icard">
+          <div class="icard-title">🔢 Calcolo live</div>
+          <div class="icard-body">
+            f = <span id="sciF" style="color:var(--cyan)">100</span> mm<br>
+            d₀ = <span id="sciD0" style="color:var(--cyan)">2000</span> mm<br>
+            dᵢ = <span id="sciDi" style="color:var(--yellow)">--</span> mm<br>
+            Ingrandimento M = –dᵢ/d₀ = <span id="sciM" style="color:var(--green)">--</span>×
+          </div>
+        </div>
+        <div class="icard">
+          <div class="icard-title">👁️ L'occhio umano</div>
+          <div class="icard-body">Il cristallino del tuo occhio è una lente con focale variabile (20–24 mm). La distanza dalla lente alla retina è fissa (~17 mm). Il tuo cervello aggiusta la focale per mettere a fuoco — è l'autofocus biologico!</div>
+        </div>
+        <div class="icard">
+          <div class="icard-title">🔭 Hubble</div>
+          <div class="icard-body">Lo specchio primario di Hubble ha f = 57,6 m (57600 mm!). Questo gli permette di distinguere due luci separate da soli 0,05 secondi d'arco — come leggere un giornale da 1 km di distanza.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div class="ptitle" style="font-size:.82rem;">🌈 Perché la lente crea colori diversi?</div>
+        <div class="icard">
+          <div class="icard-body">Le lenti non deflettono tutti i colori allo stesso modo: il blu si piega di più del rosso. Questo si chiama <strong style="color:var(--cyan)">aberrazione cromatica</strong>. È per questo che i bordi dell'immagine della Cardboard Camera appaiono leggermente colorati. I costruttori di obiettivi professionali usano combinazioni di lenti diverse per correggere questo problema — si chiamano lenti apocromate.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div class="ptitle" style="font-size:.82rem;">📷 Da f a f/stop: il diaframma</div>
+        <canvas id="cvAperture" height="140"></canvas>
+        <div style="font-family:var(--kid); font-size:.7rem; color:rgba(220,238,255,.45); margin-top:6px; text-align:center;">Apertura attuale: f/<span id="fstop">--</span> · Sposta il cursore "Diaframma" per cambiare</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- fine colonna destra -->
+</div><!-- fine wrap -->
+
+<div class="footer">Col Naso all'Insù · Cardboard Camera Simulator · Mario Mele · www.mariomele.com</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<script>
+// ── SYNC SLIDERS ─────────────────────────────────────────────────────
+function sync(id, val) {
+  document.getElementById('n' + id).textContent = val;
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tabs:first-of-type .tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+  simulate();
+}
+
+// ── PRESETS ──────────────────────────────────────────────────────────
+var PRESETS = {
+  bambino:  { obj:100, focal:100, diam:40 },
+  finestra: { obj:150, focal:100, diam:40 },
+  albero:   { obj:500, focal:100, diam:40 },
+  sole:     { obj:1000, focal:80, diam:40 },
+  stelle:   { obj:1000, focal:150, diam:60 },
+};
+function setPreset(name) {
+  var p = PRESETS[name];
+  document.getElementById('sObj').value   = p.obj;
+  document.getElementById('sFocal').value = p.focal;
+  document.getElementById('sDiam').value  = p.diam;
+  sync('Obj', p.obj); sync('Focal', p.focal); sync('Diam', p.diam);
+  // auto-set screen to ideal focus
+  var di = 1 / (1/p.focal - 1/(p.obj*10));
+  var screenVal = Math.min(400, Math.max(30, Math.round(di)));
+  document.getElementById('sScreen').value = screenVal;
+  sync('Screen', screenVal);
+  simulate();
+}
+
+// ── FISICA LENTE ─────────────────────────────────────────────────────
+function computeOptics() {
+  var f    = parseFloat(document.getElementById('nFocal').textContent);
+  var d0   = parseFloat(document.getElementById('nObj').textContent) * 10; // cm→mm
+  var diam = parseFloat(document.getElementById('nDiam').textContent);
+  var ap   = parseFloat(document.getElementById('nAperture').textContent) / 100;
+  var dscr = parseFloat(document.getElementById('nScreen').textContent);
+
+  // Legge delle lenti sottili: 1/f = 1/d0 + 1/di
+  var di = 1 / (1/f - 1/d0);
+  if (di < 0 || !isFinite(di)) di = 9999; // oggetto dentro fuoco
+
+  var mag  = Math.abs(di / d0); // ingrandimento lineare
+  var bright = ap * ap * 100;   // luminosità proporzionale ad apertura²
+  
+  // Cerchio di confusione (nitidezza): quanto la posizione screen si discosta dal fuoco
+  var blur = Math.abs(dscr - di);
+  var coc  = blur > 0 ? (diam * ap * blur / di) : 0;
+  var sharp = Math.max(0, 100 - coc * 2);
+
+  // Profondità di campo (Merklinger approx)
+  var coc_limit = 0.5; // mm
+  var dofNear = d0 * f / (f + coc_limit / (diam * ap) * (d0 - f));
+  var dofFar  = d0 * f / (f - coc_limit / (diam * ap) * (d0 - f));
+  if (dofFar < 0 || !isFinite(dofFar)) dofFar = 999999;
+  var dof = (dofFar - dofNear) / 10; // mm→cm
+
+  var fstop = f / (diam * ap);
+
+  return { f, d0, di, mag, bright, sharp, dof, fstop, dscr, diam, ap };
+}
+
+// ── SIMULATE PRINCIPALE ───────────────────────────────────────────────
+function simulate() {
+  var o = computeOptics();
+
+  // ── AGGIORNA RISULTATI ────────────────────────────────────────────
+  document.getElementById('rImgDist').textContent = o.di > 9000 ? '∞' : o.di.toFixed(1);
+  document.getElementById('rMag').textContent     = o.mag.toFixed(3);
+  document.getElementById('rSharp').textContent   = Math.round(o.sharp);
+  document.getElementById('rBright').textContent  = Math.round(o.bright);
+  document.getElementById('rDof').textContent     = o.dof > 9000 ? '∞' : o.dof.toFixed(1);
+
+  // Kid labels
+  document.getElementById('rImgKid').textContent  = o.di > 9000 ? '⚠️ Oggetto troppo vicino!' : '📐 ' + o.di.toFixed(0) + 'mm dalla lente';
+  document.getElementById('rMagKid').textContent  = o.mag < 0.01 ? '🔭 Oggetto lontanissimo!' : (o.mag > 1 ? '🔍 L\'immagine è più grande!' : '🔬 L\'immagine è più piccola');
+  document.getElementById('rSharpKid').textContent = o.sharp > 80 ? '✅ Bel fuoco!' : (o.sharp > 40 ? '⚠️ Un po\' sfocato' : '❌ Troppo sfocato!');
+  document.getElementById('rBrightKid').textContent = o.bright > 80 ? '☀️ Molto luminosa' : (o.bright > 40 ? '🌤️ Abbastanza luminosa' : '🌑 Scura — apri il diaframma!');
+  document.getElementById('rDofKid').textContent   = o.dof > 9000 ? '♾️ Tutto a fuoco!' : (o.dof > 100 ? '🌄 Campo largo' : '📷 Solo il soggetto a fuoco');
+
+  // Messa a fuoco status
+  var focBadge = document.getElementById('focusStatus');
+  document.getElementById('focusDist').textContent = o.di > 9000 ? '∞' : o.di.toFixed(0) + ' mm';
+  var diff = Math.abs(o.dscr - o.di);
+  if (diff < 5) {
+    focBadge.className = 'focus-badge focus-ok'; focBadge.textContent = '✓ A fuoco perfetto!';
+  } else if (diff < 20) {
+    focBadge.className = 'focus-badge focus-warn'; focBadge.textContent = '~ Quasi a fuoco';
+  } else {
+    focBadge.className = 'focus-badge focus-bad'; focBadge.textContent = '✗ Sfocato';
+  }
+
+  // Scienza tab
+  document.getElementById('sciF').textContent  = o.f.toFixed(0);
+  document.getElementById('sciD0').textContent = o.d0.toFixed(0);
+  document.getElementById('sciDi').textContent = o.di > 9000 ? '∞' : o.di.toFixed(1);
+  document.getElementById('sciM').textContent  = (o.di > 9000 ? '~0' : (-o.mag).toFixed(4));
+  document.getElementById('fstop').textContent = o.fstop.toFixed(1);
+
+  // SVG lente
+  document.getElementById('svgDiam').textContent = document.getElementById('nDiam').textContent;
+  var screenX = 64 + Math.min(45, o.di * 0.3);
+  document.getElementById('svgScreen').setAttribute('x', Math.min(109, screenX));
+  document.getElementById('svgInner').setAttribute('x', Math.min(64, screenX - 5));
+  document.getElementById('svgInner').setAttribute('width', Math.max(5, 113 - screenX));
+
+  // Disegna canvas
+  drawDiagram(o);
+  drawImage(o);
+  drawBuild();
+  drawAperture(o);
+}
+
+// ── CANVAS: DIAGRAMMA OTTICO ─────────────────────────────────────────
+function drawDiagram(o) {
+  var cv = document.getElementById('cvDiagram');
+  var W = cv.offsetWidth * window.devicePixelRatio || 800;
+  var H = 320;
+  cv.width = W; cv.height = H;
+  var ctx = cv.getContext('2d');
+
+  ctx.fillStyle = 'rgba(7,17,31,.95)';
+  ctx.fillRect(0,0,W,H);
+
+  var CY = H/2;
+  var LENS_X = W * 0.35;
+  var OBJ_X  = 30;
+  var scale  = Math.min(W * 0.55 / Math.min(o.di, 400), 1.5);
+
+  // Asse ottico
+  ctx.strokeStyle = 'rgba(61,143,224,.2)';
+  ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(0, CY); ctx.lineTo(W, CY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Griglia
+  ctx.strokeStyle = 'rgba(61,143,224,.06)';
+  for (var x=0; x<W; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (var y=0; y<H; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Oggetto (freccia)
+  var objH = 60;
+  ctx.strokeStyle = '#4dffaa';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(OBJ_X, CY);
+  ctx.lineTo(OBJ_X, CY - objH);
+  ctx.stroke();
+  // punta freccia
+  ctx.fillStyle = '#4dffaa';
+  ctx.beginPath();
+  ctx.moveTo(OBJ_X, CY - objH);
+  ctx.lineTo(OBJ_X - 5, CY - objH + 10);
+  ctx.lineTo(OBJ_X + 5, CY - objH + 10);
+  ctx.closePath(); ctx.fill();
+  ctx.font = '10px Share Tech Mono'; ctx.fillStyle = 'rgba(77,255,170,.7)';
+  ctx.fillText('OGGETTO', OBJ_X - 20, CY - objH - 6);
+
+  // Lente (ellisse)
+  ctx.strokeStyle = 'rgba(0,217,255,.9)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.ellipse(LENS_X, CY, 6, 70, 0, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.font = '9px Share Tech Mono'; ctx.fillStyle = 'rgba(0,217,255,.6)';
+  ctx.fillText('LENTE', LENS_X - 16, CY + 85);
+  ctx.fillText('f=' + o.f + 'mm', LENS_X - 16, CY + 96);
+
+  // Punto fuoco
+  var focX = LENS_X + o.f * scale * 0.6;
+  ctx.strokeStyle = 'rgba(255,228,77,.3)';
+  ctx.setLineDash([2,3]);
+  ctx.beginPath(); ctx.moveTo(focX, 0); ctx.lineTo(focX, H); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.font = '8px Share Tech Mono'; ctx.fillStyle = 'rgba(255,228,77,.6)';
+  ctx.fillText('F', focX - 4, CY - 75);
+
+  // Distanza immagine
+  var imgX = Math.min(W - 40, LENS_X + Math.min(o.di, 400) * scale * 0.6);
+  var imgH_actual = o.di > 9000 ? 4 : objH * o.mag;
+  var imgH_draw = Math.min(80, imgH_actual);
+
+  // Raggi di luce principali
+  ctx.lineWidth = 1.2;
+  // Raggio parallelo all'asse → passa per il fuoco
+  ctx.strokeStyle = 'rgba(255,180,50,.7)';
+  ctx.beginPath();
+  ctx.moveTo(OBJ_X, CY - objH);
+  ctx.lineTo(LENS_X, CY - objH);
+  ctx.lineTo(imgX, CY + imgH_draw);
+  ctx.stroke();
+
+  // Raggio attraverso il centro della lente
+  ctx.strokeStyle = 'rgba(255,100,100,.7)';
+  ctx.beginPath();
+  ctx.moveTo(OBJ_X, CY - objH);
+  ctx.lineTo(imgX, CY + imgH_draw);
+  ctx.stroke();
+
+  // Immagine
+  if (o.di < 9000 && imgX < W - 10) {
+    ctx.strokeStyle = '#ff9a3c';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(imgX, CY);
+    ctx.lineTo(imgX, CY + imgH_draw);
+    ctx.stroke();
+    ctx.fillStyle = '#ff9a3c';
+    ctx.beginPath();
+    ctx.moveTo(imgX, CY + imgH_draw);
+    ctx.lineTo(imgX - 5, CY + imgH_draw - 10);
+    ctx.lineTo(imgX + 5, CY + imgH_draw - 10);
+    ctx.closePath(); ctx.fill();
+    ctx.font = '9px Share Tech Mono'; ctx.fillStyle = 'rgba(255,154,60,.8)';
+    ctx.fillText('IMMAGINE', imgX - 30, CY + imgH_draw + 14);
+    ctx.fillText('CAPOVOLTA', imgX - 32, CY + imgH_draw + 24);
+  }
+
+  // Screen (tracing paper)
+  var scrnX = LENS_X + o.dscr * scale * 0.6;
+  if (scrnX < W - 5) {
+    ctx.strokeStyle = 'rgba(255,255,255,.5)';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(scrnX, CY - 75); ctx.lineTo(scrnX, CY + 75); ctx.stroke();
+    ctx.font = '8px Share Tech Mono'; ctx.fillStyle = 'rgba(255,255,255,.4)';
+    ctx.fillText('SCREEN', scrnX - 20, CY - 80);
+  }
+
+  // Distanza annotazioni
+  ctx.strokeStyle = 'rgba(61,143,224,.5)'; ctx.lineWidth=.8;
+  ctx.beginPath(); ctx.moveTo(OBJ_X, CY+95); ctx.lineTo(LENS_X, CY+95); ctx.stroke();
+  ctx.font = '8px Share Tech Mono'; ctx.fillStyle = 'rgba(61,143,224,.7)';
+  ctx.fillText('d₀=' + (o.d0/10).toFixed(0)+'cm', OBJ_X + 4, CY + 90);
+  if (o.di < 9000 && imgX < W-20) {
+    ctx.beginPath(); ctx.moveTo(LENS_X, CY+95); ctx.lineTo(imgX, CY+95); ctx.stroke();
+    ctx.fillText('dᵢ=' + o.di.toFixed(0)+'mm', LENS_X + 4, CY + 90);
+  }
+}
+
+// ── CANVAS: IMMAGINE SIMULATA ─────────────────────────────────────────
+function drawImage(o) {
+  var cv = document.getElementById('cvImage');
+  if (!cv) return;
+  var W = cv.offsetWidth * window.devicePixelRatio || 600;
+  var H = 300;
+  cv.width = W; cv.height = H;
+  var ctx = cv.getContext('2d');
+
+  // Sfondo scuro (buio interno camera)
+  ctx.fillStyle = '#050d1a';
+  ctx.fillRect(0,0,W,H);
+
+  // Simula scena capovolta
+  var sharp = o.sharp / 100;
+  var bright = o.bright / 100;
+
+  // Paesaggio capovolta (cielo in basso, terra in alto)
+  // Cielo (ora in basso perché capovolto)
+  var skyGrad = ctx.createLinearGradient(0, H/2, 0, H);
+  skyGrad.addColorStop(0, 'rgba(8,30,80,' + (bright*0.9) + ')');
+  skyGrad.addColorStop(1, 'rgba(20,80,180,' + (bright*0.7) + ')');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, H/2, W, H/2);
+
+  // Terra (in alto perché capovolto)
+  var earthGrad = ctx.createLinearGradient(0, 0, 0, H/2);
+  earthGrad.addColorStop(0, 'rgba(15,60,15,' + (bright*0.8) + ')');
+  earthGrad.addColorStop(1, 'rgba(40,120,40,' + (bright*0.6) + ')');
+  ctx.fillStyle = earthGrad;
+  ctx.fillRect(0, 0, W, H/2);
+
+  // Alberi (capovolti — in alto, radici verso il centro)
+  ctx.fillStyle = 'rgba(10,50,10,' + bright + ')';
+  for (var i=0; i<8; i++) {
+    var tx = 40 + i * (W-80)/7;
+    var th = 30 + Math.sin(i*1.3)*20;
+    // triangolo capovolto (punta verso l'alto → ora le radici)
+    ctx.beginPath();
+    ctx.moveTo(tx, 0);
+    ctx.lineTo(tx - 18, th);
+    ctx.lineTo(tx + 18, th);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Stelle (in basso = cielo capovolto)
+  for (var s=0; s<30; s++) {
+    var sx = Math.random()*W, sy = H/2 + Math.random()*H/2;
+    var sr = Math.random()*1.5 + 0.5;
+    ctx.fillStyle = 'rgba(255,255,255,' + (bright*0.7) + ')';
+    ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI*2); ctx.fill();
+  }
+
+  // Effetto sfocatura (simulato con overlay)
+  if (sharp < 0.8) {
+    var blurAmt = (1 - sharp) * 20;
+    ctx.fillStyle = 'rgba(7,17,31,' + (1 - sharp) * 0.6 + ')';
+    ctx.fillRect(0,0,W,H);
+  }
+
+  // Texture tracing paper (grain)
+  var imgData = ctx.getImageData(0, 0, W, H);
+  var data = imgData.data;
+  for (var i2=0; i2<data.length; i2+=4) {
+    var noise = (Math.random() - 0.5) * 40;
+    data[i2]   = Math.min(255, Math.max(0, data[i2]   + noise));
+    data[i2+1] = Math.min(255, Math.max(0, data[i2+1] + noise));
+    data[i2+2] = Math.min(255, Math.max(0, data[i2+2] + noise));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Frame camera
+  ctx.strokeStyle = 'rgba(0,217,255,.3)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1,1,W-2,H-2);
+
+  // Label
+  ctx.font = '9px Share Tech Mono';
+  ctx.fillStyle = 'rgba(0,217,255,.5)';
+  ctx.fillText('IMMAGINE SUL TRACING PAPER — CAPOVOLTA', 10, 16);
+  ctx.fillStyle = 'rgba(255,228,77,.5)';
+  ctx.fillText('Nitidezza: ' + Math.round(o.sharp) + '%   Luminosità: ' + Math.round(o.bright) + '%', 10, H-8);
+}
+
+// ── CANVAS: ISTRUZIONI COSTRUZIONE ───────────────────────────────────
+var buildStep = 0;
+var BUILD_STEPS = [
+  {
+    title: "1. Pezzo Esterno — la scatola della lente",
+    body: "Prendi un foglio A3 di cartone spesso. Segna e taglia: sezione superiore 10×20 cm, fascia centrale (dove va la lente) 11×20 cm, sezione inferiore 10×20 cm. Incidi le linee tratteggiate senza tagliare, poi piega e unisci con gaffer tape per formare un parallelepipedo aperto a entrambe le estremità.<br><br>💡 <strong>Trucco:</strong> Il gaffer tape nero è il migliore — blocca la luce nelle giunture!"
+  },
+  {
+    title: "2. Il Foro e la Lente (ø40 mm)",
+    body: "Sulla faccia frontale del pezzo esterno, traccia e ritaglia un foro circolare di 40 mm di diametro. Usa un compasso per segnare il cerchio, poi cutter per tagliarlo. Incolla la lente con biadesivo o colla a caldo, assicurandoti che sia ben centrata e che non rimangano spazi aperti attorno.<br><br>💡 <strong>Il foro è la pupilla della nostra macchina fotografica!</strong>"
+  },
+  {
+    title: "3. Pezzo Interno — il porta-schermo",
+    body: "Secondo foglio A3: sezione superiore 9×15 cm, fascia centrale 10×15 cm, sezione inferiore 9×15 cm. Sulla faccia posteriore fai un foro di 25 mm (per lo smartphone). Piega e chiudi come il primo pezzo — deve essere leggermente più piccolo del pezzo esterno per poterci scorrere dentro.<br><br>💡 <strong>Il pezzo interno deve scorrere avanti e indietro per mettere a fuoco!</strong>"
+  },
+  {
+    title: "4. Il Tracing Paper — lo schermo",
+    body: "Taglia un pezzo di carta traslucida da 12×12 cm. Incollalo sull'estremità aperta del pezzo interno (quella senza il foro smartphone) con nastro carta. Deve essere ben teso e senza pieghe — è lo 'schermo del cinema' della tua camera.<br><br>💡 <strong>Anche la carta da forno funziona come alternativa al tracing paper!</strong>"
+  },
+  {
+    title: "5. Unire i Due Pezzi",
+    body: "Inserisci il pezzo interno dentro il pezzo esterno, con il tracing paper all'interno e il foro smartphone accessibile dall'estremità aperta. I due pezzi devono scorrere avanti e indietro (per la messa a fuoco) ma senza far entrare luce. Sigilla i bordi con gaffer tape lasciando libero il movimento longitudinale.<br><br>💡 <strong>Guarda dall'estremità aperta verso una finestra: vedi l'immagine capovolta sul tracing paper!</strong>"
+  },
+  {
+    title: "6. (Opzionale) Il Diaframma",
+    body: "Taglia una striscia di cartone 3×15 cm. Pratica 3 fori con il punteruolo: ø5 mm, ø10 mm, ø20 mm. Incolla due guide orizzontali (strisce 3×3 cm) sopra e sotto la lente, lasciando uno spazio per far scorrere la striscia-diaframma. Prova i diversi fori e osserva l'effetto sull'immagine!<br><br>💡 <strong>Foro piccolo = immagine più scura ma più nitida. Come strizzare gli occhi al sole!</strong>"
+  },
+];
+
+function showBuildStep(n) {
+  buildStep = n;
+  document.querySelectorAll('#buildTabs .tab').forEach((t,i) => {
+    t.classList.toggle('active', i === n);
+  });
+  document.getElementById('buildTitle').textContent = BUILD_STEPS[n].title;
+  document.getElementById('buildBody').innerHTML = BUILD_STEPS[n].body;
+  drawBuild();
+}
+
+function drawBuild() {
+  var cv = document.getElementById('cvBuild');
+  if (!cv) return;
+  var W = cv.offsetWidth * window.devicePixelRatio || 700;
+  var H = 360;
+  cv.width = W; cv.height = H;
+  var ctx = cv.getContext('2d');
+
+  ctx.fillStyle = 'rgba(7,17,31,.97)';
+  ctx.fillRect(0,0,W,H);
+
+  var cx = W/2, cy = H/2;
+  var step = buildStep;
+
+  // Colori
+  var CARD_FILL  = 'rgba(255,200,80,.15)';
+  var CARD_STROK = 'rgba(255,200,80,.7)';
+  var LENS_FILL  = 'rgba(0,217,255,.25)';
+  var LENS_STROK = 'rgba(0,217,255,.9)';
+  var TAPE_FILL  = 'rgba(255,77,77,.25)';
+  var SCR_FILL   = 'rgba(255,255,255,.2)';
+  var SCR_STROK  = 'rgba(255,255,255,.7)';
+
+  function label(text, x, y, col) {
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillStyle = col || 'rgba(0,217,255,.7)';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, x, y);
+    ctx.textAlign = 'left';
+  }
+
+  function dim(x1,y1,x2,y2,text) {
+    ctx.strokeStyle = 'rgba(61,143,224,.5)'; ctx.lineWidth=.7;
+    ctx.setLineDash([2,2]);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.setLineDash([]);
+    var mx=(x1+x2)/2, my=(y1+y2)/2;
+    ctx.font='9px Share Tech Mono'; ctx.fillStyle='rgba(61,143,224,.8)';
+    ctx.textAlign='center'; ctx.fillText(text, mx, my-4); ctx.textAlign='left';
+  }
+
+  if (step === 0) {
+    // Foglio A3 appiattito con sezioni
+    var FX=cx-120, FY=50, FW=240, FSH=40;
+    // 3 sezioni
+    var sezioni = [
+      {h:FSH*0.8, label:'10 cm', fill:CARD_FILL},
+      {h:FSH*0.9, label:'11 cm', fill:'rgba(255,150,50,.15)'},
+      {h:FSH*0.8, label:'10 cm', fill:CARD_FILL},
+    ];
+    var sy=FY;
+    sezioni.forEach(function(s) {
+      ctx.fillStyle = s.fill;
+      ctx.strokeStyle = CARD_STROK;
+      ctx.lineWidth=1.5;
+      ctx.fillRect(FX,sy,FW,s.h*3.5);
+      ctx.strokeRect(FX,sy,FW,s.h*3.5);
+      label(s.label, FX-28, sy+s.h*1.75, 'rgba(255,200,80,.8)');
+      sy += s.h*3.5;
+    });
+    dim(FX, FY-15, FX+FW, FY-15, '20 cm');
+    label('FOGLIO A3 — PEZZO ESTERNO', cx, H-20, 'rgba(255,200,80,.7)');
+    label('Linee tratteggiate = incidi e piega', cx, H-6, 'rgba(255,255,255,.4)');
+
+  } else if (step === 1) {
+    // Lente + foro
+    var bx=cx-90, bw=60, bh=130;
+    ctx.fillStyle=CARD_FILL; ctx.strokeStyle=CARD_STROK; ctx.lineWidth=1.5;
+    ctx.fillRect(bx, cy-bh/2, bw, bh); ctx.strokeRect(bx, cy-bh/2, bw, bh);
+    // foro
+    ctx.save();
+    ctx.globalCompositeOperation='destination-out';
+    ctx.beginPath(); ctx.arc(bx+bw/2, cy, 20, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle='rgba(255,200,80,.4)'; ctx.beginPath(); ctx.arc(bx+bw/2, cy, 20, 0, Math.PI*2); ctx.stroke();
+    // Lente
+    ctx.fillStyle=LENS_FILL; ctx.strokeStyle=LENS_STROK; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.ellipse(bx+bw/2+8, cy, 6, 18, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    // Raggi (demo)
+    ctx.strokeStyle='rgba(255,220,50,.5)'; ctx.lineWidth=1;
+    for (var r=-3;r<=3;r++) {
+      ctx.beginPath();
+      ctx.moveTo(bx-80, cy + r*20);
+      ctx.lineTo(bx+bw/2+8, cy+r*4);
+      ctx.lineTo(bx+bw+100, cy);
+      ctx.stroke();
+    }
+    dim(bx+bw/2+8-20, cy-30, bx+bw/2+8+20, cy-30, 'ø40 mm');
+    label('LENTE ø40 mm — centro il foro!', cx, H-14, LENS_STROK);
+
+  } else if (step === 2) {
+    // Pezzo interno (più piccolo)
+    var ix=cx-70, iw=50, ih=110;
+    ctx.fillStyle='rgba(100,150,255,.12)'; ctx.strokeStyle='rgba(100,150,255,.6)'; ctx.lineWidth=1.5;
+    ctx.fillRect(ix, cy-ih/2, iw, ih); ctx.strokeRect(ix, cy-ih/2, iw, ih);
+    // foro smartphone
+    ctx.save();
+    ctx.globalCompositeOperation='destination-out';
+    ctx.beginPath(); ctx.arc(ix+iw/2, cy, 12, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle='rgba(100,150,255,.4)'; ctx.beginPath(); ctx.arc(ix+iw/2, cy, 12, 0, Math.PI*2); ctx.stroke();
+    // Smartphone
+    var sx=cx+40, sw=50, sh=90;
+    ctx.fillStyle='rgba(0,0,0,.5)'; ctx.strokeStyle='rgba(200,200,200,.5)'; ctx.lineWidth=1;
+    ctx.fillRect(sx, cy-sh/2, sw, sh); ctx.strokeRect(sx, cy-sh/2, sw, sh);
+    ctx.fillStyle='rgba(0,150,255,.2)'; ctx.fillRect(sx+3, cy-sh/2+10, sw-6, sh-20);
+    label('Foro ø25 mm\nper smartphone', ix+iw/2, cy+ih/2+18, 'rgba(100,150,255,.8)');
+    label('PEZZO INTERNO + SMARTPHONE', cx, H-14, 'rgba(100,150,255,.8)');
+
+  } else if (step === 3) {
+    // Tracing paper
+    var tx2=cx-30, tw=60, th2=110;
+    ctx.fillStyle=SCR_FILL; ctx.strokeStyle=SCR_STROK; ctx.lineWidth=1.5;
+    ctx.fillRect(tx2, cy-th2/2, tw, th2); ctx.strokeRect(tx2, cy-th2/2, tw, th2);
+    // pattern carta
+    ctx.strokeStyle='rgba(255,255,255,.1)'; ctx.lineWidth=.5;
+    for(var l=0;l<th2;l+=5){ ctx.beginPath(); ctx.moveTo(tx2,cy-th2/2+l); ctx.lineTo(tx2+tw,cy-th2/2+l); ctx.stroke(); }
+    // Immagine capovolta
+    ctx.font='22px serif'; ctx.fillStyle='rgba(0,150,255,.5)';
+    ctx.save(); ctx.translate(tx2+tw/2, cy); ctx.rotate(Math.PI);
+    ctx.fillText('🌳', -10, 10);
+    ctx.restore();
+    label('TRACING PAPER — lo schermo', cx, H-24, SCR_STROK);
+    label('L\'immagine appare capovolta!', cx, H-10, 'rgba(255,228,77,.6)');
+
+  } else if (step === 4) {
+    // Camera completa assemblata
+    var ex2=cx-130, ew2=90, eh2=140;
+    var ix2=cx-40, iw2=130;
+    // Esterno
+    ctx.fillStyle=CARD_FILL; ctx.strokeStyle=CARD_STROK; ctx.lineWidth=2;
+    ctx.fillRect(ex2, cy-eh2/2, ew2, eh2); ctx.strokeRect(ex2, cy-eh2/2, ew2, eh2);
+    // Lente
+    ctx.fillStyle=LENS_FILL; ctx.strokeStyle=LENS_STROK; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.ellipse(ex2+ew2, cy, 5, 16, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    // Interno (scorrevole)
+    ctx.fillStyle='rgba(100,150,255,.08)'; ctx.strokeStyle='rgba(100,150,255,.4)'; ctx.lineWidth=1.5;
+    ctx.fillRect(ix2, cy-eh2/2+15, iw2, eh2-30); ctx.strokeRect(ix2, cy-eh2/2+15, iw2, eh2-30);
+    // Tracing
+    ctx.fillStyle=SCR_FILL; ctx.strokeStyle=SCR_STROK; ctx.lineWidth=1;
+    ctx.fillRect(ix2+iw2, cy-eh2/2+20, 5, eh2-40); ctx.strokeRect(ix2+iw2, cy-eh2/2+20, 5, eh2-40);
+    // Frecce scorrimento
+    ctx.strokeStyle='rgba(255,228,77,.7)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(ix2-10, cy-30); ctx.lineTo(ix2-30, cy-30); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ix2-10, cy+30); ctx.lineTo(ix2-30, cy+30); ctx.stroke();
+    ctx.font='8px Share Tech Mono'; ctx.fillStyle='rgba(255,228,77,.6)'; ctx.textAlign='center';
+    ctx.fillText('SCORRI', ix2-20, cy+10);
+    ctx.fillText('per messa', ix2-20, cy+22);
+    ctx.fillText('a fuoco', ix2-20, cy+34);
+    ctx.textAlign='left';
+    // Raggi
+    ctx.strokeStyle='rgba(255,220,50,.4)'; ctx.lineWidth=.8;
+    for(var r2=-2;r2<=2;r2++){
+      ctx.beginPath(); ctx.moveTo(ex2-50, cy+r2*25); ctx.lineTo(ex2+ew2, cy+r2*8); ctx.lineTo(ix2+iw2+3, cy); ctx.stroke();
+    }
+    label('CAMERA COMPLETA — pronta per l\'uso!', cx, H-14, 'rgba(77,255,170,.8)');
+
+  } else if (step === 5) {
+    // Diaframma
+    var dx2=cx-90;
+    // Striscia cartone con 3 fori
+    ctx.fillStyle='rgba(150,100,50,.2)'; ctx.strokeStyle='rgba(200,150,80,.6)'; ctx.lineWidth=1.5;
+    ctx.fillRect(dx2, cy-20, 180, 40); ctx.strokeRect(dx2, cy-20, 180, 40);
+    // 3 fori
+    [[dx2+30, 2], [dx2+90, 5], [dx2+150, 10]].forEach(function(foro) {
+      ctx.save();
+      ctx.globalCompositeOperation='destination-out';
+      ctx.beginPath(); ctx.arc(foro[0], cy, foro[1], 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+      ctx.strokeStyle='rgba(0,217,255,.5)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.arc(foro[0], cy, foro[1], 0, Math.PI*2); ctx.stroke();
+    });
+    label('ø5mm', dx2+30, cy+35, 'rgba(255,228,77,.7)');
+    label('ø10mm', dx2+90, cy+35, 'rgba(255,228,77,.7)');
+    label('ø20mm', dx2+150, cy+35, 'rgba(255,228,77,.7)');
+    label('DIAFRAMMA — controlla la luce', cx, H-24, 'rgba(200,100,255,.8)');
+    label('Foro piccolo = nitido | Grande = luminoso', cx, H-10, 'rgba(255,255,255,.4)');
+  }
+}
+
+// ── CANVAS: APERTURA DIAFRAMMA ────────────────────────────────────────
+function drawAperture(o) {
+  var cv = document.getElementById('cvAperture');
+  if (!cv) return;
+  var W = cv.offsetWidth * window.devicePixelRatio || 600;
+  var H = 140;
+  cv.width = W; cv.height = H;
+  var ctx = cv.getContext('2d');
+
+  ctx.fillStyle = 'rgba(7,17,31,.95)';
+  ctx.fillRect(0,0,W,H);
+
+  var stops = [1, 1.4, 2, 2.8, 4, 5.6, 8, 11, 16];
+  var N = stops.length;
+  var bw = W / N;
+
+  stops.forEach(function(f, i) {
+    var x = i * bw;
+    var r = Math.min(50, bw/2 * (1/f) * 8);
+    var active = Math.abs(o.fstop - f) < 0.5;
+
+    // sfondo
+    ctx.fillStyle = active ? 'rgba(0,217,255,.15)' : 'rgba(0,0,0,.3)';
+    ctx.fillRect(x, 0, bw, H);
+
+    // diaframma (cerchio vuoto)
+    ctx.strokeStyle = active ? 'rgba(0,217,255,.9)' : 'rgba(61,143,224,.4)';
+    ctx.lineWidth = active ? 2 : 1;
+    ctx.beginPath(); ctx.arc(x+bw/2, H/2 - 15, Math.max(3, r), 0, Math.PI*2); ctx.stroke();
+
+    // label f-stop
+    ctx.font = (active ? 'bold ' : '') + '11px Share Tech Mono';
+    ctx.fillStyle = active ? 'rgba(0,217,255,.9)' : 'rgba(61,143,224,.5)';
+    ctx.textAlign = 'center';
+    ctx.fillText('f/' + f, x+bw/2, H - 20);
+
+    // label descrizione
+    if (active) {
+      ctx.font = '8px Share Tech Mono'; ctx.fillStyle = 'rgba(255,228,77,.7)';
+      ctx.fillText('▲ attuale', x+bw/2, H-8);
+    }
+  });
+  ctx.textAlign = 'left';
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+setPreset('finestra');
+</script>
+
+</body>
+</html>

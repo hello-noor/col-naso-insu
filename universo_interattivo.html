@@ -83,7 +83,7 @@ header p{font-family:'Cousine',monospace;font-size:clamp(.46rem,.78vw,.66rem);co
 .da{background:#ffd6a5;}.db{background:#caffbf;}.dc{background:#c8b4ff;}
 </style>
 </head>
-<body>
+<body><style>.home-btn{position:fixed;top:12px;left:14px;z-index:9999;font-family:monospace;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,217,255,.7);border:1px solid rgba(0,217,255,.3);background:rgba(7,17,31,.85);padding:4px 12px;border-radius:20px;text-decoration:none;backdrop-filter:blur(4px);transition:all .2s;}.home-btn:hover{color:#00d9ff;border-color:rgba(0,217,255,.8);background:rgba(0,217,255,.1);}</style><a href="index.html" class="home-btn">← Col Naso all'Insù</a>
 <canvas id="c"></canvas>
 <div id="ui">
   <header>
@@ -104,32 +104,6 @@ header p{font-family:'Cousine',monospace;font-size:clamp(.46rem,.78vw,.66rem);co
     <button class="lb" data-lv="5">🌐 Universo</button>
   </div>
   <div id="hint"></div>
-  <div id="bdform" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    background:rgba(3,10,26,.95);border:1.5px solid rgba(255,209,102,.3);border-radius:16px;
-    padding:16px 20px;pointer-events:auto;z-index:25;text-align:center;min-width:220px;backdrop-filter:blur(12px);">
-    <div style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:#FFD166;margin-bottom:8px;">🎂 Il tuo Compleanno</div>
-    <div style="font-family:'Cousine',monospace;font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:10px;">Inserisci nome e data di nascita<br>per vedere il tuo compleanno sull'orbita!</div>
-    <input id="bdname" type="text" placeholder="Il tuo nome" maxlength="15" style="width:100%;padding:6px 10px;border-radius:10px;
-      border:1.5px solid rgba(72,202,228,.3);background:rgba(0,0,0,.5);color:#fff;font-family:'Baloo 2',cursive;
-      font-size:.85rem;text-align:center;margin-bottom:6px;">
-    <div style="display:flex;gap:6px;justify-content:center;margin-bottom:8px;">
-      <input id="bdday" type="number" min="1" max="31" placeholder="GG" style="width:50px;padding:5px;border-radius:8px;
-        border:1.5px solid rgba(72,202,228,.3);background:rgba(0,0,0,.5);color:#fff;font-family:'Cousine',monospace;
-        font-size:.8rem;text-align:center;" inputmode="numeric">
-      <select id="bdmonth" style="padding:5px 8px;border-radius:8px;border:1.5px solid rgba(72,202,228,.3);
-        background:rgba(0,0,0,.5);color:#fff;font-family:'Cousine',monospace;font-size:.7rem;appearance:auto;">
-        <option value="">Mese</option>
-        <option value="1">Gennaio</option><option value="2">Febbraio</option><option value="3">Marzo</option>
-        <option value="4">Aprile</option><option value="5">Maggio</option><option value="6">Giugno</option>
-        <option value="7">Luglio</option><option value="8">Agosto</option><option value="9">Settembre</option>
-        <option value="10">Ottobre</option><option value="11">Novembre</option><option value="12">Dicembre</option>
-      </select>
-    </div>
-    <button id="bdok" style="padding:6px 20px;border-radius:20px;border:1.5px solid #FFD166;background:rgba(255,209,102,.1);
-      color:#FFD166;font-family:'Baloo 2',cursive;font-weight:700;font-size:.85rem;cursor:pointer;">🚀 Vai!</button>
-    <button id="bdclose" style="position:absolute;top:4px;right:8px;background:none;border:none;color:rgba(255,255,255,.3);
-      font-size:.8rem;cursor:pointer;">✕</button>
-  </div>
   <div id="dtable">
     <h3 id="dttitle">📊 Dati <span class="badge" id="dtbadge">LIVELLO 0</span></h3>
     <div id="dtcontent"></div>
@@ -149,13 +123,13 @@ header p{font-family:'Cousine',monospace;font-size:clamp(.46rem,.78vw,.66rem);co
     <button class="btn" id="bdata">🔢 Dati</button>
     <button class="btn" id="bscale">📐 Scala</button>
     <button class="btn" id="bgalp" style="display:none">🪐 Pianeti</button>
-    <button class="btn" id="bbd" style="display:none">🎂 Compleanno</button>
     <button class="btn" id="bunit">📏 km</button>
     <button class="btn" id="brst">🔄</button>
     <button class="btn" id="bnav">🔗</button>
     <div id="navpop">
       <a href="luce_colori.html" style="display:block;color:#48cae4;font-size:.65rem;font-family:Cousine,monospace;margin:4px 0;text-decoration:none;">🌈 Luce e Colori</a>
       <a href="calcolatore_pianeti.html" style="display:block;color:#48cae4;font-size:.65rem;font-family:Cousine,monospace;margin:4px 0;text-decoration:none;">🪐 Calcolatore Pianeti</a>
+      <a href="compleanno_orbitale.html" style="display:block;color:#48cae4;font-size:.65rem;font-family:Cousine,monospace;margin:4px 0;text-decoration:none;">🎂 Compleanno Orbitale</a>
     </div>
   </div>
 </div>
@@ -1300,80 +1274,6 @@ function drawSeasonsLevel(alpha, ts, dt) {
   cx.font = "700 10px 'Baloo 2',cursive"; cx.fillStyle = '#a0c8ff'; cx.textAlign = 'center';
   cx.fillText('🌍 Terra', eX, eY + ER + 16); cx.textAlign = 'left';
 
-  // ── BIRTHDAY TRACKER ──
-  if (window._bdName && window._bdDate) {
-    const bd = window._bdDate;
-    const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
-    let dayOfYear = bd.day;
-    for (let m=0; m<bd.month-1; m++) dayOfYear += daysInMonth[m];
-    // Birthday angle on orbit (negative = CCW on screen, same as markers)
-    const bdAng = -((dayOfYear - 3) / 365.25) * TAU;
-    const bdX = eCX + Math.cos(bdAng) * a;
-    const bdY = CY + Math.sin(bdAng) * b;
-
-    // Birthday marker on orbit
-    const pulse = 1 + Math.sin(ts * .005) * .2;
-    cx.save();
-    const bdGlow = rg(bdX,bdY,0,14*pulse,[[0,'rgba(255,100,150,.35)'],[1,'transparent']]);
-    cx.beginPath(); cx.arc(bdX,bdY,14*pulse,0,TAU); cx.fillStyle=bdGlow; cx.fill();
-    cx.font = '16px serif'; cx.textAlign = 'center';
-    cx.fillText('👶', bdX, bdY + 5);
-    cx.font = "700 8px 'Baloo 2',cursive"; cx.fillStyle = '#FFD166';
-    cx.fillText(window._bdName, bdX, bdY - 14);
-    cx.restore();
-
-    // bdAng is negative; in normAng space (0..TAU), it becomes (-bdAng % TAU)
-    const bdNormAng = (((-bdAng) % TAU) + TAU) % TAU;
-    // Detect crossing: normAng increases over time
-    if (!window._bdPrevNormAng && window._bdPrevNormAng !== 0) window._bdPrevNormAng = normAng;
-    if (!window._bdOrbitCount) window._bdOrbitCount = 0;
-    const prev = window._bdPrevNormAng;
-    const curr = normAng;
-    // Crossing happens when prev < bdNormAng and curr >= bdNormAng, or wraps around
-    if (prev <= bdNormAng && curr > bdNormAng && curr - prev < Math.PI) {
-      window._bdOrbitCount++;
-    } else if (curr < prev) {
-      // Wrapped around TAU boundary
-      if (prev <= bdNormAng || curr > bdNormAng) {
-        // Only count if we actually moved a reasonable amount (not a glitch)
-        if (TAU - prev + curr < Math.PI) window._bdOrbitCount++;
-      }
-    }
-    window._bdPrevNormAng = curr;
-
-    const completedYears = window._bdOrbitCount;
-
-    // Check if Earth is near the birthday point
-    let angDiff = Math.abs(normAng - bdNormAng);
-    if (angDiff > Math.PI) angDiff = TAU - angDiff;
-    const nearBD = angDiff < 0.08;
-
-    // Show birthday cake when passing the birthday point
-    if (nearBD && completedYears > 0) {
-      cx.save();
-      const cakeGlow = rg(eX,eY-ER*2.5,0,25,[[0,'rgba(255,209,102,.5)'],[1,'transparent']]);
-      cx.beginPath(); cx.arc(eX,eY-ER*2.5,25,0,TAU); cx.fillStyle=cakeGlow; cx.fill();
-      cx.font = '22px serif'; cx.textAlign = 'center';
-      cx.fillText('🎂', eX, eY - ER*2.2);
-      cx.font = "800 12px 'Baloo 2',cursive"; cx.fillStyle = '#FFD166';
-      cx.fillText('🎉 '+completedYears + ' anni!', eX, eY - ER*3.2);
-      cx.restore();
-    }
-
-    // Age counter box (always visible)
-    cx.save(); cx.globalAlpha *= .85;
-    const acX = 14, acY = H * .18;
-    cx.fillStyle = 'rgba(2,7,20,.8)'; cx.strokeStyle = 'rgba(255,209,102,.25)'; cx.lineWidth = 1;
-    cx.beginPath(); cx.roundRect(acX,acY,120,48,8); cx.fill(); cx.stroke();
-    cx.font = "700 9px 'Baloo 2',cursive"; cx.fillStyle = '#FFD166';
-    cx.fillText('👶 '+window._bdName, acX+8, acY+14);
-    cx.font = "600 10px 'Cousine',monospace"; cx.fillStyle = '#fff';
-    cx.fillText('🎂 '+completedYears+' giri = '+completedYears+' anni', acX+8, acY+30);
-    cx.font = "500 6.5px 'Cousine',monospace"; cx.fillStyle = 'rgba(200,220,255,.4)';
-    cx.fillText('ogni giro intorno al ☀ = 1 anno', acX+8, acY+42);
-    cx.restore();
-  }
-
   // ── Bottom captions ──
   cx.save(); cx.globalAlpha *= .4;
   cx.font = "500 7.5px 'Cousine',monospace"; cx.fillStyle = 'rgba(180,210,255,.5)'; cx.textAlign = 'center';
@@ -2043,37 +1943,11 @@ document.getElementById('bnav').addEventListener('click',()=>{
 function updateCtxBtns(){
   const lv=Math.round(levelT);
   bgalp.style.display=lv===3?'inline-block':'none';
-  // Solar system: always in scale mode, hide scale toggle
   bscale.style.display='none';
   if(lv===2&&!solarScale){solarScale=true;bscale.classList.add('on');}
   if(lv!==2&&solarScale){solarScale=false;bscale.classList.remove('on');}
   if(lv!==3&&showGalPlanets){showGalPlanets=false;bgalp.classList.remove('on');}
-  // Birthday form toggle
-  document.getElementById('bbd').style.display=lv===1?'inline-block':'none';
-  document.getElementById('bdform').style.display=(lv===1&&window._bdFormOpen)?'block':'none';
 }
-
-// Birthday form
-document.getElementById('bbd').addEventListener('click',()=>{
-  window._bdFormOpen=!window._bdFormOpen;
-  document.getElementById('bdform').style.display=window._bdFormOpen?'block':'none';
-});
-document.getElementById('bdclose').addEventListener('click',()=>{
-  window._bdFormOpen=false;
-  document.getElementById('bdform').style.display='none';
-});
-document.getElementById('bdok').addEventListener('click',()=>{
-  const name=document.getElementById('bdname').value.trim();
-  const day=parseInt(document.getElementById('bdday').value);
-  const month=parseInt(document.getElementById('bdmonth').value);
-  if(name&&day>=1&&day<=31&&month>=1&&month<=12){
-    window._bdName=name;
-    window._bdDate={day,month};
-    window._bdFormOpen=false;
-    document.getElementById('bdform').style.display='none';
-    document.getElementById('bbd').classList.add('on');
-  }
-});
 
 // ─────────────────────────────────────────────────────────────────
 // DYNAMIC DATA PANEL — 4 levels, different data per level
@@ -2256,7 +2130,6 @@ document.getElementById('brst').addEventListener('click',()=>{
   lastPanelLevel=-1;
   solarScale=false;bscale.classList.remove('on');scaleZoom=1.0;
   showGalPlanets=false;bgalp.classList.remove('on');
-  window._bdOrbitCount=0;window._bdPrevNormAng=0;
   PLANETS.forEach(p=>{pAng[p.id]=Math.random()*TAU;});
   moonAngSolar=.4;moonAngEarth=.8;galAng=.25;earthRotAng=0.4;earthAngSeason=0;setLevel(0);
 });

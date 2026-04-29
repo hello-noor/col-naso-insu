@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Memory dei Nostri Pianeti — Col Naso all’Insù</title>
+<title>Memory dei Pianeti — Col Naso all’Insù</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -150,11 +150,11 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;min-height:100vh;overf
 .btn-restart:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(255,160,50,.6)}
 </style>
 </head>
-<body>
+<body><style>.home-btn{position:fixed;top:12px;left:14px;z-index:9999;font-family:monospace;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,217,255,.7);border:1px solid rgba(0,217,255,.3);background:rgba(7,17,31,.85);padding:4px 12px;border-radius:20px;text-decoration:none;backdrop-filter:blur(4px);transition:all .2s;}.home-btn:hover{color:#00d9ff;border-color:rgba(0,217,255,.8);background:rgba(0,217,255,.1);}</style><a href="index.html" class="home-btn">← Col Naso all'Insù</a>
 <div id="stars-bg"></div>
 
 <div class="header">
-  <h1>&#127775; Memory dei Nostri Pianeti</h1>
+  <h1>&#127775; Memory dei Pianeti</h1>
   <p class="subtitle">Col Naso all&rsquo;Ins&ugrave; &mdash; Scuola dell&rsquo;Infanzia Fratello Sole &middot; Rivotorto di Assisi</p>
   <p class="credit">Ideato dalla Sezione B di Rivotorto &mdash; da un&rsquo;idea di Riccardo Cavallucci</p>
 </div>
@@ -425,7 +425,7 @@ function makeCard(index){
   front.innerHTML =
     '<span class="cf-star">&#11088;</span>' +
     '<div class="cf-title">Col Naso<br>all&rsquo;Ins&ugrave;</div>' +
-    '<div class="cf-sub">Memory dei Nostri Pianeti</div>';
+    '<div class="cf-sub">Memory dei Pianeti</div>';
   // FRONTE (immagine) - visibile dopo il flip
   var back = document.createElement("div"); back.className="card-back";
   var img = document.createElement("img");
